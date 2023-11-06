@@ -1,9 +1,13 @@
-//compilen como gcc *.c -o nombre.exe, *.c indica "cualquier
-//archivo con extensión *.c"
-#include "guia.h"
+// #include "guia.h"
+#include "login.h"
+#include "form_pac.h"
 
-int main(){
-  print("Hola mundo");
-    
+int main() {
+  gtk_init(NULL, NULL);
+
+  //gen_login();
+  gen_formpac();
+
+  gtk_main();
   return 0;
 }
