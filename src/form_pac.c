@@ -1,9 +1,14 @@
 #include "form_pac.h"
 
-gboolean opc; // indicar si está en modo modificar o agregar(?)
+gboolean fp_opc; // indicar si está en modo modificar o agregar(?)
 GtkWidget *fp_win, *fp_grid, *fp_combox[6], *fp_entry[5], *fp_btn[2],
     *fp_lbl[8];
 GdkPixbuf *fp_icon;
+
+gboolean fp_reset_warning(GtkWidget *widget, GdkEventButton *event, gpointer data) {
+  gtk_label_set_text(GTK_LABEL(fp_lbl[7]), NULL);
+  return FALSE;
+}
 
 void free_formpac() {
   gtk_widget_hide(fp_win);
@@ -83,6 +88,7 @@ void fp_init_entry() {
   }
   for (i = 2; i < 5; i += 2) {
     gtk_entry_set_placeholder_text(GTK_ENTRY(fp_entry[i]), "Año");
+    g_signal_connect(G_OBJECT(fp_entry[i]), "button-press-event", G_CALLBACK(fp_reset_warning), NULL);
   }
 }
 
@@ -234,6 +240,16 @@ void fp_set_widgets() {
   gtk_grid_attach(GTK_GRID(fp_grid), fp_btn[1], 5, 4, 3, 3);
 }
 
+void gen_warning(){
+  fp_lbl[7] = gtk_label_new(NULL);
+  gtk_grid_attach(GTK_GRID(fp_grid), fp_lbl[7], 0, 3, 7, 1);
+}
+/*
+void fp_show_warning(){
+  gtk_label_set_markup(GTK_LABEL(log_warning), "<span foreground='red'>Usuario o contraseña incorrectos</span>");
+}
+*/
+
 void gen_formpac() {
   fp_wingrid();
   init_lbl();
@@ -241,6 +257,7 @@ void gen_formpac() {
   fp_gen_mescombox();
   fp_gen_tsangre();
   fp_gen_sexo();
+  gen_warning();
   fp_gen_btns();
   fp_set_widgets();
 
@@ -435,14 +452,16 @@ void aceptar_opc(GtkWidget *wid, gpointer data) {
   sexo = formatear_sexo(GTK_COMBO_BOX_TEXT(fp_combox[3]));
 
   if (err->len != 0) {
-    // gen_warning(list);
     g_string_append(err, " no válido(s)");
+    gtk_label_set_markup(GTK_LABEL(fp_lbl[7]), err->str);
+  } else{
     // llamar a función de esribir supongo
-  } else
     free_formpac();
+  }
+ 
 
   // liberar todo
-  g_print("%s\n", err->str);
+  //g_print("%s\n", err->str);
   g_string_free(err, TRUE);
 
   for (i = 0; i < 4; i++) {
