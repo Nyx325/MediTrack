@@ -62,10 +62,8 @@ void fp_wingrid() {
   fp_grid = gtk_grid_new();
 
   // padding del margen del grid
-  gtk_grid_set_row_spacing(GTK_GRID(fp_grid),
-                           20); // Espaciado vertical
-  gtk_grid_set_column_spacing(GTK_GRID(fp_grid),
-                              10); // Espaciado horizontal
+  gtk_grid_set_row_spacing(GTK_GRID(fp_grid), 20); // Espaciado vertical
+  gtk_grid_set_column_spacing(GTK_GRID(fp_grid), 10); // Espaciado horizontal
   gtk_container_add(GTK_CONTAINER(fp_win), fp_grid);
 
   fp_icon = gdk_pixbuf_new_from_file("../images/icon.png", NULL);
@@ -89,40 +87,6 @@ void fp_init_entry() {
   for (i = 2; i < 5; i += 2) {
     gtk_entry_set_placeholder_text(GTK_ENTRY(fp_entry[i]), "Año");
     g_signal_connect(G_OBJECT(fp_entry[i]), "button-press-event", G_CALLBACK(fp_reset_warning), NULL);
-  }
-}
-
-char dias_x_mes(const gint mes) {
-  if (mes > 12 || mes < 1)
-    return 0;
-
-  if (mes == 2)
-    return 29;
-
-  if (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 ||
-      mes == 12)
-    return 31;
-
-  return 30;
-}
-
-void cambio_mes(GtkComboBox *widget, gpointer data) {
-  GtkComboBoxText *dia_combox = GTK_COMBO_BOX_TEXT(data);
-  gint active = gtk_combo_box_get_active(widget);
-
-  gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(dia_combox));
-
-  // Agregar la opción "Dia" como valor predeterminado
-  gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(dia_combox), "Día");
-
-  // Establecer "Dia" como el valor predeterminado
-  gtk_combo_box_set_active(GTK_COMBO_BOX(dia_combox), 0);
-
-  // Llenar el ComboBox con números del 1 al 12
-  for (int i = 1; i <= dias_x_mes(active); i++) {
-    char buffer[3];
-    snprintf(buffer, sizeof(buffer), "%d", i);
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(dia_combox), buffer);
   }
 }
 
@@ -194,8 +158,8 @@ void fp_set_widgets() {
   // Nombre
   gtk_grid_attach(GTK_GRID(fp_grid), fp_lbl[0], 0, 0, 2, 1);
   gtk_grid_attach(GTK_GRID(fp_grid), fp_entry[0], 2, 0, 3, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(fp_entry[0]), 18);
-  gtk_entry_set_width_chars(GTK_ENTRY(fp_entry[0]), 30);
+  gtk_entry_set_max_length(GTK_ENTRY(fp_entry[0]), 50);
+  gtk_entry_set_width_chars(GTK_ENTRY(fp_entry[0]), 50);
 
   // CURP
   gtk_grid_attach(GTK_GRID(fp_grid), fp_lbl[1], 5, 0, 1, 1);

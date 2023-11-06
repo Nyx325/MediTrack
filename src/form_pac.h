@@ -2,6 +2,7 @@
 #define FORM_PAC_H
 
 #include <gtk/gtk.h>
+#include "general.h"
 
 //void fp_wingrid();
 void gen_formpac();
