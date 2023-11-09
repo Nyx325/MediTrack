@@ -64,6 +64,7 @@ void fm_wingrid(){
   gtk_window_set_icon(GTK_WINDOW(fm_win), fm_icon);
 }
 
+//Crear los apuntadores a los label y les coloca el texto
 void fm_init_lbl(){
     char *fm_titles[] = {
         "Clave",
@@ -80,9 +81,8 @@ void fm_init_lbl(){
         " "};
     short i;
 
-    for(i = 0; i < 12; i++){
+    for(i = 0; i < 12; i++)
         fm_lbl[i] = gtk_label_new(fm_titles[i]);
-    }
 }
 
 void fm_init_entry(){
@@ -90,16 +90,19 @@ void fm_init_entry(){
     for(i = 0; i < 12; i++)
         fm_entry[i] = gtk_entry_new();
     
-    gtk_entry_set_placeholder_text(GTK_ENTRY(fm_entry[9]), "Día");
+    //Colocar al entry para la fecha el texto
+    gtk_entry_set_placeholder_text(GTK_ENTRY(fm_entry[9]), "Año");
 }
 
 void fm_init_combox(){
     short j;
-    fm_combox[0] = gtk_combo_box_text_new();
-    fm_combox[1] = gtk_combo_box_text_new();
+    for(j = 0; j < 2; j++)
+      fm_combox[j] = gtk_combo_box_text_new();
+
+    //Hacer que el contenido de la box de dias dependa del mes elegido
     g_signal_connect(fm_combox[0], "changed", G_CALLBACK(cambio_mes), fm_combox[1]);
 
-    // Agregar la opción "Mes" como valor predeterminado
+    // Agregar la opción "Mes"
     gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(fm_combox[0]), "Mes");
 
     // Llenar el ComboBox con números del 1 al 12
@@ -202,11 +205,14 @@ void fm_Set_widgets(){
 }
 
 void gen_formed(){
+    //Generar ventana
     fm_wingrid();
+    //Incializar widgets
     fm_init_lbl();
     fm_init_entry();
     fm_init_combox();
     fm_init_btn();
+    //Distribuir en la ventana
     fm_Set_widgets();
 
     gtk_widget_show_all(fm_win);
