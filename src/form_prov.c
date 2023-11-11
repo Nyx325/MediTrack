@@ -80,9 +80,15 @@ void p_wingrid() {
 // Crear los apuntadores a los label y les coloca el texto
 void p_init_lbl() {
   short i;
-  char *titulos[] = {"Nombre comercial",        "Nombre de factura", "RFC",
-                     "Núm. oficina",       "Whatsapp",          "Correo",
-                     "Representante Comercial", "Vigencia",          " "};
+  char *titulos[] = {"Nombre comercial",
+                     "Nombre de factura",
+                     "RFC",
+                     "Núm. oficina",
+                     "Whatsapp",
+                     "Correo",
+                     "Representante Comercial",
+                     "Vigencia",
+                     " "};
 
   for (i = 0; i < 9; i++)
     p_lbl[i] = gtk_label_new(titulos[i]);
@@ -122,11 +128,18 @@ void p_init_combox() {
 }
 
 void p_init_btn() {
+  GtkStyleContext *context;
   short i;
   char *titulos[] = {"Aceptar", "Cancelar"};
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 2; i++) {
     p_btn[i] = gtk_button_new_with_label(titulos[i]);
+    // Agregar nombre de objeto en el CSS
+    gtk_widget_set_name(p_btn[i], "button");
+    // Agregar clase
+    context = gtk_widget_get_style_context(p_btn[i]);
+    gtk_style_context_add_class(context, "suggested-action");
+  }
 }
 
 void on_check_button_toggled(GtkWidget *widget, gpointer data) {
@@ -197,7 +210,7 @@ void p_set_widgets() {
   gtk_grid_attach(GTK_GRID(p_grid), p_combox[1], 4, 5, 1, 1);
   gtk_entry_set_width_chars(GTK_ENTRY(p_entry[7]), 4);
 
-  //Botones
+  // Botones
   gtk_grid_attach(GTK_GRID(p_grid), p_btn[0], 0, 7, 2, 1);
   gtk_grid_attach(GTK_GRID(p_grid), p_btn[1], 2, 7, 3, 1);
 }
