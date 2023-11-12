@@ -5,8 +5,8 @@
 #include "general.h"
 
 //void fp_wingrid();
-void gen_formpac();
-void aceptar_opc(GtkWidget *wid, gpointer data);
-gboolean reset_warning(GtkWidget *widget, GdkEventButton *event, gpointer data);
+void        gen_formpac     (void);
+void        aceptar_opc     (GtkWidget *wid, gpointer data);
+gboolean    reset_warning   (GtkWidget *widget, GdkEventButton *event, gpointer data);
 
 #endif

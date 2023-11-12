@@ -1,11 +1,13 @@
 #include "form_pac.h"
+#include "general.h"
 
 gboolean fp_opc; // indicar si está en modo modificar o agregar(?)
 GtkWidget *fp_win, *fp_grid, *fp_combox[6], *fp_entry[5], *fp_btn[2],
     *fp_lbl[8];
 GdkPixbuf *fp_icon;
 
-gboolean fp_reset_warning(GtkWidget *widget, GdkEventButton *event, gpointer data) {
+gboolean fp_reset_warning(GtkWidget *widget, GdkEventButton *event,
+                          gpointer data) {
   gtk_label_set_text(GTK_LABEL(fp_lbl[7]), NULL);
   return FALSE;
 }
@@ -62,9 +64,11 @@ void fp_wingrid() {
   fp_grid = gtk_grid_new();
 
   // padding del margen del grid
-  gtk_grid_set_row_spacing(GTK_GRID(fp_grid), 20); // Espaciado vertical
+  gtk_grid_set_row_spacing(GTK_GRID(fp_grid), 20);    // Espaciado vertical
   gtk_grid_set_column_spacing(GTK_GRID(fp_grid), 10); // Espaciado horizontal
   gtk_container_add(GTK_CONTAINER(fp_win), fp_grid);
+  gtk_widget_set_halign(fp_grid, GTK_ALIGN_CENTER);
+  gtk_widget_set_valign(fp_grid, GTK_ALIGN_CENTER);
 
   fp_icon = gdk_pixbuf_new_from_file("../images/icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(fp_win), fp_icon);
@@ -86,7 +90,8 @@ void fp_init_entry() {
   }
   for (i = 2; i < 5; i += 2) {
     gtk_entry_set_placeholder_text(GTK_ENTRY(fp_entry[i]), "Año");
-    g_signal_connect(G_OBJECT(fp_entry[i]), "button-press-event", G_CALLBACK(fp_reset_warning), NULL);
+    g_signal_connect(G_OBJECT(fp_entry[i]), "button-press-event",
+                     G_CALLBACK(fp_reset_warning), NULL);
   }
 }
 
@@ -142,11 +147,16 @@ void fp_gen_sexo() {
 }
 
 void fp_gen_btns() {
+  GtkStyleContext *context;
   int i;
   char *title[2] = {"Aceptar", "Cancelar"};
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 2; i++) {
     fp_btn[i] = gtk_button_new_with_label(title[i]);
+    gtk_widget_set_name(fp_btn[i], "button");
+    context = gtk_widget_get_style_context(fp_btn[i]);
+    gtk_style_context_add_class(context, "suggested-action");
+  }
 
   g_signal_connect(G_OBJECT(fp_btn[0]), "clicked", G_CALLBACK(aceptar_opc),
                    NULL);
@@ -204,13 +214,14 @@ void fp_set_widgets() {
   gtk_grid_attach(GTK_GRID(fp_grid), fp_btn[1], 5, 4, 3, 3);
 }
 
-void gen_warning(){
+void gen_warning() {
   fp_lbl[7] = gtk_label_new(NULL);
   gtk_grid_attach(GTK_GRID(fp_grid), fp_lbl[7], 0, 3, 7, 1);
 }
 /*
 void fp_show_warning(){
-  gtk_label_set_markup(GTK_LABEL(log_warning), "<span foreground='red'>Usuario o contraseña incorrectos</span>");
+  gtk_label_set_markup(GTK_LABEL(log_warning), "<span foreground='red'>Usuario o
+contraseña incorrectos</span>");
 }
 */
 
@@ -238,38 +249,7 @@ void agregar_err(char *texto, GString **cadena) {
   }
 }
 
-gchar *formatear_nombre(const gchar *input) {
-  const gsize tam = g_utf8_strlen(input, -1);
-  gboolean flag = TRUE;
-  gchar *formateo = g_strdup(input); // Copia la cadena de entrada
-  gunichar character;
-
-  if (tam == 0)
-    return NULL;
-
-  for (gsize i = 0; i < tam; i++) {
-    character = g_utf8_get_char(&formateo[i]);
-
-    if (!g_unichar_isspace(character) && !g_unichar_isalpha(character))
-      return NULL;
-
-    if (flag) {
-      // Volver mayúscula la primera letra de la palabra
-      formateo[i] = g_unichar_totitle(character);
-      flag = FALSE;
-    } else {
-      // Convierte el resto de las letras a minúsculas
-      formateo[i] = g_unichar_tolower(character);
-    }
-
-    if (g_unichar_isspace(character))
-      flag = TRUE;
-  }
-
-  return formateo;
-}
-
-gchar *formatear_curp(const char *input) {
+char *formatear_curp(const char *input) {
   gsize i, tam = g_utf8_strlen(input, -1);
   gchar *formateo = g_strdup(input); // Copia la cadena de entrada
   gunichar character;
@@ -304,30 +284,7 @@ gchar *formatear_curp(const char *input) {
       formateo[i] = character;
   }
 
-  return formateo;
-}
-
-gchar *formatear_full_nums(const gchar *input, gsize max_tam, gsize min_tam) {
-  const gsize tam = g_utf8_strlen(input, -1);
-  gsize i;
-  gchar *formateo = g_strdup(input);
-  gunichar character;
-
-  if (max_tam != -1 && tam > max_tam)
-    return NULL;
-
-  if (min_tam != -1 && tam < min_tam)
-    return NULL;
-
-  for (i = 0; i < tam; i++) {
-    character = g_utf8_get_char(&formateo[i]);
-    if (!g_unichar_isdigit(character))
-      return NULL;
-    else
-      formateo[i] = character;
-  }
-
-  return formateo;
+  return g_strdup(formateo);
 }
 
 const gchar *formatear_tsangre(GtkComboBox *combox) {
@@ -364,7 +321,7 @@ gunichar formatear_sexo(GtkComboBoxText *combox) {
 
 void aceptar_opc(GtkWidget *wid, gpointer data) {
   const gchar *input[4], *tsangre;
-  gchar *output[4];
+  char *output[3];
   gunichar sexo;
   GString *err = g_string_new("");
   int cboxf_output[4];
@@ -383,30 +340,28 @@ void aceptar_opc(GtkWidget *wid, gpointer data) {
   input[1] = gtk_entry_get_text(GTK_ENTRY(fp_entry[1]));
   // validar
   output[1] = formatear_curp(input[1]);
-
   if (!output[1])
     agregar_err("CURP", &err);
 
   // Obtener año
   input[2] = gtk_entry_get_text(GTK_ENTRY(fp_entry[2]));
-  // validar
-  output[2] = formatear_full_nums(input[2], -1, 1);
-  if (!output[2])
+  if (is_full_nums(input[2], -1, 1) == FALSE)
     agregar_err("Año de nacimiento", &err);
 
+  // Obtener mes
   cboxf_output[0] = gtk_combo_box_get_active(GTK_COMBO_BOX(fp_combox[0]));
   if (cboxf_output[0] == 0)
     agregar_err("Mes de nacimiento", &err);
 
+  // Obtener dia
   cboxf_output[1] = gtk_combo_box_get_active(GTK_COMBO_BOX(fp_combox[1]));
   if (cboxf_output[1] == 0)
     agregar_err("Dia de nacimiento", &err);
 
-  // NO TIENE UN FILTRO DE MIN NUMS
+  // Obtener telefono
   input[3] = gtk_entry_get_text(GTK_ENTRY(fp_entry[3]));
-  // validar
-  output[3] = formatear_full_nums(input[3], 10, 10);
-  if (!output[3])
+  output[2] = formatear_num(input[3], 10, 10);
+  if (!output[2])
     agregar_err("Teléfono", &err);
 
   tsangre = formatear_tsangre(GTK_COMBO_BOX(fp_combox[2]));
@@ -418,17 +373,16 @@ void aceptar_opc(GtkWidget *wid, gpointer data) {
   if (err->len != 0) {
     g_string_append(err, " no válido(s)");
     gtk_label_set_markup(GTK_LABEL(fp_lbl[7]), err->str);
-  } else{
+  } else {
     // llamar a función de esribir supongo
     free_formpac();
   }
- 
 
   // liberar todo
-  //g_print("%s\n", err->str);
+  // g_print("%s\n", err->str);
   g_string_free(err, TRUE);
-
-  for (i = 0; i < 4; i++) {
+  for (i = 0; i < 3; i++){
+    g_print("%s\n", output[i]);
     g_free(output[i]);
   }
 }

@@ -3,6 +3,6 @@
 
 #include "general.h"
 
-
+void gen_formcons(void);
 
 #endif

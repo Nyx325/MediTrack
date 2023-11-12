@@ -60,6 +60,8 @@ void fm_wingrid() {
   gtk_grid_set_row_spacing(GTK_GRID(fm_grid), 20);    // Espaciado vertical
   gtk_grid_set_column_spacing(GTK_GRID(fm_grid), 10); // Espaciado horizontal
   gtk_container_add(GTK_CONTAINER(fm_win), fm_grid);
+  gtk_widget_set_halign(fm_grid, GTK_ALIGN_CENTER);
+  gtk_widget_set_valign(fm_grid, GTK_ALIGN_CENTER);
 
   fm_icon = gdk_pixbuf_new_from_file("../images/icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(fm_win), fm_icon);
@@ -118,11 +120,18 @@ void fm_init_combox() {
 }
 
 void fm_init_btn() {
+  GtkStyleContext *context;
   short i;
   char *title[] = {"Aceptar", "Cancelar"};
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 2; i++) {
     fm_btn[i] = gtk_button_new_with_label(title[i]);
+    // Agregar nombre de objeto en el CSS
+    gtk_widget_set_name(fm_btn[i], "button");
+    // Agregar clase
+    context = gtk_widget_get_style_context(fm_btn[i]);
+    gtk_style_context_add_class(context, "suggested-action");
+  }
 }
 
 void fm_Set_widgets() {

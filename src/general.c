@@ -1,4 +1,5 @@
 #include "general.h"
+#include <ctype.h>
 
 char dias_x_mes(const gint mes) {
   if (mes > 12 || mes < 1)
@@ -32,4 +33,63 @@ void cambio_mes(GtkComboBox *widget, gpointer data) {
     snprintf(buffer, sizeof(buffer), "%d", i);
     gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(dia_combox), buffer);
   }
+}
+
+char *formatear_nombre(const gchar *input) {
+  const gsize tam = g_utf8_strlen(input, -1);
+  gboolean flag = TRUE;
+  gchar *formateo = g_strdup(input);
+
+  if (tam == 0)
+    return NULL;
+
+  for (gsize i = 0; i < tam; i++) {
+    gunichar2 character = g_utf8_get_char(formateo + i);
+
+    if (g_unichar_iscntrl(character)) {
+      g_free(formateo);
+      return NULL;
+    }
+
+    if (flag) {
+      // Volver mayúscula la primera letra de la palabra
+      formateo[i] = g_unichar_toupper(character);
+      flag = FALSE;
+    } else {
+      // Convierte el resto de las letras a minúsculas
+      formateo[i] = g_unichar_tolower(character);
+    }
+
+    if (g_unichar_isspace(character))
+      flag = TRUE;
+  }
+
+  return g_strdup(formateo);
+}
+
+gboolean is_full_nums(const gchar *input, gsize max_tam, gsize min_tam) {
+  const gsize tam = g_utf8_strlen(input, -1);
+  gsize i;
+  gunichar character;
+
+  if (max_tam != -1 && tam > max_tam)
+    return FALSE;
+
+  if (min_tam != -1 && tam < min_tam)
+    return FALSE;
+
+  for (i = 0; i < tam; i++) {
+    character = g_utf8_get_char(&input[i]);
+    if (!g_unichar_isdigit(character))
+      return FALSE;
+  }
+
+  return TRUE;
+}
+
+char *formatear_num(const gchar *input, gsize max_tam, gsize min_tam){
+    if(is_full_nums(input, max_tam, min_tam) == FALSE)
+        return NULL;
+
+    return g_strdup(input);
 }

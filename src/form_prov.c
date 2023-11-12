@@ -53,7 +53,6 @@ void free_formprov() {
 }
 
 void p_wingrid() {
-
   // Crear ventana
   p_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -71,6 +70,8 @@ void p_wingrid() {
   gtk_grid_set_row_spacing(GTK_GRID(p_grid), 20);    // Espaciado vertical
   gtk_grid_set_column_spacing(GTK_GRID(p_grid), 10); // Espaciado horizontal
   gtk_container_add(GTK_CONTAINER(p_win), p_grid);
+  gtk_widget_set_halign(p_grid, GTK_ALIGN_CENTER);
+  gtk_widget_set_valign(p_grid, GTK_ALIGN_CENTER);
 
   // Generar icono
   p_icon = gdk_pixbuf_new_from_file("../images/icon.png", NULL);

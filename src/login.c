@@ -26,12 +26,15 @@ void log_wingrid() {
   gtk_grid_set_row_spacing(GTK_GRID(log_grid), 20);    // Espaciado vertical
   gtk_grid_set_column_spacing(GTK_GRID(log_grid), 10); // Espaciado horizontal
   gtk_container_add(GTK_CONTAINER(log_win), log_grid);
+  gtk_widget_set_halign(log_grid, GTK_ALIGN_CENTER);
+  gtk_widget_set_valign(log_grid, GTK_ALIGN_CENTER);
 
   log_icon = gdk_pixbuf_new_from_file("../images/icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(log_win), log_icon);
 }
 
 void gen_img() {
+  GtkStyleContext *context;
   log_img = gtk_image_new_from_file("../images/MT2(2).png");
   gtk_grid_attach(GTK_GRID(log_grid), log_img, 0, 0, 3, 1);
 
@@ -41,6 +44,9 @@ void gen_img() {
   log_btn = gtk_button_new_with_label("Aceptar");
   gtk_grid_attach(GTK_GRID(log_grid), log_btn, 1, 4, 1, 1);
   g_signal_connect(G_OBJECT(log_btn), "clicked", G_CALLBACK(check_login), NULL);
+  gtk_widget_set_name(log_btn, "button");
+  context = gtk_widget_get_style_context(log_btn);
+  gtk_style_context_add_class(context, "suggested-action");
 }
 
 void gen_entrys() {
