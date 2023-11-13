@@ -14,11 +14,11 @@ int main() {
   gtk_init(NULL, NULL);
 
   // gen_login();
-  // gen_formpac();
-  // TODO gen_formed();
+  gen_formpac();
+  // gen_formed();
   // gen_formprov();
   // gen_formcons();
-  prueba();
+  // prueba();
 
   gtk_main();
   return 0;

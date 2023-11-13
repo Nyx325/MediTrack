@@ -2,6 +2,7 @@
 #define GENERAL_H
 
 #include <gtk/gtk.h>
+#include <string.h>
 
 void        cambio_mes                  (GtkComboBox *widget, gpointer data);
 char        dias_x_mes                  (const gint mes);

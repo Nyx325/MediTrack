@@ -168,8 +168,8 @@ void fp_set_widgets() {
   // Nombre
   gtk_grid_attach(GTK_GRID(fp_grid), fp_lbl[0], 0, 0, 2, 1);
   gtk_grid_attach(GTK_GRID(fp_grid), fp_entry[0], 2, 0, 3, 1);
-  gtk_entry_set_max_length(GTK_ENTRY(fp_entry[0]), 50);
-  gtk_entry_set_width_chars(GTK_ENTRY(fp_entry[0]), 50);
+  gtk_entry_set_max_length(GTK_ENTRY(fp_entry[0]), 49);
+  gtk_entry_set_width_chars(GTK_ENTRY(fp_entry[0]), 49);
 
   // CURP
   gtk_grid_attach(GTK_GRID(fp_grid), fp_lbl[1], 5, 0, 1, 1);
@@ -320,69 +320,103 @@ gunichar formatear_sexo(GtkComboBoxText *combox) {
 }
 
 void aceptar_opc(GtkWidget *wid, gpointer data) {
-  const gchar *input[4], *tsangre;
+  Pacientes registroP;
+  const gchar *input[5], *tsangre;
   char *output[3];
   gunichar sexo;
   GString *err = g_string_new("");
   int cboxf_output[4];
   char i;
 
+  registroP.estado = 0;
+
   // VALIDACIONES
   //  Obtener nombre
   input[0] = gtk_entry_get_text(GTK_ENTRY(fp_entry[0]));
   // validar
   output[0] = formatear_nombre(input[0]);
-
-  if (!output[0])
+  if (output[0] == NULL)
     agregar_err("Nombre", &err);
+  else
+    strcpy(registroP.nombre, output[0]);
 
   // Obtener curp
   input[1] = gtk_entry_get_text(GTK_ENTRY(fp_entry[1]));
   // validar
   output[1] = formatear_curp(input[1]);
-  if (!output[1])
+  if (output[1] == NULL)
     agregar_err("CURP", &err);
+  else
+    strcpy(registroP.CURP, output[1]);
 
   // Obtener año
   input[2] = gtk_entry_get_text(GTK_ENTRY(fp_entry[2]));
   if (is_full_nums(input[2], -1, 1) == FALSE)
     agregar_err("Año de nacimiento", &err);
+  else
+    registroP.fechas.anio = atoi(input[2]);
 
   // Obtener mes
-  cboxf_output[0] = gtk_combo_box_get_active(GTK_COMBO_BOX(fp_combox[0]));
-  if (cboxf_output[0] == 0)
+  registroP.fechas.mes = gtk_combo_box_get_active(GTK_COMBO_BOX(fp_combox[0]));
+  if (registroP.fechas.mes == 0)
     agregar_err("Mes de nacimiento", &err);
 
   // Obtener dia
-  cboxf_output[1] = gtk_combo_box_get_active(GTK_COMBO_BOX(fp_combox[1]));
-  if (cboxf_output[1] == 0)
+  registroP.fechas.dia = gtk_combo_box_get_active(GTK_COMBO_BOX(fp_combox[1]));
+  if (registroP.fechas.dia == 0)
     agregar_err("Dia de nacimiento", &err);
 
   // Obtener telefono
   input[3] = gtk_entry_get_text(GTK_ENTRY(fp_entry[3]));
-  output[2] = formatear_num(input[3], 10, 10);
-  if (!output[2])
+  if (is_full_nums(input[3], -1, 10) == FALSE)
     agregar_err("Teléfono", &err);
+  else
+    strcpy(registroP.telf, input[3]);
 
-  tsangre = formatear_tsangre(GTK_COMBO_BOX(fp_combox[2]));
-  if (tsangre == NULL)
+  input[4] = formatear_tsangre(GTK_COMBO_BOX(fp_combox[2]));
+  if (input[4] == NULL)
     agregar_err("Tipo de sangre", &err);
+  else
+    strcpy(registroP.tpSangre, input[4]);
 
-  sexo = formatear_sexo(GTK_COMBO_BOX_TEXT(fp_combox[3]));
+  registroP.sexo = formatear_sexo(GTK_COMBO_BOX_TEXT(fp_combox[3]));
 
   if (err->len != 0) {
     g_string_append(err, " no válido(s)");
     gtk_label_set_markup(GTK_LABEL(fp_lbl[7]), err->str);
   } else {
-    // llamar a función de esribir supongo
+    registroP.estado = 1;
+    addPaciente("../data/pacientes.dat", registroP);
     free_formpac();
   }
 
   // liberar todo
   // g_print("%s\n", err->str);
   g_string_free(err, TRUE);
-  for (i = 0; i < 3; i++){
-    g_print("%s\n", output[i]);
+  for (i = 0; i < 4; i++){
     g_free(output[i]);
   }
+
+  printf("Nombre: %s\n", registroP.nombre);
+  printf("CURP: %s\n", registroP.CURP);
+  printf("Fecha N: %d/%d/%d\n", registroP.fechas.dia, registroP.fechas.mes, registroP.fechas.anio);
+  printf("Sexo: %c\n", registroP.sexo);
+  printf("Tel: %s\n", registroP.telf);
+  printf("TIpo Sangre: %s\n", registroP.tpSangre);
+  printf("Fecha 1C: %d/%d/%d\n", registroP.fechasC.dia, registroP.fechasC.mes, registroP.fechasC.anio);
+
+}
+
+int addPaciente(char nomPac[], Pacientes paciente){
+  FILE *apPaci;
+
+  apPaci=fopen(nomPac,"ab");
+  if(apPaci==NULL){
+      printf("Archivo dañado\n");
+      return 0;
+  }
+
+  fwrite(&paciente,sizeof(Pacientes),1,apPaci);
+  fclose(apPaci);
+  return 1;
 }

@@ -36,6 +36,7 @@ void gen_bar() {
     bar_entry[i] = gtk_entry_new();
   }
 
+  bar_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_box_pack_start(GTK_BOX(bar_box), bar_btn[4], FALSE, FALSE, 0);
 
   for (i = 0; i < 3; i++)

@@ -26,12 +26,10 @@ void import_model(GtkListStore *list_store, char *titulosColum[],
 
   // Configurar scrolled window
   lv_scrollw = gtk_scrolled_window_new(NULL, NULL);
-  gtk_container_add(GTK_CONTAINER(lv_scrollw), lv_tview);
+  //gtk_container_add(GTK_CONTAINER(lv_scrollw), lv_tview);
 
   // Crear barra de busqueda (listv_bar.c)
-  gen_bar();
 
-  gtk_grid_attach(GTK_GRID(lv_grid), bar_box, 0, 0, 1, 1);
   gtk_grid_attach(GTK_GRID(lv_grid), lv_scrollw, 0, 1, 1, 1);
 }
 
@@ -41,7 +39,7 @@ void gen_listv() {
   //  gtk_window_set_title(GTK_WINDOW(p_win), "Iniciar sesion");
   gtk_window_set_default_size(GTK_WINDOW(lv_win), 611, 220);
   gtk_window_set_position(GTK_WINDOW(lv_win), GTK_WIN_POS_CENTER);
-  gtk_container_set_border_width(GTK_CONTAINER(lv_win), 20);
+  gtk_container_set_border_width(GTK_CONTAINER(lv_win), 0);
   // g_signal_connect(G_OBJECT(lv_win), "destroy", G_CALLBACK(free_formcons),
   // NULL);
 
@@ -49,7 +47,7 @@ void gen_listv() {
 
   // padding del margen del grid
   gtk_grid_set_row_spacing(GTK_GRID(lv_grid), 20);    // Espaciado vertical
-  gtk_grid_set_column_spacing(GTK_GRID(lv_grid), 10); // Espaciado horizontal
+  gtk_grid_set_column_spacing(GTK_GRID(lv_grid), 0); // Espaciado horizontal
   gtk_container_add(GTK_CONTAINER(lv_win), lv_grid);
   gtk_widget_set_halign(lv_grid, GTK_ALIGN_CENTER);
   gtk_widget_set_valign(lv_grid, GTK_ALIGN_CENTER);
@@ -57,6 +55,9 @@ void gen_listv() {
   // Generar icono
   lv_icon = gdk_pixbuf_new_from_file("../images/icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(lv_win), lv_icon);
+
+  gen_bar();
+  gtk_grid_attach(GTK_GRID(lv_grid), bar_box, 0, 0, 1, 1);
 
   gtk_widget_show_all(lv_win);
 }
@@ -89,6 +90,6 @@ void prueba() {
                        "A+", Fecha1C, "2/3/2020", -1);
   }
 
-  gen_listv();
   import_model(list_store, titulosCol, 7);
+  gen_listv();
 }
