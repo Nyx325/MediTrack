@@ -79,8 +79,6 @@ void c_wingrid() {
   // Generar icono
   c_icon = gdk_pixbuf_new_from_file("../images/icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(c_win), c_icon);
-
-  c_separator = gtk_label_new("");
 }
 
 void c_init_lbl() {

@@ -3,6 +3,7 @@
 #include "form_pac.h"
 #include "form_prov.h"
 #include "general.h"
+#include "listv.h"
 #include "login.h"
 
 int main() {
@@ -17,6 +18,7 @@ int main() {
   // TODO gen_formed();
   // gen_formprov();
   // gen_formcons();
+  prueba();
 
   gtk_main();
   return 0;
