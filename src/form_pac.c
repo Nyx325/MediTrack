@@ -158,7 +158,7 @@ void fp_gen_btns() {
     gtk_style_context_add_class(context, "suggested-action");
   }
 
-  g_signal_connect(G_OBJECT(fp_btn[0]), "clicked", G_CALLBACK(aceptar_opc),
+  g_signal_connect(G_OBJECT(fp_btn[0]), "clicked", G_CALLBACK(fp_aceptar),
                    NULL);
   g_signal_connect(G_OBJECT(fp_btn[1]), "clicked", G_CALLBACK(free_formpac),
                    NULL);
@@ -319,9 +319,9 @@ gunichar formatear_sexo(GtkComboBoxText *combox) {
   return sexo;
 }
 
-void aceptar_opc(GtkWidget *wid, gpointer data) {
+void fp_aceptar(GtkWidget *wid, gpointer data) {
   Pacientes registroP;
-  const gchar *input[5], *tsangre;
+  const gchar *input[6], *tsangre;
   char *output[3];
   gunichar sexo;
   GString *err = g_string_new("");
@@ -381,6 +381,24 @@ void aceptar_opc(GtkWidget *wid, gpointer data) {
 
   registroP.sexo = formatear_sexo(GTK_COMBO_BOX_TEXT(fp_combox[3]));
 
+  // Primer conculsta
+  // Obtener año
+  input[5] = gtk_entry_get_text(GTK_ENTRY(fp_entry[4]));
+  if (is_full_nums(input[5], -1, 1) == FALSE)
+    agregar_err("Año de primer consulta", &err);
+  else
+    registroP.fechasC.anio = atoi(input[5]);
+
+  // Obtener mes
+  registroP.fechasC.mes = gtk_combo_box_get_active(GTK_COMBO_BOX(fp_combox[4]));
+  if (registroP.fechasC.mes == 0)
+    agregar_err("Mes de nacimiento", &err);
+
+  // Obtener dia
+  registroP.fechasC.dia = gtk_combo_box_get_active(GTK_COMBO_BOX(fp_combox[5]));
+  if (registroP.fechasC.dia == 0)
+    agregar_err("Dia de nacimiento", &err);
+
   if (err->len != 0) {
     g_string_append(err, " no válido(s)");
     gtk_label_set_markup(GTK_LABEL(fp_lbl[7]), err->str);
@@ -393,30 +411,22 @@ void aceptar_opc(GtkWidget *wid, gpointer data) {
   // liberar todo
   // g_print("%s\n", err->str);
   g_string_free(err, TRUE);
-  for (i = 0; i < 4; i++){
-    g_free(output[i]);
+  for (i = 0; i < 2; i++) {
+    if (output[i])
+      g_free(output[i]);
   }
-
-  printf("Nombre: %s\n", registroP.nombre);
-  printf("CURP: %s\n", registroP.CURP);
-  printf("Fecha N: %d/%d/%d\n", registroP.fechas.dia, registroP.fechas.mes, registroP.fechas.anio);
-  printf("Sexo: %c\n", registroP.sexo);
-  printf("Tel: %s\n", registroP.telf);
-  printf("TIpo Sangre: %s\n", registroP.tpSangre);
-  printf("Fecha 1C: %d/%d/%d\n", registroP.fechasC.dia, registroP.fechasC.mes, registroP.fechasC.anio);
-
 }
 
-int addPaciente(char nomPac[], Pacientes paciente){
+int addPaciente(char nomPac[], Pacientes paciente) {
   FILE *apPaci;
 
-  apPaci=fopen(nomPac,"ab");
-  if(apPaci==NULL){
-      printf("Archivo dañado\n");
-      return 0;
+  apPaci = fopen(nomPac, "ab");
+  if (apPaci == NULL) {
+    printf("Archivo dañado\n");
+    return 0;
   }
 
-  fwrite(&paciente,sizeof(Pacientes),1,apPaci);
+  fwrite(&paciente, sizeof(Pacientes), 1, apPaci);
   fclose(apPaci);
   return 1;
 }
