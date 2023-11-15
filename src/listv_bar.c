@@ -37,6 +37,8 @@ void gen_bar() {
   }
 
   bar_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_widget_set_size_request(bar_box, 10, 10);
+  gtk_widget_set_vexpand(bar_box, FALSE);
   gtk_box_pack_start(GTK_BOX(bar_box), bar_btn[4], FALSE, FALSE, 0);
 
   for (i = 0; i < 3; i++)
@@ -48,6 +50,7 @@ void gen_bar() {
     gtk_box_pack_start(GTK_BOX(bar_box), bar_entry[i], TRUE, TRUE, 0);
 
   gtk_box_pack_start(GTK_BOX(bar_box), bar_btn[3], FALSE, FALSE, 0);
+
 }
 
 void set_entry_placeholders(char *ph1, char *ph2) {

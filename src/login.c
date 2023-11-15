@@ -4,12 +4,6 @@
 GtkWidget *log_win, *log_grid, *log_entry[2], *log_btn, *log_img, *log_warning;
 GdkPixbuf *log_icon;
 
-gboolean reset_warning(GtkWidget *widget, GdkEventButton *event,
-                       gpointer data) {
-  gtk_label_set_text(GTK_LABEL(log_warning), NULL);
-  return FALSE;
-}
-
 void log_wingrid() {
   log_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -62,7 +56,7 @@ void gen_entrys() {
     gtk_entry_set_width_chars(GTK_ENTRY(log_entry[i]), 30);
 
     g_signal_connect(G_OBJECT(log_entry[i]), "button-press-event",
-                     G_CALLBACK(reset_warning), NULL);
+                     G_CALLBACK(reset_warning), log_warning);
   }
 
   gtk_entry_set_visibility(GTK_ENTRY(log_entry[1]), FALSE);

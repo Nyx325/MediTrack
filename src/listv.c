@@ -1,95 +1,67 @@
 #include "listv.h"
+#include "listv_bar.h"
 
-GtkWidget *lv_scrollw, *lv_tview, *lv_win, *lv_swin, *lv_grid;
-GdkPixbuf *lv_icon;
+GtkWidget *lv_win, *lv_box, *lv_tview, *lv_scrollw;
+GtkListStore *lv_lstore;
 
-void import_model(GtkListStore *list_store, char *titulosColum[],
-                  short n_colum) {
-  short i;
-  lv_tview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(list_store));
-
-  // Generar columnas
-  for (i = 0; i < n_colum; i++) {
-    GtkTreeViewColumn *col = gtk_tree_view_column_new();
-    GtkCellRenderer *rend = gtk_cell_renderer_text_new();
-    gtk_tree_view_column_set_title(col, titulosColum[i]);
-    gtk_tree_view_column_pack_start(col, rend, TRUE);
-    gtk_tree_view_column_add_attribute(col, rend, "text", i);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(lv_tview), col);
-  }
-
-  // Configurar el tamaño de las columnas para que se expandan
-  gtk_tree_view_columns_autosize(GTK_TREE_VIEW(lv_tview));
-
-  // Establecer política de tamaño de las columnas
-  gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lv_tview), FALSE);
-
-  // Configurar scrolled window
-  lv_scrollw = gtk_scrolled_window_new(NULL, NULL);
-  //gtk_container_add(GTK_CONTAINER(lv_scrollw), lv_tview);
-
-  // Crear barra de busqueda (listv_bar.c)
-
-  gtk_grid_attach(GTK_GRID(lv_grid), lv_scrollw, 0, 1, 1, 1);
+void free_listv() {
+  if (lv_win)
+    gtk_widget_hide(lv_win);
+  if (lv_lstore)
+    g_object_unref(lv_lstore);
+  if (lv_tview)
+    gtk_widget_destroy(lv_tview);
+  if (lv_scrollw)
+    gtk_widget_destroy(lv_scrollw);
+  if (lv_box)
+    gtk_widget_destroy(lv_box);
+  if (lv_win)
+    gtk_widget_destroy(lv_win);
 }
 
-void gen_listv() {
-  lv_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  // Configurar tamaño, posición, padding y envento de cerrado
-  //  gtk_window_set_title(GTK_WINDOW(p_win), "Iniciar sesion");
-  gtk_window_set_default_size(GTK_WINDOW(lv_win), 611, 220);
-  gtk_window_set_position(GTK_WINDOW(lv_win), GTK_WIN_POS_CENTER);
-  gtk_container_set_border_width(GTK_CONTAINER(lv_win), 0);
-  // g_signal_connect(G_OBJECT(lv_win), "destroy", G_CALLBACK(free_formcons),
-  // NULL);
+void lv_importmodel(unsigned short numCols, char *titulos[]) {
+  ushort i;
+  lv_tview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(lv_lstore));
 
-  lv_grid = gtk_grid_new();
+  // Crear, configurar columnas y agregar al treeview
+  for (i = 0; i < numCols; i++) {
+    GtkTreeViewColumn *column = gtk_tree_view_column_new();
+    GtkCellRenderer *render = gtk_cell_renderer_text_new();
+    gtk_tree_view_column_set_title(column, titulos[i]);
+    gtk_tree_view_column_pack_start(column, render, TRUE);
+    gtk_tree_view_column_add_attribute(column, render, "text", i);
+    // Configurar el tamaño de las columnas
+    gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
+    // Ajustar propiedades para expandir
+    gtk_tree_view_column_set_expand(column, TRUE);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(lv_tview), column);
+  }
 
-  // padding del margen del grid
-  gtk_grid_set_row_spacing(GTK_GRID(lv_grid), 20);    // Espaciado vertical
-  gtk_grid_set_column_spacing(GTK_GRID(lv_grid), 0); // Espaciado horizontal
-  gtk_container_add(GTK_CONTAINER(lv_win), lv_grid);
-  gtk_widget_set_halign(lv_grid, GTK_ALIGN_CENTER);
-  gtk_widget_set_valign(lv_grid, GTK_ALIGN_CENTER);
-
-  // Generar icono
-  lv_icon = gdk_pixbuf_new_from_file("../images/icon.png", NULL);
-  gtk_window_set_icon(GTK_WINDOW(lv_win), lv_icon);
-
-  gen_bar();
-  gtk_grid_attach(GTK_GRID(lv_grid), bar_box, 0, 0, 1, 1);
-
+  gtk_container_add(GTK_CONTAINER(lv_scrollw), lv_tview);
+  gtk_box_pack_start(GTK_BOX(lv_box), lv_scrollw, TRUE, TRUE, 0);
   gtk_widget_show_all(lv_win);
 }
 
-enum cols {
-  CURP,   // CURP = 0
-  Nombre, // Nombre = 1
-  FechaN, // FechaN = 2
-  Sexo,   // Sexo = 3
-  NumT,   // NumT = 4
-  TipoS,  // TipoS = 5
-  Fecha1C // Fecha1C = 6
-};
+void init_listv(char *titulo) {
+  // Crear y configurar ventana principal
+  lv_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_default_size(GTK_WINDOW(lv_win), 1280, 720);
+  gtk_window_set_title(GTK_WINDOW(lv_win), titulo);
+  gtk_window_set_position(GTK_WINDOW(lv_win), GTK_WIN_POS_CENTER);
+  g_signal_connect(G_OBJECT(lv_win), "destroy", G_CALLBACK(gtk_main_quit),
+                   NULL);
 
-void prueba() {
-  // Info de columnas
+  // Crear contenedor principal de widgets
+  lv_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
 
-  char *titulosCol[] = {"CURP",  "Nombre", "Fecha N",        "Sexo",
-                        "Num T", "Tipo S", "Primer consulta"};
-  GtkListStore *list_store = gtk_list_store_new(
-      7, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-  GtkTreeIter iter; // estructura para identificar fila en modelo
-  int i;
-  // Llenar modelo
-  for (i = 0; i < 20; i++) {
-    gtk_list_store_append(list_store, &iter); // agregar fila nueva
-    gtk_list_store_set(list_store, &iter, CURP, "RSRO121212qeqe", Nombre,
-                       "Juan", FechaN, "2/3/2023", Sexo, "M", NumT, "a", TipoS,
-                       "A+", Fecha1C, "2/3/2020", -1);
-  }
+  // Crear barra de búsqueda
+  gen_bar();
+  gtk_box_pack_start(GTK_BOX(lv_box), bar_box, FALSE, TRUE, 0);
 
-  import_model(list_store, titulosCol, 7);
-  gen_listv();
+  // Crear la ventana scrolleable
+  lv_scrollw = gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(lv_scrollw),
+                                 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+
+  gtk_container_add(GTK_CONTAINER(lv_win), lv_box);
 }

@@ -1,11 +1,14 @@
 #ifndef LISTV_H
 #define LISTV_H
 
-#include "general.h"
 #include "listv_bar.h"
+#include "general.h"
 
-void    import_model    (GtkListStore *list_store, char *titulosColum[], short n_colum);
-void    gen_listv       (void);
+extern GtkWidget *lv_win, *lv_box, *lv_tview, *lv_scrollw;
+extern GtkListStore *lv_lstore;
 
-void prueba();
+void    free_listv          (void);
+void    lv_importmodel      (unsigned short numCols, char *titulos[]);
+void    init_listv          (char *titulo);
+
 #endif

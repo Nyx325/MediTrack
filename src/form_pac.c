@@ -1,16 +1,10 @@
 #include "form_pac.h"
-#include "general.h"
+#include "listv.h"
 
 gboolean fp_opc; // indicar si está en modo modificar o agregar(?)
 GtkWidget *fp_win, *fp_grid, *fp_combox[6], *fp_entry[5], *fp_btn[2],
     *fp_lbl[8];
 GdkPixbuf *fp_icon;
-
-gboolean fp_reset_warning(GtkWidget *widget, GdkEventButton *event,
-                          gpointer data) {
-  gtk_label_set_text(GTK_LABEL(fp_lbl[7]), NULL);
-  return FALSE;
-}
 
 void free_formpac() {
   gtk_widget_hide(fp_win);
@@ -91,7 +85,7 @@ void fp_init_entry() {
   for (i = 2; i < 5; i += 2) {
     gtk_entry_set_placeholder_text(GTK_ENTRY(fp_entry[i]), "Año");
     g_signal_connect(G_OBJECT(fp_entry[i]), "button-press-event",
-                     G_CALLBACK(fp_reset_warning), NULL);
+                     G_CALLBACK(reset_warning), fp_lbl[7]);
   }
 }
 
@@ -182,7 +176,7 @@ void fp_set_widgets() {
   gtk_grid_attach(GTK_GRID(fp_grid), fp_entry[2], 2, 1, 1, 1);
   gtk_grid_attach(GTK_GRID(fp_grid), fp_combox[0], 3, 1, 1, 1);
   gtk_grid_attach(GTK_GRID(fp_grid), fp_combox[1], 4, 1, 1, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(fp_entry[2]), 18);
+  gtk_entry_set_max_length(GTK_ENTRY(fp_entry[2]), 4);
   gtk_entry_set_width_chars(GTK_ENTRY(fp_entry[2]), 4);
 
   // Teléfono
@@ -204,7 +198,7 @@ void fp_set_widgets() {
   gtk_grid_attach(GTK_GRID(fp_grid), fp_entry[4], 5, 2, 1, 1);
   gtk_grid_attach(GTK_GRID(fp_grid), fp_combox[4], 6, 2, 1, 1);
   gtk_grid_attach(GTK_GRID(fp_grid), fp_combox[5], 7, 2, 1, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(fp_entry[4]), 18);
+  gtk_entry_set_max_length(GTK_ENTRY(fp_entry[4]), 4);
   gtk_entry_set_width_chars(GTK_ENTRY(fp_entry[4]), 4);
 
   // colocar warning
@@ -429,4 +423,50 @@ int addPaciente(char nomPac[], Pacientes paciente) {
   fwrite(&paciente, sizeof(Pacientes), 1, apPaci);
   fclose(apPaci);
   return 1;
+}
+void mostrarPaci(char nomPac[]) {
+  gboolean isEmpty = TRUE;
+  char *titulos[] = {
+      "CURP",     "Nombre",         "Fecha de nacimineto",  "Sexo",
+      "Teléfono", "Tipo sanguineo", "Fecha primer consulta"};
+  char fechaFormato[2][11];
+  GtkTreeIter iter; // estructura para identificar fila en modelo
+  // apuntador definido en listv.c para el modelo de la tabla
+  lv_lstore = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+                                 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+                                 G_TYPE_STRING, G_TYPE_INT);
+
+  FILE *apPaci;
+  Pacientes paciente;
+
+  apPaci = fopen(nomPac, "a+b");
+  if (apPaci == NULL) {
+    printf("Archivo danaño\n");
+    return;
+  }
+  // fseek(apPaci,0,SEEK_SET);
+
+  fread(&paciente, sizeof(Pacientes), 1, apPaci);
+
+  while (!feof(apPaci)) {
+    isEmpty = FALSE;
+    if (paciente.estado) {
+      // Cadena para dia nacimiento
+      sprintf(fechaFormato[0], "%02d/%02d/%04d", paciente.fechas.dia,
+              paciente.fechas.mes, paciente.fechas.anio);
+      // Cadena para fecha primer consulta
+      sprintf(fechaFormato[1], "%02d/%02d/%04d", paciente.fechasC.dia,
+              paciente.fechasC.mes, paciente.fechasC.anio);
+
+      gtk_list_store_append(lv_lstore, &iter); // agregar fila nueva
+      gtk_list_store_set(lv_lstore, &iter, 0, paciente.CURP, 1, paciente.nombre,
+                         2, fechaFormato[0], 3, paciente.sexo, 4, paciente.telf,
+                         5, paciente.tpSangre, 6, fechaFormato[1], 7,
+                         ftell(apPaci) - sizeof(Pacientes), -1);
+    }
+    fread(&paciente, sizeof(Pacientes), 1, apPaci);
+  }
+  fclose(apPaci);
+  if (!isEmpty)
+    lv_importmodel(7, titulos);
 }

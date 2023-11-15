@@ -15,6 +15,12 @@ char dias_x_mes(const gint mes) {
   return 30;
 }
 
+gboolean reset_warning(GtkWidget *widget, GdkEventButton *event,
+                       gpointer data) {
+  gtk_label_set_text(GTK_LABEL(data), NULL);
+  return FALSE;
+}
+
 void cambio_mes(GtkComboBox *widget, gpointer data) {
   GtkComboBoxText *dia_combox = GTK_COMBO_BOX_TEXT(data);
   gint active = gtk_combo_box_get_active(widget);
@@ -87,9 +93,28 @@ gboolean is_full_nums(const gchar *input, gsize max_tam, gsize min_tam) {
   return TRUE;
 }
 
-char *formatear_num(const gchar *input, gsize max_tam, gsize min_tam){
-    if(is_full_nums(input, max_tam, min_tam) == FALSE)
-        return NULL;
+char *formatear_num(const gchar *input, gsize max_tam, gsize min_tam) {
+  if (is_full_nums(input, max_tam, min_tam) == FALSE)
+    return NULL;
 
-    return g_strdup(input);
+  return g_strdup(input);
+}
+
+void import_model(GtkWidget *tview, GtkListStore *model, unsigned short numCols,
+                  char *titulos[]) {
+  unsigned short i;
+  tview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(model));
+
+  for (i = 0; i < numCols; i++) {
+    GtkTreeViewColumn *column = gtk_tree_view_column_new();
+    GtkCellRenderer *render = gtk_cell_renderer_text_new();
+    gtk_tree_view_column_set_title(column, titulos[i]);
+    gtk_tree_view_column_pack_start(column, render, TRUE);
+    gtk_tree_view_column_add_attribute(column, render, "text", i);
+    // Configurar el tamaño de las columnas
+    gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
+    // Ajustar propiedades para expandir
+    gtk_tree_view_column_set_expand(column, TRUE);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tview), column);
+  }
 }
