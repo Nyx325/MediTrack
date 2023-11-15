@@ -1,4 +1,5 @@
 #include "listv_bar.h"
+#include "form_pac.h"
 
 GtkWidget *bar_btn[5], *bar_img[5], *bar_lbl[3], *bar_separator, *bar_entry[2],
     *bar_btnbox[3], *bar_box;
@@ -28,6 +29,9 @@ void gen_bar() {
     bar_img[i] = gtk_image_new_from_file(imgPaths[i]);
     gtk_button_set_image(GTK_BUTTON(bar_btn[i]), bar_img[i]);
   }
+
+
+  g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formpac), NULL);
 
   bar_separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 

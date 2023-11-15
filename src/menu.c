@@ -10,28 +10,23 @@ void free_menu() {
 
   gtk_widget_hide(m_win);
 
-  for (i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++) {
     if (m_btn[i]) {
       gtk_widget_destroy(m_btn[i]);
       m_btn[i] = NULL;
     }
     if (m_lbl[i]) {
-      gtk_widget_destroy(m_btn[i]);
-      m_btn[i] = NULL;
+      gtk_widget_destroy(m_lbl[i]);
+      m_lbl[i] = NULL;
     }
   }
-  if (m_lbl[3]) {
-    gtk_widget_destroy(m_lbl[3]);
-    m_lbl[3] = NULL;
-  }
-  if (m_grid) {
-    gtk_widget_destroy(m_grid);
-    m_grid = NULL;
-  }
-  if (m_win) {
-    gtk_widget_destroy(m_win);
-    m_win = NULL;
-  }
+  /*
+  for (int i = 0; i < 3; i++) {
+    if (m_btn_img[i]) {
+      gtk_widget_destroy(m_btn_img[i]);
+      m_btn_img[i] = NULL;
+    }
+  }*/
   if (m_banner) {
     gtk_widget_destroy(m_banner);
     m_banner = NULL;
@@ -40,6 +35,15 @@ void free_menu() {
     g_object_unref(m_icon);
     m_icon = NULL;
   }
+  if (m_grid) {
+    gtk_widget_destroy(m_grid);
+    m_grid = NULL;
+  }
+  /*
+  if (m_win) {
+    gtk_widget_destroy(m_win);
+    m_win = NULL;
+  }*/
 }
 
 void gen_menu() {
@@ -76,7 +80,8 @@ void gen_menu() {
     m_btn_img[i] = gtk_image_new_from_file(img_btn_path[i]);
     gtk_widget_set_size_request(m_btn[i], 90, 90);
     gtk_button_set_image(GTK_BUTTON(m_btn[i]), m_btn_img[i]);
-    //g_signal_connect(G_OBJECT(m_btn[i]), "clicked", G_CALLBACK(callbacks[i]), NULL);
+    // g_signal_connect(G_OBJECT(m_btn[i]), "clicked", G_CALLBACK(callbacks[i]),
+    // NULL);
   }
 
   g_signal_connect(G_OBJECT(m_btn[1]), "clicked", G_CALLBACK(pacientes), NULL);
@@ -99,4 +104,5 @@ void gen_menu() {
 void pacientes(GtkWidget *widget, gpointer data) {
   init_listv("Gestión de Pacientes");
   mostrarPaci("../data/pacientes.dat");
+  free_menu();
 }

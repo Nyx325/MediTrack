@@ -424,17 +424,14 @@ int addPaciente(char nomPac[], Pacientes paciente) {
   fclose(apPaci);
   return 1;
 }
+
 void mostrarPaci(char nomPac[]) {
-  gboolean isEmpty = TRUE;
-  char *titulos[] = {
-      "CURP",     "Nombre",         "Fecha de nacimineto",  "Sexo",
-      "Teléfono", "Tipo sanguineo", "Fecha primer consulta"};
-  char fechaFormato[2][11];
+  char fechaFormato[2][12];
   GtkTreeIter iter; // estructura para identificar fila en modelo
   // apuntador definido en listv.c para el modelo de la tabla
   lv_lstore = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
                                  G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-                                 G_TYPE_STRING, G_TYPE_INT);
+                                 G_TYPE_STRING, G_TYPE_STRING);
 
   FILE *apPaci;
   Pacientes paciente;
@@ -446,17 +443,20 @@ void mostrarPaci(char nomPac[]) {
   }
   // fseek(apPaci,0,SEEK_SET);
 
-  fread(&paciente, sizeof(Pacientes), 1, apPaci);
+  // fread(&paciente, sizeof(Pacientes), 1, apPaci);
+  int i = 0;
 
-  while (!feof(apPaci)) {
-    isEmpty = FALSE;
+  while (fread(&paciente, sizeof(Pacientes), 1, apPaci)) {
+    g_print("%d %s %s\n", i, paciente.CURP, paciente.nombre);
     if (paciente.estado) {
       // Cadena para dia nacimiento
       sprintf(fechaFormato[0], "%02d/%02d/%04d", paciente.fechas.dia,
               paciente.fechas.mes, paciente.fechas.anio);
+      g_print("%s\n", fechaFormato[0]);
       // Cadena para fecha primer consulta
       sprintf(fechaFormato[1], "%02d/%02d/%04d", paciente.fechasC.dia,
               paciente.fechasC.mes, paciente.fechasC.anio);
+      g_print("%s\n", fechaFormato[1]);
 
       gtk_list_store_append(lv_lstore, &iter); // agregar fila nueva
       gtk_list_store_set(lv_lstore, &iter, 0, paciente.CURP, 1, paciente.nombre,
@@ -464,9 +464,13 @@ void mostrarPaci(char nomPac[]) {
                          5, paciente.tpSangre, 6, fechaFormato[1], 7,
                          ftell(apPaci) - sizeof(Pacientes), -1);
     }
-    fread(&paciente, sizeof(Pacientes), 1, apPaci);
+    i++;
+    // fread(&paciente, sizeof(Pacientes), 1, apPaci);
   }
   fclose(apPaci);
-  if (!isEmpty)
-    lv_importmodel(7, titulos);
+
+  char *titulos[] = {
+      "CURP",     "Nombre",         "Fecha de nacimineto",  "Sexo",
+      "Teléfono", "Tipo sanguineo", "Fecha primer consulta"};
+  lv_importmodel(7, titulos);
 }
