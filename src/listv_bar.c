@@ -30,15 +30,14 @@ void gen_bar() {
     gtk_button_set_image(GTK_BUTTON(bar_btn[i]), bar_img[i]);
   }
 
-
-  g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formpac), NULL);
+  g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formpac),
+                   NULL);
 
   bar_separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 
   // Generar entrys de busqueda
-  for (i = 0; i < 2; i++) {
+  for (i = 0; i < 2; i++)
     bar_entry[i] = gtk_entry_new();
-  }
 
   bar_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_set_size_request(bar_box, 10, 10);
@@ -54,7 +53,6 @@ void gen_bar() {
     gtk_box_pack_start(GTK_BOX(bar_box), bar_entry[i], TRUE, TRUE, 0);
 
   gtk_box_pack_start(GTK_BOX(bar_box), bar_btn[3], FALSE, FALSE, 0);
-
 }
 
 void set_entry_placeholders(char *ph1, char *ph2) {

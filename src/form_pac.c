@@ -1,5 +1,7 @@
 #include "form_pac.h"
+#include "general.h"
 #include "listv.h"
+#include <stdio.h>
 
 gboolean fp_opc; // indicar si está en modo modificar o agregar(?)
 GtkWidget *fp_win, *fp_grid, *fp_combox[6], *fp_entry[5], *fp_btn[2],
@@ -393,6 +395,7 @@ void fp_aceptar(GtkWidget *wid, gpointer data) {
   if (registroP.fechasC.dia == 0)
     agregar_err("Dia de nacimiento", &err);
 
+  // Si algún campo no es válido
   if (err->len != 0) {
     g_string_append(err, " no válido(s)");
     gtk_label_set_markup(GTK_LABEL(fp_lbl[7]), err->str);
@@ -400,6 +403,9 @@ void fp_aceptar(GtkWidget *wid, gpointer data) {
     registroP.estado = 1;
     addPaciente("../data/pacientes.dat", registroP);
     free_formpac();
+
+    gtk_list_store_clear(lv_lstore);
+    mostrarPaci("../data/pacientes.dat");
   }
 
   // liberar todo
@@ -431,7 +437,7 @@ void mostrarPaci(char nomPac[]) {
   // apuntador definido en listv.c para el modelo de la tabla
   lv_lstore = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
                                  G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-                                 G_TYPE_STRING, G_TYPE_STRING);
+                                 G_TYPE_STRING, G_TYPE_ULONG);
 
   FILE *apPaci;
   Pacientes paciente;
@@ -444,28 +450,27 @@ void mostrarPaci(char nomPac[]) {
   // fseek(apPaci,0,SEEK_SET);
 
   // fread(&paciente, sizeof(Pacientes), 1, apPaci);
-  int i = 0;
+  unsigned long pos;
 
   while (fread(&paciente, sizeof(Pacientes), 1, apPaci)) {
-    g_print("%d %s %s\n", i, paciente.CURP, paciente.nombre);
     if (paciente.estado) {
-      // Cadena para dia nacimiento
+      // Formatear la fecha almacenada en una cadena para mostrarla en la tabla
       sprintf(fechaFormato[0], "%02d/%02d/%04d", paciente.fechas.dia,
               paciente.fechas.mes, paciente.fechas.anio);
-      g_print("%s\n", fechaFormato[0]);
-      // Cadena para fecha primer consulta
       sprintf(fechaFormato[1], "%02d/%02d/%04d", paciente.fechasC.dia,
               paciente.fechasC.mes, paciente.fechasC.anio);
-      g_print("%s\n", fechaFormato[1]);
+      // Formatear el sexo de igual forma
+      char sexo[2] = {paciente.sexo, '\0'};
+
+      // Obtener posición en archivo del registro
+      pos = (unsigned long)ftell(apPaci) - sizeof(Pacientes);
 
       gtk_list_store_append(lv_lstore, &iter); // agregar fila nueva
+      // Agregar datos al modelo
       gtk_list_store_set(lv_lstore, &iter, 0, paciente.CURP, 1, paciente.nombre,
-                         2, fechaFormato[0], 3, paciente.sexo, 4, paciente.telf,
-                         5, paciente.tpSangre, 6, fechaFormato[1], 7,
-                         ftell(apPaci) - sizeof(Pacientes), -1);
+                         2, fechaFormato[0], 3, sexo, 4, paciente.telf, 5,
+                         paciente.tpSangre, 6, fechaFormato[1], 7, pos, -1);
     }
-    i++;
-    // fread(&paciente, sizeof(Pacientes), 1, apPaci);
   }
   fclose(apPaci);
 

@@ -21,6 +21,9 @@ void free_listv() {
 
 void lv_importmodel(unsigned short numCols, char *titulos[]) {
   ushort i;
+  if (lv_tview)
+    gtk_widget_destroy(lv_tview);
+
   lv_tview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(lv_lstore));
 
   // Crear, configurar columnas y agregar al treeview

@@ -1,6 +1,7 @@
 #include "menu.h"
 #include "form_pac.h"
 #include "listv.h"
+#include "listv_bar.h"
 
 GtkWidget *m_win, *m_grid, *m_btn[3], *m_lbl[4], *m_banner, *m_btn_img[3];
 GdkPixbuf *m_icon;
@@ -102,6 +103,7 @@ void gen_menu() {
 }
 
 void pacientes(GtkWidget *widget, gpointer data) {
+  set_entry_placeholders("CURP", "Nombre");
   init_listv("Gestión de Pacientes");
   mostrarPaci("../data/pacientes.dat");
   free_menu();
