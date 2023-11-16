@@ -428,8 +428,10 @@ void mostrarPaci(char nomPac[]) {
   free_formpac();
 
   // Eliminar todos los elementos del ListStore
-  if (gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lv_lstore), &iter))
+  if (lv_lstore) {
     gtk_list_store_clear(lv_lstore);
+    lv_lstore = NULL;
+  }
 
   // apuntador definido en listv.c para el modelo de la tabla
   lv_lstore = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,

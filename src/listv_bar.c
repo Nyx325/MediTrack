@@ -7,8 +7,8 @@ GtkWidget *bar_btn[5], *bar_img[5], *bar_lbl[3], *bar_separator, *bar_entry[2],
     *bar_btnbox[3], *bar_box;
 
 void volver_a_menu(GtkWidget *widget, gpointer data) {
-  gen_menu();
-  gtk_widget_hide(lv_win);
+  gtk_widget_show_all(m_win);
+  free_listv();
 }
 
 void gen_bar() {
@@ -21,8 +21,6 @@ void gen_bar() {
 
   // Crear botones agregar, modificar y eliminar
   for (i = 0; i < 3; i++) {
-    // Si se han asociado señales a los botones con anterioridad se eliminan
-    g_signal_handlers_disconnect_by_data(bar_btn[i], NULL);
     bar_img[i] = gtk_image_new_from_file(imgPaths[i]);
     bar_lbl[i] = gtk_label_new(titulos[i]);
     bar_btnbox[i] = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);

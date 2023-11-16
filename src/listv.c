@@ -81,5 +81,6 @@ void init_listv(char *titulo) {
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(lv_scrollw),
                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
+  lv_lstore = NULL;
   gtk_container_add(GTK_CONTAINER(lv_win), lv_box);
 }

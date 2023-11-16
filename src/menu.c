@@ -103,21 +103,17 @@ void gen_menu() {
 }
 
 void pacientes(GtkWidget *widget, gpointer data) {
-  ushort i;
-
-  set_entry_placeholders("CURP", "Nombre");
   init_listv("Gestión de Pacientes");
   mostrarPaci("../data/pacientes.dat");
   g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formpac),
                    NULL);
-  free_menu();
+  gtk_widget_hide(m_win);
 }
 
 void medicamento(GtkWidget *widget, gpointer data) {
-  set_entry_placeholders("", "Nombre");
   init_listv("Gestión de Pacientes");
   mostrarMed("../data/medicamentos.dat");
   g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formed),
                    NULL);
-  free_menu();
+  gtk_widget_hide(m_win);
 }
