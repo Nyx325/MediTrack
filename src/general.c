@@ -1,5 +1,4 @@
 #include "general.h"
-#include <ctype.h>
 
 char dias_x_mes(const gint mes) {
   if (mes > 12 || mes < 1)
@@ -116,5 +115,14 @@ void import_model(GtkWidget *tview, GtkListStore *model, unsigned short numCols,
     // Ajustar propiedades para expandir
     gtk_tree_view_column_set_expand(column, TRUE);
     gtk_tree_view_append_column(GTK_TREE_VIEW(tview), column);
+  }
+}
+
+void agregar_err(char *texto, GString **cadena) {
+  if ((*cadena)->len == 0) {
+    g_string_append(*cadena, texto);
+  } else {
+    g_string_append(*cadena, ", ");
+    g_string_append(*cadena, texto);
   }
 }

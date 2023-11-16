@@ -236,14 +236,6 @@ void gen_formpac() {
 }
 
 // Validaciones
-void agregar_err(char *texto, GString **cadena) {
-  if ((*cadena)->len == 0) {
-    g_string_append(*cadena, texto);
-  } else {
-    g_string_append(*cadena, ", ");
-    g_string_append(*cadena, texto);
-  }
-}
 
 char *formatear_curp(const char *input) {
   gsize i, tam = g_utf8_strlen(input, -1);
@@ -418,9 +410,7 @@ void fp_aceptar(GtkWidget *wid, gpointer data) {
 }
 
 int addPaciente(char nomPac[], Pacientes paciente) {
-  FILE *apPaci;
-
-  apPaci = fopen(nomPac, "ab");
+  FILE *apPaci = fopen(nomPac, "ab");
   if (apPaci == NULL) {
     printf("Archivo dañado\n");
     return 0;

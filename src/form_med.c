@@ -1,4 +1,7 @@
 #include "form_med.h"
+#include "general.h"
+#include <stdio.h>
+#include <sys/types.h>
 
 GtkWidget *fm_win, *fm_grid, *fm_lbl[12], *fm_entry[12], *fm_combox[2],
     *fm_btn[2];
@@ -223,4 +226,36 @@ void gen_formed() {
   fm_Set_widgets();
 
   gtk_widget_show_all(fm_win);
+}
+
+void fm_aceptar(GtkWidget *wid, gpointer data) {
+  GString *err = g_string_new("");
+  Medicamento registroM;
+  const char *input[11];
+  char *output[11];
+  FILE *apArch;
+  ushort i;
+
+  input[0] = gtk_entry_get_text(GTK_ENTRY(fm_entry[0]));
+  if (is_full_nums(input[0], -1, -1) == FALSE)
+    agregar_err("Teléfono", &err);
+  else
+    registroM.id = atoi(input[0]);
+
+  g_string_free(err, TRUE);
+  for (i = 0; i < 11; i++)
+    if (output[i])
+      g_free(output[i]);
+}
+
+int agregarMedicamento(char *archivoDir, Medicamento registro) {
+  FILE *apArch = fopen(archivoDir, "ab");
+  if (apArch == NULL) {
+    g_print("Archivo dañado\n");
+    return 0;
+  }
+
+  fwrite(&registro, sizeof(Medicamento), 1, apArch);
+  fclose(apArch);
+  return 1;
 }
