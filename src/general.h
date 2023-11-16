@@ -52,7 +52,6 @@ char        *formatear_num      (const gchar *input, gsize max_tam, gsize min_ta
 gboolean    reset_warning       (GtkWidget *widget, GdkEventButton *event, gpointer data);
 void        import_model        (GtkWidget *tview, GtkListStore *model, ushort numCols, char *titulos[]);
 void        agregar_err         (char *texto, GString **cadena);
-float       string2decimal      (const char *input);
-int         char2int            (char c);
+void        mostrarMed          (char nomMed[]);
 
 #endif

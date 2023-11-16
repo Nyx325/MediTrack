@@ -55,7 +55,9 @@ void gen_menu() {
   char *btn_titles[] = {"Medicamentos", "Pacientes", "Proveedores"};
   // Array de punteros a funciones para los callbacks de la creacion
   // de botones
-  void (*callbacks[3])(GtkWidget *, gpointer) = {pacientes, NULL, NULL};
+  void (*callbacks[3])(GtkWidget *, gpointer) = {medicamento, pacientes, NULL};
+
+  free_menu();
 
   m_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_default_size(GTK_WINDOW(m_win), 1280, 720);
@@ -81,11 +83,9 @@ void gen_menu() {
     m_btn_img[i] = gtk_image_new_from_file(img_btn_path[i]);
     gtk_widget_set_size_request(m_btn[i], 90, 90);
     gtk_button_set_image(GTK_BUTTON(m_btn[i]), m_btn_img[i]);
-    // g_signal_connect(G_OBJECT(m_btn[i]), "clicked", G_CALLBACK(callbacks[i]),
-    // NULL);
+    g_signal_connect(G_OBJECT(m_btn[i]), "clicked", G_CALLBACK(callbacks[i]),
+                     NULL);
   }
-
-  g_signal_connect(G_OBJECT(m_btn[1]), "clicked", G_CALLBACK(pacientes), NULL);
 
   gtk_grid_attach(GTK_GRID(m_grid), m_banner, 0, 0, 5, 1);
   // Opc medicamentos
@@ -103,8 +103,21 @@ void gen_menu() {
 }
 
 void pacientes(GtkWidget *widget, gpointer data) {
+  ushort i;
+
   set_entry_placeholders("CURP", "Nombre");
   init_listv("Gestión de Pacientes");
   mostrarPaci("../data/pacientes.dat");
+  g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formpac),
+                   NULL);
+  free_menu();
+}
+
+void medicamento(GtkWidget *widget, gpointer data) {
+  set_entry_placeholders("", "Nombre");
+  init_listv("Gestión de Pacientes");
+  mostrarMed("../data/medicamentos.dat");
+  g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formed),
+                   NULL);
   free_menu();
 }

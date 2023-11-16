@@ -1,22 +1,35 @@
 #include "listv.h"
 #include "listv_bar.h"
+#include "menu.h"
 
 GtkWidget *lv_win, *lv_box, *lv_tview, *lv_scrollw;
 GtkListStore *lv_lstore;
 
 void free_listv() {
-  if (lv_win)
+  if (lv_win) {
     gtk_widget_hide(lv_win);
-  if (lv_lstore)
+    lv_win = NULL;
+  }
+  if (lv_lstore){
     g_object_unref(lv_lstore);
-  if (lv_tview)
+    lv_lstore = NULL;
+  }
+  if (lv_tview){
     gtk_widget_destroy(lv_tview);
-  if (lv_scrollw)
+    lv_tview = NULL;
+  }
+  if (lv_scrollw){
     gtk_widget_destroy(lv_scrollw);
-  if (lv_box)
+    lv_scrollw = NULL;
+  }
+  if (lv_box){
     gtk_widget_destroy(lv_box);
-  if (lv_win)
+    lv_box = NULL;
+  }
+  if (lv_win){
     gtk_widget_destroy(lv_win);
+    lv_win = NULL;
+  }
 }
 
 void lv_importmodel(unsigned short numCols, char *titulos[]) {
@@ -46,6 +59,8 @@ void lv_importmodel(unsigned short numCols, char *titulos[]) {
 }
 
 void init_listv(char *titulo) {
+  free_listv();
+
   // Crear y configurar ventana principal
   lv_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_default_size(GTK_WINDOW(lv_win), 1280, 720);

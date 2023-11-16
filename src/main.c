@@ -10,11 +10,11 @@ int main() {
 
   // gen_login();
   // gen_formpac();
-  gen_formed();
+  // gen_formed();
   // gen_formprov();
   // gen_formcons();
   // prueba();
-  // gen_menu();
+  gen_menu();
 
   gtk_main();
   return 0;

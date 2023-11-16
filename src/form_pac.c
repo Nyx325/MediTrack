@@ -221,7 +221,7 @@ contraseña incorrectos</span>");
 }
 */
 
-void gen_formpac() {
+void gen_formpac(GtkWidget *wid, gpointer data) {
   fp_wingrid();
   init_lbl();
   fp_init_entry();
@@ -424,6 +424,13 @@ int addPaciente(char nomPac[], Pacientes paciente) {
 void mostrarPaci(char nomPac[]) {
   char fechaFormato[2][12];
   GtkTreeIter iter; // estructura para identificar fila en modelo
+
+  free_formpac();
+
+  // Eliminar todos los elementos del ListStore
+  if (gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lv_lstore), &iter))
+    gtk_list_store_clear(lv_lstore);
+
   // apuntador definido en listv.c para el modelo de la tabla
   lv_lstore = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
                                  G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
@@ -434,7 +441,7 @@ void mostrarPaci(char nomPac[]) {
 
   apPaci = fopen(nomPac, "a+b");
   if (apPaci == NULL) {
-    printf("Archivo danaño\n");
+    g_print("Archivo danaño\n");
     return;
   }
   // fseek(apPaci,0,SEEK_SET);

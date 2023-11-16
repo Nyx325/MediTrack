@@ -1,5 +1,7 @@
 #include "form_med.h"
 #include "general.h"
+#include "listv.h"
+#include <stdio.h>
 
 GtkWidget *fm_win, *fm_grid, *fm_lbl[12], *fm_entry[11], *fm_combox[2],
     *fm_btn[2];
@@ -233,6 +235,7 @@ void fm_aceptar(GtkWidget *wid, gpointer data) {
   char *output[3];
   FILE *apArch;
   ushort i;
+  registroM.estado = 0;
 
   // Clave del medicamento
   input[0] = gtk_entry_get_text(GTK_ENTRY(fm_entry[0]));
@@ -283,11 +286,11 @@ void fm_aceptar(GtkWidget *wid, gpointer data) {
     strcpy(registroM.presentacion, output[2]);
 
   // Unidades en inventario
-  input[6] = gtk_entry_get_text(GTK_ENTRY(fm_entry[6]));
-  if (!is_full_nums(input[6], -1, -1))
+  input[10] = gtk_entry_get_text(GTK_ENTRY(fm_entry[10]));
+  if (!is_full_nums(input[10], -1, -1))
     agregar_err("Unidades en inventario", &err);
   else
-    registroM.unidadesInventario = atoi(input[6]);
+    registroM.unidadesInventario = atoi(input[10]);
 
   // Costo
   input[7] = gtk_entry_get_text(GTK_ENTRY(fm_entry[7]));
@@ -323,19 +326,20 @@ void fm_aceptar(GtkWidget *wid, gpointer data) {
     agregar_err("Dia de caducidad", &err);
 
   // Laboratorio
-  input[10] = gtk_entry_get_text(GTK_ENTRY(fm_entry[10]));
+  input[6] = gtk_entry_get_text(GTK_ENTRY(fm_entry[6]));
   // Si cadena vacía
-  if (g_utf8_strlen(input[10], -1) == 0)
+  if (g_utf8_strlen(input[6], -1) == 0)
     agregar_err("Laboratorio", &err);
   else
-    strcpy(registroM.laboratorio, input[10]);
-
+    strcpy(registroM.laboratorio, input[6]);
 
   if (err->len == 0) {
+    registroM.estado = 1;
     free_formed();
     agregarMedicamento("../data/medicamentos.dat", registroM);
-  }
-  else agregar_err("no válido(s)", &err);
+    mostrarMed("../data/medicamentos.dat");
+  } else
+    agregar_err("no válido(s)", &err);
   g_print("%s\n", err->str);
   g_string_free(err, TRUE);
   for (i = 0; i < 3; i++)
@@ -353,4 +357,58 @@ int agregarMedicamento(char *archivoDir, Medicamento registro) {
   fwrite(&registro, sizeof(Medicamento), 1, apArch);
   fclose(apArch);
   return 1;
+}
+
+void mostrarMed(char nomMed[]) {
+  unsigned long pos;
+  Medicamento med;
+  char fechaFormato[12];
+  GtkTreeIter iter;
+  FILE *apArch;
+
+  // Eliminar todos los elementos del ListStore
+  if (gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lv_lstore), &iter))
+    gtk_list_store_clear(lv_lstore);
+
+  // apuntador definido en listv.c para el modelo de la tabla
+  lv_lstore = gtk_list_store_new(12, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING,
+                                 G_TYPE_FLOAT, G_TYPE_UINT, G_TYPE_STRING,
+                                 G_TYPE_UINT, G_TYPE_FLOAT, G_TYPE_STRING,
+                                 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
+
+  apArch = fopen(nomMed, "a+b");
+  if (apArch == NULL) {
+    g_print("Archivo dañado");
+    return;
+  }
+
+  while (fread(&med, sizeof(Medicamento), 1, apArch)) {
+    if (med.estado) {
+      pos = (unsigned long)ftell(apArch);
+      // Formatear fecha como cadena
+      sprintf(fechaFormato, "%02d/%02d/%04d", med.fecha.dia, med.fecha.mes,
+              med.fecha.anio);
+      // Agregar fila
+      gtk_list_store_append(lv_lstore, &iter);
+      // Agregar datos al modelo
+      gtk_list_store_set(lv_lstore, &iter, 0, med.id, 1, med.sustancia, 2,
+                         med.marca, 3, med.gramaje, 4, med.unidadesCaja, 5,
+                         med.presentacion, 6, med.unidadesInventario, 7,
+                         med.costo, 8, med.lote, 9, fechaFormato, 10,
+                         med.laboratorio, 11, pos, -1);
+    }
+  }
+  fclose(apArch);
+  char *titulos[] = {"Clave",
+                     "Substancia",
+                     "Marca",
+                     "Gramaje (g)",
+                     "Cantidad",
+                     "Presentacion",
+                     "Unidades de inventario",
+                     "Costo",
+                     "Lote",
+                     "Caducidad",
+                     "Laboratorio"};
+  lv_importmodel(11, titulos);
 }
