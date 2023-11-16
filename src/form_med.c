@@ -1,9 +1,7 @@
 #include "form_med.h"
 #include "general.h"
-#include <stdio.h>
-#include <sys/types.h>
 
-GtkWidget *fm_win, *fm_grid, *fm_lbl[12], *fm_entry[12], *fm_combox[2],
+GtkWidget *fm_win, *fm_grid, *fm_lbl[12], *fm_entry[11], *fm_combox[2],
     *fm_btn[2];
 GdkPixbuf *fm_icon;
 
@@ -75,14 +73,14 @@ void fm_init_lbl() {
   char *fm_titles[] = {"Clave",
                        "Substancia",
                        "Marca",
-                       "Gramaje",
+                       "Gramaje (g)",
                        "Cantidad",
                        "Presentación",
                        "Laboratorio",
                        "Costo",
                        "Lote",
                        "Caducidad",
-                       "Unidades en inventario",
+                       "Unidades en\ninventario",
                        " "};
   short i;
 
@@ -135,83 +133,83 @@ void fm_init_btn() {
     context = gtk_widget_get_style_context(fm_btn[i]);
     gtk_style_context_add_class(context, "suggested-action");
   }
+  g_signal_connect(G_OBJECT(fm_btn[0]), "clicked", G_CALLBACK(fm_aceptar),
+                   NULL);
+  g_signal_connect(G_OBJECT(fm_btn[1]), "clicked", G_CALLBACK(free_formed),
+                   NULL);
 }
 
 void fm_Set_widgets() {
   // Clave
   gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[0], 0, 0, 1, 1);
   gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[0], 1, 0, 2, 1);
-  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[0]), 30);
-  gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[0]), 30);
+  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[0]), 10);
+  gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[0]), 10);
 
   // Substancia
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[1], 3, 0, 2, 1);
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[1], 5, 0, 3, 1);
-  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[1]), 50);
-  gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[1]), 50);
-
-  // Marca
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[2], 8, 0, 1, 1);
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[2], 9, 0, 1, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(fm_entry[2]), 18);
-  // gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[2]), 18);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[1], 3, 0, 1, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[1], 4, 0, 3, 1);
+  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[1]), 49);
+  // gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[1]), 49);
 
   // Gramaje
   gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[3], 0, 1, 1, 1);
   gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[3], 1, 1, 1, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(fm_entry[3]), 18);
+  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[3]), 7);
   gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[3]), 5);
 
-  // Cantidad
+  // Cantidad / Unidades por caja
   gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[4], 2, 1, 1, 1);
   gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[4], 3, 1, 1, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(fm_entry[4]), 18);
-  gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[4]), 3);
+  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[4]), 10);
+  gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[4]), 10);
 
   // Presentación
   gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[5], 4, 1, 1, 1);
   gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[5], 5, 1, 3, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(fm_entry[1]), 18);
-  // gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[1]), 18);
+  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[1]), 50);
 
   // Laboratorio
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[6], 8, 1, 1, 1);
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[6], 9, 1, 1, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(fm_entry[1]), 18);
-  // gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[1]), 18);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[6], 3, 4, 1, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[6], 4, 4, 4, 1);
+  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[1]), 49);
 
   // Costo
   gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[7], 0, 3, 1, 1);
   gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[7], 1, 3, 1, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(fm_entry[7]), 18);
+  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[7]), 7);
   gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[7]), 5);
 
   // Lote
   gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[8], 2, 3, 1, 1);
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[8], 3, 3, 2, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[8], 3, 3, 4, 1);
   gtk_entry_set_max_length(GTK_ENTRY(fm_entry[8]), 20);
   gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[8]), 20);
 
   // Caducidad
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[9], 5, 3, 1, 1);
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[9], 6, 3, 1, 1);
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_combox[0], 7, 3, 1, 1);
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_combox[1], 8, 3, 1, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[9], 7, 3, 1, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[9], 8, 3, 1, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_combox[0], 9, 3, 1, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_combox[1], 10, 3, 1, 1);
   gtk_entry_set_max_length(GTK_ENTRY(fm_entry[9]), 5);
   gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[9]), 5);
 
   // Unidades en inventario
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[10], 9, 3, 1, 1);
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[10], 10, 3, 1, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(fm_entry[9]), 18);
-  // gtk_entry_set_width_chars(GTK_ENTRY(fm_entry[9]), 18);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[10], 8, 1, 1, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[10], 9, 1, 2, 1);
+  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[0]), 10);
+
+  // Marca
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[2], 7, 0, 1, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_entry[2], 8, 0, 3, 1);
+  gtk_entry_set_max_length(GTK_ENTRY(fm_entry[2]), 49);
 
   // Warning
   gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[11], 1, 5, 1, 1);
 
   // Botones
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_btn[0], 0, 6, 4, 1);
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_btn[1], 5, 6, 3, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_btn[0], 1, 6, 4, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_btn[1], 6, 6, 4, 1);
 }
 
 void gen_formed() {
@@ -232,18 +230,115 @@ void fm_aceptar(GtkWidget *wid, gpointer data) {
   GString *err = g_string_new("");
   Medicamento registroM;
   const char *input[11];
-  char *output[11];
+  char *output[3];
   FILE *apArch;
   ushort i;
 
+  // Clave del medicamento
   input[0] = gtk_entry_get_text(GTK_ENTRY(fm_entry[0]));
-  if (is_full_nums(input[0], -1, -1) == FALSE)
-    agregar_err("Teléfono", &err);
+  if (!is_full_nums(input[0], -1, -1))
+    agregar_err("Clave", &err);
   else
     registroM.id = atoi(input[0]);
 
+  // Substancia
+  input[1] = gtk_entry_get_text(GTK_ENTRY(fm_entry[1]));
+  output[0] = formatear_nombre(input[1]);
+  if (output[0] == NULL)
+    agregar_err("Substancia", &err);
+  else
+    strcpy(registroM.sustancia, output[0]);
+
+  // Marca
+  input[2] = gtk_entry_get_text(GTK_ENTRY(fm_entry[2]));
+  // Sólo copiamos la cadena porque no necesitamos formato
+  output[1] = g_strdup(input[2]);
+  // Si el input está vacío
+  if (output[1][0] == '\0')
+    agregar_err("Marca", &err);
+  else
+    strcpy(registroM.marca, output[1]);
+
+  // Gramaje
+  input[3] = gtk_entry_get_text(GTK_ENTRY(fm_entry[3]));
+  if (!is_number(input[3], -1, -1))
+    agregar_err("Gramaje", &err);
+  else
+    registroM.gramaje = atof(input[3]);
+
+  // Cantidad / Unidades x caja
+  input[4] = gtk_entry_get_text(GTK_ENTRY(fm_entry[4]));
+  g_print("%s\n", input[4]);
+  if (!is_full_nums(input[4], -1, -1))
+    agregar_err("Cantidad por caja", &err);
+  else
+    registroM.unidadesCaja = atoi(input[4]);
+
+  // Presentacion
+  input[5] = gtk_entry_get_text(GTK_ENTRY(fm_entry[5]));
+  output[2] = formatear_nombre(input[5]);
+  if (output[2] == NULL)
+    agregar_err("Presentación", &err);
+  else
+    strcpy(registroM.presentacion, output[2]);
+
+  // Unidades en inventario
+  input[6] = gtk_entry_get_text(GTK_ENTRY(fm_entry[6]));
+  if (!is_full_nums(input[6], -1, -1))
+    agregar_err("Unidades en inventario", &err);
+  else
+    registroM.unidadesInventario = atoi(input[6]);
+
+  // Costo
+  input[7] = gtk_entry_get_text(GTK_ENTRY(fm_entry[7]));
+  if (!is_number(input[7], -1, -1))
+    agregar_err("Costo", &err);
+  else
+    registroM.costo = atof(input[7]);
+
+  // Lote
+  input[8] = gtk_entry_get_text(GTK_ENTRY(fm_entry[8]));
+  // Si cadena vacía
+  if (g_utf8_strlen(input[8], -1) == 0)
+    agregar_err("Lote", &err);
+  else
+    strcpy(registroM.lote, input[8]);
+
+  // Caducidad
+  // Año
+  input[9] = gtk_entry_get_text(GTK_ENTRY(fm_entry[9]));
+  if (!is_full_nums(input[9], -1, -1))
+    agregar_err("Año de caducidad", &err);
+  else
+    registroM.fecha.anio = atoi(input[9]);
+
+  // Mes
+  registroM.fecha.mes = gtk_combo_box_get_active(GTK_COMBO_BOX(fm_combox[0]));
+  if (registroM.fecha.mes == 0)
+    agregar_err("Mes de caducidad", &err);
+
+  // Dia
+  registroM.fecha.dia = gtk_combo_box_get_active(GTK_COMBO_BOX(fm_combox[1]));
+  if (registroM.fecha.dia == 0)
+    agregar_err("Dia de caducidad", &err);
+
+  // Laboratorio
+  input[10] = gtk_entry_get_text(GTK_ENTRY(fm_entry[10]));
+  // Si cadena vacía
+  if (g_utf8_strlen(input[10], -1) == 0)
+    agregar_err("Laboratorio", &err);
+  else
+    strcpy(registroM.laboratorio, input[10]);
+
+
+  if (err->len == 0) {
+    free_formed();
+    agregarMedicamento("../data/medicamentos.dat", registroM);
+  }
+  else agregar_err("no válido(s)", &err);
+  g_print("%s\n", err->str);
   g_string_free(err, TRUE);
-  for (i = 0; i < 11; i++)
+  for (i = 0; i < 3; i++)
     if (output[i])
       g_free(output[i]);
 }

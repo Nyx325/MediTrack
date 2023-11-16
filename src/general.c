@@ -1,5 +1,8 @@
 #include "general.h"
+#include <ctype.h>
+#include <string.h>
 
+// :D
 char dias_x_mes(const gint mes) {
   if (mes > 12 || mes < 1)
     return 0;
@@ -14,12 +17,15 @@ char dias_x_mes(const gint mes) {
   return 30;
 }
 
+// Vacía un entry, que posiblemente se trate de las advertencias de los
+// formularios
 gboolean reset_warning(GtkWidget *widget, GdkEventButton *event,
                        gpointer data) {
   gtk_label_set_text(GTK_LABEL(data), NULL);
   return FALSE;
 }
 
+// Establece el contenido de un combo box de Día dado el mes elegido
 void cambio_mes(GtkComboBox *widget, gpointer data) {
   GtkComboBoxText *dia_combox = GTK_COMBO_BOX_TEXT(data);
   gint active = gtk_combo_box_get_active(widget);
@@ -40,6 +46,8 @@ void cambio_mes(GtkComboBox *widget, gpointer data) {
   }
 }
 
+// Formatea una cadena con primer letra de cada palabra mayúscula y el resto
+// minúscula
 char *formatear_nombre(const gchar *input) {
   const gsize tam = g_utf8_strlen(input, -1);
   gboolean flag = TRUE;
@@ -51,7 +59,8 @@ char *formatear_nombre(const gchar *input) {
   for (gsize i = 0; i < tam; i++) {
     gunichar2 character = g_utf8_get_char(formateo + i);
 
-    if (g_unichar_iscntrl(character)) {
+    // Si tiene caracteres de "control" (\t, \n, etc)
+    if (g_unichar_iscntrl(character) || !g_unichar_isalpha(character)) {
       g_free(formateo);
       return NULL;
     }
@@ -72,6 +81,7 @@ char *formatear_nombre(const gchar *input) {
   return g_strdup(formateo);
 }
 
+// Comprueba si una cadena está compuesta unicamente por números
 gboolean is_full_nums(const gchar *input, gsize max_tam, gsize min_tam) {
   const gsize tam = g_utf8_strlen(input, -1);
   gsize i;
@@ -92,13 +102,30 @@ gboolean is_full_nums(const gchar *input, gsize max_tam, gsize min_tam) {
   return TRUE;
 }
 
-char *formatear_num(const gchar *input, gsize max_tam, gsize min_tam) {
-  if (is_full_nums(input, max_tam, min_tam) == FALSE)
-    return NULL;
+// Compara si la cadena contiene un número, por lo que compara si tiene
+// números y '.'
+gboolean is_number(const gchar *input, gsize max_tam, gsize min_tam) {
+  const gsize tam = g_utf8_strlen(input, -1);
+  gsize i;
+  gunichar character;
 
-  return g_strdup(input);
+  if (max_tam != -1 && tam > max_tam)
+    return FALSE;
+
+  if (min_tam != -1 && tam < min_tam)
+    return FALSE;
+
+  for (i = 0; i < tam; i++) {
+    character = g_utf8_get_char(&input[i]);
+    if (!g_unichar_isdigit(character) && character != '.')
+      return FALSE;
+  }
+
+  return TRUE;
 }
 
+// Dado lv_lstore inicializado con datos dentro genera la tabla de cada
+// categoría
 void import_model(GtkWidget *tview, GtkListStore *model, unsigned short numCols,
                   char *titulos[]) {
   unsigned short i;
@@ -118,6 +145,8 @@ void import_model(GtkWidget *tview, GtkListStore *model, unsigned short numCols,
   }
 }
 
+// Dada una cadena GString agrega como listado las cadenas que se mandan como
+// argumento
 void agregar_err(char *texto, GString **cadena) {
   if ((*cadena)->len == 0) {
     g_string_append(*cadena, texto);
@@ -125,4 +154,58 @@ void agregar_err(char *texto, GString **cadena) {
     g_string_append(*cadena, ", ");
     g_string_append(*cadena, texto);
   }
+}
+
+int char2int(char c) {
+  switch (c) {
+  case '1':
+    return 1;
+  case '2':
+    return 2;
+  case '3':
+    return 3;
+  case '4':
+    return 4;
+  case '5':
+    return 5;
+  case '6':
+    return 6;
+  case '7':
+    return 7;
+  case '8':
+    return 8;
+  case '9':
+    return 9;
+  default:
+    return -1;
+  }
+}
+
+float string2decimal(const char *input) {
+  int digito;
+  float num = 0;
+  gboolean puntoEncontrado = FALSE;
+  ushort i, tam;
+  tam = strlen(input);
+
+  for (i = 0; i < tam; i++) {
+    if (input[i] != '.' || !isdigit(input[i]) ||
+        input[i] == '.' && puntoEncontrado == TRUE)
+      return 0;
+
+    if (input[i] == '.') {
+      puntoEncontrado = TRUE;
+      continue;
+    }
+    digito = char2int(input[i]);
+    g_print("%d, %c\n", digito, input[i]);
+
+    if (puntoEncontrado) {
+      num = (float)num + (digito / (10 * (i + 1)));
+    } else {
+      num = (float)num + (digito * (10 * (i + 1)));
+    }
+  }
+
+  return num;
 }

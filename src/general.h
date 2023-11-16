@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <gtk/gtk.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef unsigned char Opc;
@@ -23,11 +24,11 @@ typedef struct medicamento {
   float         gramaje;
   char          presentacion[50];
   char          laboratorio[50];
-  int           unidadesCaja;
+  unsigned int  unidadesCaja;
   float         costo;
   char          lote[20];
   Fecha         fecha;
-  int           unidadesInventario;
+  unsigned int  unidadesInventario;
 }Medicamento;
 
 typedef struct {
@@ -45,10 +46,13 @@ void        cambio_mes          (GtkComboBox *widget, gpointer data);
 char        dias_x_mes          (const gint mes);
 char        *formatear_nombre   (const gchar *input);
 gboolean    is_full_nums        (const gchar *input, gsize max_tam, gsize min_tam);
+gboolean    is_number           (const gchar *input, gsize max_tam, gsize min_tam);
 gboolean    es_vocal_acentuada  (char c);
 char        *formatear_num      (const gchar *input, gsize max_tam, gsize min_tam);
 gboolean    reset_warning       (GtkWidget *widget, GdkEventButton *event, gpointer data);
 void        import_model        (GtkWidget *tview, GtkListStore *model, ushort numCols, char *titulos[]);
 void        agregar_err         (char *texto, GString **cadena);
+float       string2decimal      (const char *input);
+int         char2int            (char c);
 
 #endif
