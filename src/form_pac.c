@@ -425,14 +425,6 @@ void mostrarPaci(char nomPac[]) {
   char fechaFormato[2][12];
   GtkTreeIter iter; // estructura para identificar fila en modelo
 
-  free_formpac();
-
-  // Eliminar todos los elementos del ListStore
-  if (lv_lstore) {
-    gtk_list_store_clear(lv_lstore);
-    lv_lstore = NULL;
-  }
-
   // apuntador definido en listv.c para el modelo de la tabla
   lv_lstore = gtk_list_store_new(8, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
                                  G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,

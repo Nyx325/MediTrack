@@ -366,10 +366,6 @@ void mostrarMed(char nomMed[]) {
   GtkTreeIter iter;
   FILE *apArch;
 
-  // Eliminar todos los elementos del ListStore
-  if (gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lv_lstore), &iter))
-    gtk_list_store_clear(lv_lstore);
-
   // apuntador definido en listv.c para el modelo de la tabla
   lv_lstore = gtk_list_store_new(12, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING,
                                  G_TYPE_FLOAT, G_TYPE_UINT, G_TYPE_STRING,

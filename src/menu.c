@@ -57,8 +57,6 @@ void gen_menu() {
   // de botones
   void (*callbacks[3])(GtkWidget *, gpointer) = {medicamento, pacientes, NULL};
 
-  free_menu();
-
   m_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_default_size(GTK_WINDOW(m_win), 1280, 720);
   gtk_window_set_title(GTK_WINDOW(m_win), "MediTrack");
