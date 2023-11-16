@@ -395,7 +395,7 @@ void fp_aceptar(GtkWidget *wid, gpointer data) {
     registroP.estado = 1;
     addPaciente("../data/pacientes.dat", registroP);
     free_formpac();
-
+    // Recargar datos de la tabla
     gtk_list_store_clear(lv_lstore);
     mostrarPaci("../data/pacientes.dat");
   }

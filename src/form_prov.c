@@ -230,3 +230,19 @@ void gen_formprov() {
 
   gtk_widget_show_all(p_win);
 }
+
+void agregarProveedor(char *dirArchivo, Proveedor proveedor){
+    FILE *apArch = fopen(dirArchivo, "ab");
+    if (apArch == NULL){
+      g_print("Archivo dañado");
+      return;
+    }
+    fwrite(&proveedor, sizeof(struct Proveedor), 1, apArch);
+    fclose(apArch);
+}
+
+void prov_agregar(GtkWidget *Wid, gpointer data){
+  Proveedor registroP;
+  const gchar *input[8];
+  
+}

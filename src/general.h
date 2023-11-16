@@ -42,6 +42,19 @@ typedef struct {
   int   estado;
 } Pacientes;
 
+typedef struct Proveedor {
+  char  nombreComercial[100];
+  char  nombreFactura[100];
+  char  rfc[15];
+  char  domicilio[100];
+  char  numeroOficina[15];
+  char  whatsappEmpresarial[15];
+  char  correoElectronico[100];
+  char  representanteComercial[100];
+  ushort permisoNarcoticos;
+  Fecha vigencia;
+}Proveedor;
+
 void        cambio_mes          (GtkComboBox *widget, gpointer data);
 char        dias_x_mes          (const gint mes);
 char        *formatear_nombre   (const gchar *input);

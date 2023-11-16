@@ -207,7 +207,7 @@ void fm_Set_widgets() {
   gtk_entry_set_max_length(GTK_ENTRY(fm_entry[2]), 49);
 
   // Warning
-  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[11], 1, 5, 1, 1);
+  gtk_grid_attach(GTK_GRID(fm_grid), fm_lbl[11], 1, 5, 9, 1);
 
   // Botones
   gtk_grid_attach(GTK_GRID(fm_grid), fm_btn[0], 1, 6, 4, 1);
@@ -310,7 +310,7 @@ void fm_aceptar(GtkWidget *wid, gpointer data) {
   // Caducidad
   // Año
   input[9] = gtk_entry_get_text(GTK_ENTRY(fm_entry[9]));
-  if (!is_full_nums(input[9], -1, -1))
+  if (!is_full_nums(input[9], -1, 1))
     agregar_err("Año de caducidad", &err);
   else
     registroM.fecha.anio = atoi(input[9]);
@@ -337,9 +337,14 @@ void fm_aceptar(GtkWidget *wid, gpointer data) {
     registroM.estado = 1;
     free_formed();
     agregarMedicamento("../data/medicamentos.dat", registroM);
+    // Recargar datos de la tabla
+    gtk_list_store_clear(lv_lstore);
     mostrarMed("../data/medicamentos.dat");
-  } else
+  } else{
     agregar_err("no válido(s)", &err);
+    gtk_label_set_markup(GTK_LABEL(fm_lbl[11]), err->str);
+  }
+    
   g_print("%s\n", err->str);
   g_string_free(err, TRUE);
   for (i = 0; i < 3; i++)

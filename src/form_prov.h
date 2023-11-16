@@ -3,6 +3,7 @@
 
 #include "general.h"
 
-void gen_formprov();
+void gen_formprov       (void);
+void agregarProveedor   (char *dirArchivo, Proveedor proveedor);
 
 #endif
