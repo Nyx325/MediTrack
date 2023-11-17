@@ -56,6 +56,8 @@ typedef struct Proveedor {
   Fecha vigencia;
 }Proveedor;
 
+extern ushort max_largo;
+
 void        cambio_mes          (GtkComboBox *widget, gpointer data);
 char        dias_x_mes          (const gint mes);
 char        *formatear_nombre   (const gchar *input);

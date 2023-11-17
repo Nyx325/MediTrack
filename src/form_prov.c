@@ -302,14 +302,14 @@ void prov_aceptar(GtkWidget *Wid, gpointer data) {
 
   // Nombre comercial
   input[0] = gtk_entry_get_text(GTK_ENTRY(p_entry[0]));
-  if (g_utf8_strlen(input[0], -1) == 0)
+  if (g_utf8_strlen(input[0], -1) > 0)
     strcpy(registroP.nombreComercial, input[0]);
   else
     agregar_err("Nombre comercial", &err);
 
   // Nombre factura
   input[1] = gtk_entry_get_text(GTK_ENTRY(p_entry[1]));
-  if (g_utf8_strlen(input[1], -1) == 0)
+  if (g_utf8_strlen(input[1], -1) > 0)
     strcpy(registroP.nombreFactura, input[1]);
   else
     agregar_err("Nombre de factura", &err);
@@ -323,15 +323,21 @@ void prov_aceptar(GtkWidget *Wid, gpointer data) {
     agregar_err("RFC", &err);
 
   // Correo
-  input[3] = gtk_entry_get_text(GTK_ENTRY(p_entry[3]));
-  if (g_utf8_strchr(input[3], -1, '@')) {
-    output[1] = g_strdup(input[3]);
+  input[3] = gtk_entry_get_text(GTK_ENTRY(p_entry[5]));
+  g_print("%s\n", input[3]);
+  output[1] = g_strdup(input[3]);
+  if (strstr(output[1], "@") && strlen(output[1]) > 6) {
     strcpy(registroP.correoElectronico, output[1]);
   } else
     agregar_err("Correo", &err);
 
+
+  // Whatsapp
+  input[4] = gtk_entry_get_text(GTK_ENTRY())
+
   agregar_err("no valido(s)", &err);
   g_print("%s\n", err->str);
+  
   for (i = 0; i < 2; i++)
     if (output[i])
       g_free(output[i]);
