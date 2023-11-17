@@ -1,4 +1,6 @@
 #include "form_prov.h"
+#include "general.h"
+#include <ctype.h>
 
 GtkWidget *p_win, *p_grid, *p_entry[8], *p_lbl[9], *p_combox[2], *p_btn[2],
     *p_checkbtn;
@@ -132,6 +134,7 @@ void p_init_btn() {
   GtkStyleContext *context;
   short i;
   char *titulos[] = {"Aceptar", "Cancelar"};
+  void (*callbacks[2])(GtkWidget *, gpointer) = {prov_aceptar, free_formprov};
 
   for (i = 0; i < 2; i++) {
     p_btn[i] = gtk_button_new_with_label(titulos[i]);
@@ -140,6 +143,8 @@ void p_init_btn() {
     // Agregar clase
     context = gtk_widget_get_style_context(p_btn[i]);
     gtk_style_context_add_class(context, "suggested-action");
+    g_signal_connect(G_OBJECT(p_btn[i]), "clicked", G_CALLBACK(callbacks[i]),
+                     NULL);
   }
 }
 
@@ -231,18 +236,103 @@ void gen_formprov() {
   gtk_widget_show_all(p_win);
 }
 
-void agregarProveedor(char *dirArchivo, Proveedor proveedor){
-    FILE *apArch = fopen(dirArchivo, "ab");
-    if (apArch == NULL){
-      g_print("Archivo dañado");
-      return;
-    }
-    fwrite(&proveedor, sizeof(struct Proveedor), 1, apArch);
-    fclose(apArch);
+void agregarProveedor(char *dirArchivo, Proveedor proveedor) {
+  FILE *apArch = fopen(dirArchivo, "ab");
+  if (apArch == NULL) {
+    g_print("Archivo dañado");
+    return;
+  }
+  fwrite(&proveedor, sizeof(struct Proveedor), 1, apArch);
+  fclose(apArch);
 }
 
-void prov_agregar(GtkWidget *Wid, gpointer data){
+char *formatear_rfc(const gchar *input) {
+  char *formateo = g_strdup(input);
+  unsigned int i, max_letras;
+  const gchar tam = g_utf8_strlen(input, -1);
+
+  if (tam != 12 || tam != 13) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  switch (tam) {
+  case 12:
+    max_letras = 3;
+    break;
+  case 13:
+    max_letras = 4;
+  default:
+    g_free(formateo);
+    return NULL;
+  }
+
+  for (i = 0; i < max_letras; i++) {
+    if (!isalpha(formateo[i])) {
+      g_free(formateo);
+      return NULL;
+    }
+
+    formateo[i] = toupper(formateo[i]);
+  }
+
+  for (; i < max_letras + 4; i++) {
+    if (!isdigit(formateo[i])) {
+      g_free(formateo);
+      return NULL;
+    }
+  }
+
+  for (; i < max_letras + 7; i++) {
+    if (isalpha(formateo[i]))
+      formateo[i] = toupper(formateo[i]);
+  }
+
+  return formateo;
+}
+
+void prov_aceptar(GtkWidget *Wid, gpointer data) {
+  short i;
+  char *output[2];
   Proveedor registroP;
   const gchar *input[8];
-  
+  GString *err = g_string_new("");
+
+  registroP.estado = 0;
+
+  // Nombre comercial
+  input[0] = gtk_entry_get_text(GTK_ENTRY(p_entry[0]));
+  if (g_utf8_strlen(input[0], -1) == 0)
+    strcpy(registroP.nombreComercial, input[0]);
+  else
+    agregar_err("Nombre comercial", &err);
+
+  // Nombre factura
+  input[1] = gtk_entry_get_text(GTK_ENTRY(p_entry[1]));
+  if (g_utf8_strlen(input[1], -1) == 0)
+    strcpy(registroP.nombreFactura, input[1]);
+  else
+    agregar_err("Nombre de factura", &err);
+
+  // RFC
+  input[2] = gtk_entry_get_text(GTK_ENTRY(p_entry[2]));
+  output[0] = formatear_rfc(input[2]);
+  if (output[0])
+    strcpy(registroP.rfc, input[2]);
+  else
+    agregar_err("RFC", &err);
+
+  // Correo
+  input[3] = gtk_entry_get_text(GTK_ENTRY(p_entry[3]));
+  if (g_utf8_strchr(input[3], -1, '@')) {
+    output[1] = g_strdup(input[3]);
+    strcpy(registroP.correoElectronico, output[1]);
+  } else
+    agregar_err("Correo", &err);
+
+  agregar_err("no valido(s)", &err);
+  g_print("%s\n", err->str);
+  for (i = 0; i < 2; i++)
+    if (output[i])
+      g_free(output[i]);
 }

@@ -53,8 +53,10 @@ char *formatear_nombre(const gchar *input) {
   gboolean flag = TRUE;
   gchar *formateo = g_strdup(input);
 
-  if (tam == 0)
+  if (tam == 0) {
+    g_free(formateo);
     return NULL;
+  }
 
   for (gsize i = 0; i < tam; i++) {
     gunichar2 character = g_utf8_get_char(formateo + i);
@@ -155,5 +157,3 @@ void agregar_err(char *texto, GString **cadena) {
     g_string_append(*cadena, texto);
   }
 }
-
-

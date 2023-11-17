@@ -43,6 +43,7 @@ typedef struct {
 } Pacientes;
 
 typedef struct Proveedor {
+  int   estado;
   char  nombreComercial[100];
   char  nombreFactura[100];
   char  rfc[15];

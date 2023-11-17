@@ -5,5 +5,6 @@
 
 void gen_formprov       (void);
 void agregarProveedor   (char *dirArchivo, Proveedor proveedor);
+void prov_aceptar       (GtkWidget *Wid, gpointer data);
 
 #endif
