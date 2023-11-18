@@ -60,13 +60,6 @@ char *formatear_nombre(const gchar *input) {
 
   for (gsize i = 0; i < tam; i++) {
     gunichar2 character = g_utf8_get_char(formateo + i);
-
-    // Si tiene caracteres de "control" (\t, \n, etc)
-    if (g_unichar_iscntrl(character) || !g_unichar_isalpha(character)) {
-      g_free(formateo);
-      return NULL;
-    }
-
     if (flag) {
       // Volver mayúscula la primera letra de la palabra
       formateo[i] = g_unichar_toupper(character);

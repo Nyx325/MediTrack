@@ -48,8 +48,8 @@ typedef struct Proveedor {
   char  nombreFactura[100];
   char  rfc[15];
   char  domicilio[100];
-  char  numeroOficina[15];
-  char  whatsappEmpresarial[15];
+  char  numeroOficina[11];
+  char  whatsappEmpresarial[11];
   char  correoElectronico[100];
   char  representanteComercial[100];
   ushort permisoNarcoticos;

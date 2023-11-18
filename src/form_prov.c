@@ -2,7 +2,7 @@
 #include "general.h"
 #include <ctype.h>
 
-GtkWidget *p_win, *p_grid, *p_entry[8], *p_lbl[9], *p_combox[2], *p_btn[2],
+GtkWidget *p_win, *p_grid, *p_entry[9], *p_lbl[10], *p_combox[2], *p_btn[2],
     *p_checkbtn;
 GdkPixbuf *p_icon;
 
@@ -91,16 +91,17 @@ void p_init_lbl() {
                      "Correo",
                      "Representante Comercial",
                      "Vigencia",
-                     " "};
+                     " ",
+                     "Domicilio"};
 
-  for (i = 0; i < 9; i++)
+  for (i = 0; i < 10; i++)
     p_lbl[i] = gtk_label_new(titulos[i]);
 }
 
 void p_init_entry() {
   short i;
 
-  for (i = 0; i < 8; i++)
+  for (i = 0; i < 9; i++)
     p_entry[i] = gtk_entry_new();
 
   // Colocar texto "Año" al entry de fecha
@@ -148,39 +149,29 @@ void p_init_btn() {
   }
 }
 
-void on_check_button_toggled(GtkWidget *widget, gpointer data) {
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-    g_print("Checkbox está seleccionado\n");
-  } else {
-    g_print("Checkbox no está seleccionado\n");
-  }
-}
-
 void p_init_checkbtn() {
   p_checkbtn =
       gtk_check_button_new_with_label("Permiso de venta\nde narcóticos");
-  g_signal_connect(p_checkbtn, "toggled", G_CALLBACK(on_check_button_toggled),
-                   NULL);
 }
 
 void p_set_widgets() {
   // Nombre comercial
   gtk_grid_attach(GTK_GRID(p_grid), p_lbl[0], 0, 0, 1, 1);
   gtk_grid_attach(GTK_GRID(p_grid), p_entry[0], 1, 0, 4, 1);
-  gtk_entry_set_max_length(GTK_ENTRY(p_entry[0]), 30);
+  gtk_entry_set_max_length(GTK_ENTRY(p_entry[0]), 100);
   gtk_entry_set_width_chars(GTK_ENTRY(p_entry[0]), 30);
 
   // Nombre Factura
   gtk_grid_attach(GTK_GRID(p_grid), p_lbl[1], 0, 1, 1, 1);
   gtk_grid_attach(GTK_GRID(p_grid), p_entry[1], 1, 1, 4, 1);
-  gtk_entry_set_max_length(GTK_ENTRY(p_entry[1]), 30);
+  gtk_entry_set_max_length(GTK_ENTRY(p_entry[1]), 100);
   gtk_entry_set_width_chars(GTK_ENTRY(p_entry[1]), 30);
 
   // RFC
   gtk_grid_attach(GTK_GRID(p_grid), p_lbl[2], 0, 2, 1, 1);
   gtk_grid_attach(GTK_GRID(p_grid), p_entry[2], 1, 2, 1, 1);
-  gtk_entry_set_max_length(GTK_ENTRY(p_entry[1]), 15);
-  gtk_entry_set_width_chars(GTK_ENTRY(p_entry[1]), 15);
+  gtk_entry_set_max_length(GTK_ENTRY(p_entry[2]), 14);
+  gtk_entry_set_width_chars(GTK_ENTRY(p_entry[2]), 14);
 
   // Número de oficina
   gtk_grid_attach(GTK_GRID(p_grid), p_lbl[3], 2, 3, 1, 1);
@@ -191,14 +182,14 @@ void p_set_widgets() {
   // Whatsapp
   gtk_grid_attach(GTK_GRID(p_grid), p_lbl[4], 0, 3, 1, 1);
   gtk_grid_attach(GTK_GRID(p_grid), p_entry[4], 1, 3, 1, 1);
-  // gtk_entry_set_max_length(GTK_ENTRY(p_entry[3]), 30);
-  // gtk_entry_set_width_chars(GTK_ENTRY(p_entry[3]), 30);
+  gtk_entry_set_max_length(GTK_ENTRY(p_entry[4]), 10);
+  gtk_entry_set_width_chars(GTK_ENTRY(p_entry[4]), 10);
 
   // Correo
   gtk_grid_attach(GTK_GRID(p_grid), p_lbl[5], 2, 2, 1, 1);
   gtk_grid_attach(GTK_GRID(p_grid), p_entry[5], 3, 2, 2, 1);
   // gtk_entry_set_max_length(GTK_ENTRY(p_entry[4]), 30);
-  gtk_entry_set_width_chars(GTK_ENTRY(p_entry[4]), 20);
+  gtk_entry_set_width_chars(GTK_ENTRY(p_entry[5]), 20);
 
   // Representante comercial
   gtk_grid_attach(GTK_GRID(p_grid), p_lbl[6], 0, 4, 1, 1);
@@ -206,19 +197,28 @@ void p_set_widgets() {
   gtk_entry_set_max_length(GTK_ENTRY(p_entry[6]), 30);
   gtk_entry_set_width_chars(GTK_ENTRY(p_entry[6]), 30);
 
+  // Domicilio
+  gtk_grid_attach(GTK_GRID(p_grid), p_lbl[9], 0, 5, 1, 1);
+  gtk_grid_attach(GTK_GRID(p_grid), p_entry[8], 1, 5, 4, 1);
+  gtk_entry_set_max_length(GTK_ENTRY(p_entry[8]), 30);
+  gtk_entry_set_width_chars(GTK_ENTRY(p_entry[8]), 30);
+
   // Permiso venta narcóticos
-  gtk_grid_attach(GTK_GRID(p_grid), p_checkbtn, 0, 5, 1, 1);
+  gtk_grid_attach(GTK_GRID(p_grid), p_checkbtn, 0, 6, 1, 1);
 
   // Vigencia
-  gtk_grid_attach(GTK_GRID(p_grid), p_lbl[7], 1, 5, 1, 1);
-  gtk_grid_attach(GTK_GRID(p_grid), p_entry[7], 2, 5, 1, 1);
-  gtk_grid_attach(GTK_GRID(p_grid), p_combox[0], 3, 5, 1, 1);
-  gtk_grid_attach(GTK_GRID(p_grid), p_combox[1], 4, 5, 1, 1);
+  gtk_grid_attach(GTK_GRID(p_grid), p_lbl[7], 1, 6, 1, 1);
+  gtk_grid_attach(GTK_GRID(p_grid), p_entry[7], 2, 6, 1, 1);
+  gtk_grid_attach(GTK_GRID(p_grid), p_combox[0], 3, 6, 1, 1);
+  gtk_grid_attach(GTK_GRID(p_grid), p_combox[1], 4, 6, 1, 1);
   gtk_entry_set_width_chars(GTK_ENTRY(p_entry[7]), 4);
 
+  // Warning
+  gtk_grid_attach(GTK_GRID(p_grid), p_lbl[8], 0, 7, 5, 1);
+
   // Botones
-  gtk_grid_attach(GTK_GRID(p_grid), p_btn[0], 0, 7, 2, 1);
-  gtk_grid_attach(GTK_GRID(p_grid), p_btn[1], 2, 7, 3, 1);
+  gtk_grid_attach(GTK_GRID(p_grid), p_btn[0], 0, 8, 2, 1);
+  gtk_grid_attach(GTK_GRID(p_grid), p_btn[1], 2, 8, 3, 1);
 }
 
 void gen_formprov() {
@@ -293,30 +293,36 @@ char *formatear_rfc(const gchar *input) {
 
 void prov_aceptar(GtkWidget *Wid, gpointer data) {
   short i;
-  char *output[2];
+  char *output[8];
   Proveedor registroP;
-  const gchar *input[8];
+  const gchar *input[9];
   GString *err = g_string_new("");
 
   registroP.estado = 0;
+  registroP.vigencia.dia = 0;
+  registroP.vigencia.mes = 0;
+  registroP.vigencia.anio = 0;
 
   // Nombre comercial
   input[0] = gtk_entry_get_text(GTK_ENTRY(p_entry[0]));
+  output[6] = g_strdup(input[0]);
   if (g_utf8_strlen(input[0], -1) > 0)
-    strcpy(registroP.nombreComercial, input[0]);
+    strcpy(registroP.nombreComercial, output[6]);
   else
     agregar_err("Nombre comercial", &err);
 
   // Nombre factura
   input[1] = gtk_entry_get_text(GTK_ENTRY(p_entry[1]));
+  output[7] = g_strdup(input[0]);
   if (g_utf8_strlen(input[1], -1) > 0)
-    strcpy(registroP.nombreFactura, input[1]);
+    strcpy(registroP.nombreComercial, output[7]);
   else
     agregar_err("Nombre de factura", &err);
 
   // RFC
   input[2] = gtk_entry_get_text(GTK_ENTRY(p_entry[2]));
   output[0] = formatear_rfc(input[2]);
+  g_print("%s", output[0]);
   if (output[0])
     strcpy(registroP.rfc, input[2]);
   else
@@ -324,21 +330,88 @@ void prov_aceptar(GtkWidget *Wid, gpointer data) {
 
   // Correo
   input[3] = gtk_entry_get_text(GTK_ENTRY(p_entry[5]));
-  g_print("%s\n", input[3]);
   output[1] = g_strdup(input[3]);
-  if (strstr(output[1], "@") && strlen(output[1]) > 6) {
+  if (strstr(output[1], "@") && strlen(output[1]) > 4) {
     strcpy(registroP.correoElectronico, output[1]);
   } else
     agregar_err("Correo", &err);
 
+  // Validar whatsapp y num de oficina
+  char *titulosErr[2] = {"Num de oficina", "Whatsapp"};
+  for (i = 4; i < 6; i++) {
+    input[i] = gtk_entry_get_text(GTK_ENTRY(p_entry[i - 1]));
+    output[i - 2] = g_strdup(input[i]);
+    if (is_full_nums(input[i], 10, 10) || strlen(output[i - 2]) == 0) {
+      if (i == 4)
+        strcpy(registroP.numeroOficina, output[i - 2]);
+      else
+        strcpy(registroP.whatsappEmpresarial, output[i - 2]);
+    } else
+      agregar_err(titulosErr[i - 4], &err);
+  }
 
-  // Whatsapp
-  input[4] = gtk_entry_get_text(GTK_ENTRY())
+  // Representante Comercial
+  input[6] = gtk_entry_get_text(GTK_ENTRY(p_entry[6]));
+  output[4] = formatear_nombre(input[6]);
+  if (output[4] || g_utf8_strlen(input[6], -1) == 0)
+    if (output[4] == NULL)
+      registroP.representanteComercial[0] = '\0';
+    else
+      strcpy(registroP.representanteComercial, output[4]);
+  else
+    agregar_err("Representante comercial", &err);
 
-  agregar_err("no valido(s)", &err);
-  g_print("%s\n", err->str);
-  
-  for (i = 0; i < 2; i++)
+  // Domicilio
+  input[7] = gtk_entry_get_text(GTK_ENTRY(p_entry[8]));
+  output[5] = g_strdup(input[7]);
+  if (g_utf8_strlen(input[7], -1) != 0)
+    strcpy(registroP.domicilio, output[5]);
+  else
+    agregar_err("Domicilio", &err);
+
+  // Permiso de venta de narcóticos
+  registroP.permisoNarcoticos =
+      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(p_checkbtn));
+
+  if (registroP.permisoNarcoticos == 1) {
+    // Año
+    input[7] = gtk_entry_get_text(GTK_ENTRY(p_entry[7]));
+    if (is_full_nums(input[7], -1, 1) == FALSE)
+      agregar_err("Año de vigencia", &err);
+    else
+      registroP.vigencia.anio = atoi(input[7]);
+
+    // Mes
+    registroP.vigencia.mes =
+        gtk_combo_box_get_active(GTK_COMBO_BOX(p_combox[0]));
+    if (registroP.vigencia.mes == 0)
+      agregar_err("Mes de vigencia", &err);
+
+    // Obtener dia
+    registroP.vigencia.dia =
+        gtk_combo_box_get_active(GTK_COMBO_BOX(p_combox[1]));
+    if (registroP.vigencia.dia == 0)
+      agregar_err("Dia de vigencia", &err);
+  }
+
+  if (err->len != 0)
+    agregar_err("no valido(s)", &err);
+
+  g_print("Tel: %s\nWsp: %s\n", registroP.numeroOficina,
+          registroP.whatsappEmpresarial);
+  g_print("Tel: %d\nWsp: %d", strlen(registroP.numeroOficina),
+          strlen(registroP.whatsappEmpresarial));
+
+  if (strlen(registroP.numeroOficina) == 0 &&
+      strlen(registroP.whatsappEmpresarial) == 0) {
+      g_print("a");
+    agregar_err("\nSe necesita al menos un número de contacto", &err);
+    gtk_label_set_text(GTK_LABEL(p_lbl[8]), err->str);
+  } else if (err->len == 0) {
+    agregarProveedor("../data/proveedores.dat", registroP);
+  }
+
+  for (i = 0; i < 6; i++)
     if (output[i])
       g_free(output[i]);
 }
