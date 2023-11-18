@@ -81,10 +81,8 @@ void check_login(GtkWidget *btn, gpointer data) {
 
   if (strcmp(usr_input, usr_read) == 0 &&
       strcmp(passwd_input, passwd_read) == 0) {
-    free_login();
-    g_print("a");
     gen_menu();
-    g_print("a");
+    free_login();
   } else {
     gtk_label_set_markup(
         GTK_LABEL(log_warning),

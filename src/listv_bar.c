@@ -13,9 +13,9 @@ void volver_a_menu(GtkWidget *widget, gpointer data) {
 
 void gen_bar() {
   short i;
-  char *imgPaths[] = {"../images/add2.png", "../images/modify2.png",
-                      "../images/delete2.png", "../images/search2.png",
-                      "../images/back2.png"};
+  char *imgPaths[] = {"../images/add.png", "../images/edit.png",
+                      "../images/delete.png", "../images/search.png",
+                      "../images/back.png"};
 
   char *titulos[] = {"Agregar", "Modificar", "Eliminar"};
 

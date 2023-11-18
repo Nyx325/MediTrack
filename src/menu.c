@@ -50,9 +50,9 @@ void free_menu() {
 
 void gen_menu() {
   ushort i;
-  char *img_btn_path[] = {"../images/medicinas_menu2.jpeg",
-                          "../images/pacientes_menu2.png",
-                          "../images/proveedores_menu2.jpg"};
+  char *img_btn_path[] = {"../images/medicinas_menu.jpg",
+                          "../images/pacientes_menu.png",
+                          "../images/proveedores_menu.jpg"};
   char *btn_titles[] = {"Medicamentos", "Pacientes", "Proveedores"};
   // Array de punteros a funciones para los callbacks de la creacion
   // de botones
@@ -74,7 +74,7 @@ void gen_menu() {
   m_icon = gdk_pixbuf_new_from_file("../images/icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(m_win), m_icon);
 
-  m_banner = gtk_image_new_from_file("../images/MT2(2).png");
+  m_banner = gtk_image_new_from_file("../images/banner_login.png");
 
   for (i = 0; i < 3; i++) {
     m_lbl[i] = gtk_label_new(btn_titles[i]);
@@ -86,16 +86,16 @@ void gen_menu() {
                      NULL);
   }
 
-  gtk_grid_attach(GTK_GRID(m_grid), m_banner, 0, 0, 5, 1);
+  gtk_grid_attach(GTK_GRID(m_grid), m_banner, 0, 0, 6, 1);
   // Opc medicamentos
-  gtk_grid_attach(GTK_GRID(m_grid), m_btn[0], 2, 1, 1, 1);
-  gtk_grid_attach(GTK_GRID(m_grid), m_lbl[0], 0, 2, 5, 1);
+  gtk_grid_attach(GTK_GRID(m_grid), m_btn[0], 0, 1, 1, 2);
+  gtk_grid_attach(GTK_GRID(m_grid), m_lbl[0], 0, 3, 2, 1);
   // Opc pacientes
-  gtk_grid_attach(GTK_GRID(m_grid), m_btn[1], 2, 3, 1, 1);
-  gtk_grid_attach(GTK_GRID(m_grid), m_lbl[1], 0, 4, 5, 1);
+  gtk_grid_attach(GTK_GRID(m_grid), m_btn[1], 5, 1, 1, 2);
+  gtk_grid_attach(GTK_GRID(m_grid), m_lbl[1], 5, 3, 2, 1);
   // Opc proveedores
-  gtk_grid_attach(GTK_GRID(m_grid), m_btn[2], 2, 5, 1, 1);
-  gtk_grid_attach(GTK_GRID(m_grid), m_lbl[2], 0, 6, 5, 1);
+  gtk_grid_attach(GTK_GRID(m_grid), m_btn[2], 2, 1, 1, 2);
+  gtk_grid_attach(GTK_GRID(m_grid), m_lbl[2], 2, 3, 2, 1);
 
   gtk_container_add(GTK_CONTAINER(m_win), m_grid);
   gtk_widget_show_all(m_win);
