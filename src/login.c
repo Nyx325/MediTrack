@@ -1,4 +1,5 @@
 #include "login.h"
+#include "menu.h"
 #include "widl.h"
 
 GtkWidget *log_win, *log_grid, *log_entry[2], *log_btn, *log_img, *log_warning;
@@ -81,11 +82,16 @@ void check_login(GtkWidget *btn, gpointer data) {
   if (strcmp(usr_input, usr_read) == 0 &&
       strcmp(passwd_input, passwd_read) == 0) {
     free_login();
+    g_print("a");
+    gen_menu();
+    g_print("a");
   } else {
     gtk_label_set_markup(
         GTK_LABEL(log_warning),
         "<span foreground='red'>Usuario o contraseña incorrectos</span>");
   }
+
+  g_print("a");
 }
 
 void gen_login() {

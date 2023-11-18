@@ -421,7 +421,7 @@ int addPaciente(char nomPac[], Pacientes paciente) {
   return 1;
 }
 
-void mostrarPaci(char nomPac[]) {
+void mostrarPaci(char archivoDir[]) {
   char fechaFormato[2][12];
   GtkTreeIter iter; // estructura para identificar fila en modelo
 
@@ -433,7 +433,7 @@ void mostrarPaci(char nomPac[]) {
   FILE *apPaci;
   Pacientes paciente;
 
-  apPaci = fopen(nomPac, "a+b");
+  apPaci = fopen(archivoDir, "a+b");
   if (apPaci == NULL) {
     g_print("Archivo danaño\n");
     return;
@@ -445,7 +445,7 @@ void mostrarPaci(char nomPac[]) {
 
   while (fread(&paciente, sizeof(Pacientes), 1, apPaci)) {
     if (paciente.estado) {
-      // Formatear la fecha almacenada en una cadena para mostrarla en la tabla
+      // Crear cadenas para fechas
       sprintf(fechaFormato[0], "%02d/%02d/%04d", paciente.fechas.dia,
               paciente.fechas.mes, paciente.fechas.anio);
       sprintf(fechaFormato[1], "%02d/%02d/%04d", paciente.fechasC.dia,

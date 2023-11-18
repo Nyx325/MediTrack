@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 #include "general.h"
+#include "menu.h"
 
 void gen_login      (void);
 void check_login    (GtkWidget *btn, gpointer data);

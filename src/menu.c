@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "form_pac.h"
+#include "form_prov.h"
 #include "listv.h"
 #include "listv_bar.h"
 
@@ -55,7 +56,7 @@ void gen_menu() {
   char *btn_titles[] = {"Medicamentos", "Pacientes", "Proveedores"};
   // Array de punteros a funciones para los callbacks de la creacion
   // de botones
-  void (*callbacks[3])(GtkWidget *, gpointer) = {medicamento, pacientes, NULL};
+  void (*callbacks[3])(GtkWidget *, gpointer) = {medicamento, pacientes, proveedores};
 
   m_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_default_size(GTK_WINDOW(m_win), 1280, 720);
@@ -109,9 +110,17 @@ void pacientes(GtkWidget *widget, gpointer data) {
 }
 
 void medicamento(GtkWidget *widget, gpointer data) {
-  init_listv("Gestión de Pacientes");
+  init_listv("Gestión de Medicamentos");
   mostrarMed("../data/medicamentos.dat");
   g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formed),
+                   NULL);
+  gtk_widget_hide(m_win);
+}
+
+void proveedores(GtkWidget *widget, gpointer data) {
+  init_listv("Gestión de Proveedores");
+  mostrarProv("../data/proveedores.dat");
+  g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formprov),
                    NULL);
   gtk_widget_hide(m_win);
 }

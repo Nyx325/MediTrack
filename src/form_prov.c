@@ -1,6 +1,7 @@
 #include "form_prov.h"
 #include "general.h"
-#include <ctype.h>
+#include "listv.h"
+#include <stdio.h>
 
 GtkWidget *p_win, *p_grid, *p_entry[9], *p_lbl[10], *p_combox[2], *p_btn[2],
     *p_checkbtn;
@@ -16,13 +17,13 @@ void free_formprov() {
     g_object_unref(p_icon);
     p_icon = NULL;
   }
-  for (i = 0; i < 8; i++) {
+  for (i = 0; i < 9; i++) {
     if (p_entry[i]) {
       gtk_widget_destroy(p_entry[i]);
       p_entry[i] = NULL;
     }
   }
-  for (i = 0; i < 9; i++) {
+  for (i = 0; i < 10; i++) {
     if (p_lbl[i]) {
       gtk_widget_destroy(p_lbl[i]);
       p_lbl[i] = NULL;
@@ -170,8 +171,8 @@ void p_set_widgets() {
   // RFC
   gtk_grid_attach(GTK_GRID(p_grid), p_lbl[2], 0, 2, 1, 1);
   gtk_grid_attach(GTK_GRID(p_grid), p_entry[2], 1, 2, 1, 1);
-  gtk_entry_set_max_length(GTK_ENTRY(p_entry[2]), 14);
-  gtk_entry_set_width_chars(GTK_ENTRY(p_entry[2]), 14);
+  gtk_entry_set_max_length(GTK_ENTRY(p_entry[2]), 13);
+  gtk_entry_set_width_chars(GTK_ENTRY(p_entry[2]), 13);
 
   // Número de oficina
   gtk_grid_attach(GTK_GRID(p_grid), p_lbl[3], 2, 3, 1, 1);
@@ -242,7 +243,7 @@ void agregarProveedor(char *dirArchivo, Proveedor proveedor) {
     g_print("Archivo dañado");
     return;
   }
-  fwrite(&proveedor, sizeof(struct Proveedor), 1, apArch);
+  fwrite(&proveedor, sizeof(Proveedor), 1, apArch);
   fclose(apArch);
 }
 
@@ -251,41 +252,62 @@ char *formatear_rfc(const gchar *input) {
   unsigned int i, max_letras;
   const gchar tam = g_utf8_strlen(input, -1);
 
-  if (tam != 12 || tam != 13) {
+  if (tam != 12 && tam != 13) {
     g_free(formateo);
     return NULL;
   }
 
-  switch (tam) {
-  case 12:
-    max_letras = 3;
-    break;
-  case 13:
-    max_letras = 4;
-  default:
-    g_free(formateo);
-    return NULL;
-  }
+  // Si persona física
+  if (tam == 13) {
+    // Verificar caracteres de nombre
+    for (i = 0; i < 4; i++) {
+      if (!isalpha(formateo[i])) {
+        g_free(formateo);
+        return NULL;
+      }
 
-  for (i = 0; i < max_letras; i++) {
-    if (!isalpha(formateo[i])) {
-      g_free(formateo);
-      return NULL;
-    }
-
-    formateo[i] = toupper(formateo[i]);
-  }
-
-  for (; i < max_letras + 4; i++) {
-    if (!isdigit(formateo[i])) {
-      g_free(formateo);
-      return NULL;
-    }
-  }
-
-  for (; i < max_letras + 7; i++) {
-    if (isalpha(formateo[i]))
       formateo[i] = toupper(formateo[i]);
+    }
+
+    // Verificar caracteres de nombre
+    for (i = 4; i < 8; i++) {
+      if (!isdigit(formateo[i])) {
+        g_free(formateo);
+        return NULL;
+      }
+    }
+
+    // Validar homoclave
+    for (i = 8; i < 13; i++) {
+      if (isalpha(formateo[i]))
+        formateo[i] = toupper(formateo[i]);
+    }
+  }
+  // Si persona moral
+  else {
+    // Validar denominación
+    for (i = 0; i < 3; i++) {
+      if (!isalpha(formateo[i])) {
+        g_free(formateo);
+        return NULL;
+      }
+
+      formateo[i] = toupper(formateo[i]);
+    }
+
+    // Validar fecha de creación
+    for (i = 3; i < 9; i++) {
+      if (!isdigit(formateo[i])) {
+        g_free(formateo);
+        return NULL;
+      }
+    }
+
+    // Validar homoclave
+    for (i = 9; i < 12; i++) {
+      if (isalpha(formateo[i]))
+        formateo[i] = toupper(formateo[i]);
+    }
   }
 
   return formateo;
@@ -315,14 +337,15 @@ void prov_aceptar(GtkWidget *Wid, gpointer data) {
   input[1] = gtk_entry_get_text(GTK_ENTRY(p_entry[1]));
   output[7] = g_strdup(input[0]);
   if (g_utf8_strlen(input[1], -1) > 0)
-    strcpy(registroP.nombreComercial, output[7]);
+    strcpy(registroP.nombreFactura, output[7]);
   else
     agregar_err("Nombre de factura", &err);
 
   // RFC
   input[2] = gtk_entry_get_text(GTK_ENTRY(p_entry[2]));
   output[0] = formatear_rfc(input[2]);
-  g_print("%s", output[0]);
+  g_print("%s\n", input[2]);
+  g_print("%s\n", output[0]);
   if (output[0])
     strcpy(registroP.rfc, input[2]);
   else
@@ -397,21 +420,72 @@ void prov_aceptar(GtkWidget *Wid, gpointer data) {
   if (err->len != 0)
     agregar_err("no valido(s)", &err);
 
-  g_print("Tel: %s\nWsp: %s\n", registroP.numeroOficina,
-          registroP.whatsappEmpresarial);
-  g_print("Tel: %d\nWsp: %d", strlen(registroP.numeroOficina),
-          strlen(registroP.whatsappEmpresarial));
-
   if (strlen(registroP.numeroOficina) == 0 &&
       strlen(registroP.whatsappEmpresarial) == 0) {
-      g_print("a");
     agregar_err("\nSe necesita al menos un número de contacto", &err);
-    gtk_label_set_text(GTK_LABEL(p_lbl[8]), err->str);
   } else if (err->len == 0) {
+    registroP.estado = 1;
     agregarProveedor("../data/proveedores.dat", registroP);
+    free_formprov();
+    gtk_list_store_clear(lv_lstore);
+    mostrarProv("../data/proveedores.dat");
   }
+  gtk_label_set_text(GTK_LABEL(p_lbl[8]), err->str);
 
   for (i = 0; i < 6; i++)
     if (output[i])
       g_free(output[i]);
+}
+
+void mostrarProv(char *archivoDir) {
+  unsigned long pos;
+  char fechaFormato[13];
+  GtkTreeIter iter; // Fila del modelo
+
+  // Apuntador definido en listv.c para modelo de tabla
+  lv_lstore = gtk_list_store_new(11, G_TYPE_STRING, G_TYPE_STRING,
+                                 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+                                 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+                                 G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_ULONG);
+
+  FILE *apProv;
+  Proveedor prov;
+  ushort a;
+
+  apProv = fopen(archivoDir, "a+b");
+  if (apProv == NULL) {
+    g_print("Archivo dañado\n");
+    return;
+  }
+
+  while (fread(&prov, sizeof(Proveedor), 1, apProv)) {
+    if (prov.estado == 1) {
+      // Crear cadena para fecha
+      sprintf(fechaFormato, "%02d/%02d/%04d", prov.vigencia.dia,
+              prov.vigencia.mes, prov.vigencia.anio);
+
+      // Obtener posición en archivo
+      pos = (unsigned long)ftell(apProv) - sizeof(Proveedor);
+
+      gtk_list_store_append(lv_lstore, &iter); // Fila nueva
+      gtk_list_store_set(lv_lstore, &iter, 0, prov.rfc, 1, prov.nombreComercial,
+                         2, prov.nombreFactura, 3, prov.correoElectronico, 4,
+                         prov.numeroOficina, 5, prov.whatsappEmpresarial, 6,
+                         prov.domicilio, 7, prov.representanteComercial, 8,
+                         prov.permisoNarcoticos, 9, fechaFormato, 10, pos, -1);
+    }
+  }
+  fclose(apProv);
+  char *titulos[] = {"RFC",
+                     "Nombre Comercial",
+                     "Nombre Factura",
+                     "Correo",
+                     "Num. Oficina",
+                     "Num. Whatsapp",
+                     "Domicilio",
+                     "Representante Comercial",
+                     "Venta de narcóticos",
+                     "Vigencia Permiso"};
+
+  lv_importmodel(10, titulos);
 }
