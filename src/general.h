@@ -9,6 +9,7 @@
 
 typedef unsigned char Opc;
 typedef unsigned short ushort;
+typedef void (*CallbackFunc)(GtkWidget *, gpointer);
 
 typedef struct {
   int   dia;
