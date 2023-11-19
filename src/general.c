@@ -201,6 +201,21 @@ void free_entradacombox(EntradaCombox *entrada) {
   entrada->combox = NULL;
 }
 
+void free_baseform(BaseForm *basesVentana) {
+  if (basesVentana == NULL)
+    return;
+
+  if (!basesVentana->icon)
+    g_object_unref(basesVentana->icon);
+  if (!basesVentana->grid)
+    gtk_widget_destroy(basesVentana->grid);
+  if (!basesVentana->win)
+    gtk_widget_destroy(basesVentana->win);
+
+  basesVentana->icon = NULL;
+  basesVentana->grid = NULL;
+  basesVentana->win = NULL;
+}
 
 void crear_entradatexto(EntradaTexto *info, char *titulo, int tamEntry,
                         int maxChars) {
@@ -249,10 +264,38 @@ void crear_entradacombox(EntradaCombox *entrada, char *titulo,
                                    datos[i]);
 }
 
-void crear_boton(GtkWidget **btn, char *titulo) {
+void crear_boton(GtkWidget **btn, char *titulo, CallbackFunc callback) {
   *btn = gtk_button_new_with_label(titulo);
   GtkStyleContext *context;
   gtk_widget_set_name(*btn, "button");
   context = gtk_widget_get_style_context(*btn);
   gtk_style_context_add_class(context, "suggested-action");
+  g_signal_connect(G_OBJECT(*btn), "clicked", G_CALLBACK(callback), NULL);
+}
+
+void crear_ventana(BaseForm *baseDelFormulario, int xRes, int yRes,
+                   CallbackFunc callback) {
+
+  baseDelFormulario->win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
+  gtk_window_set_default_size(GTK_WINDOW(baseDelFormulario->win), xRes, yRes);
+  gtk_window_set_position(GTK_WINDOW(baseDelFormulario->win),
+                          GTK_WIN_POS_CENTER);
+  gtk_container_set_border_width(GTK_CONTAINER(baseDelFormulario->win), 20);
+  g_signal_connect(G_OBJECT(baseDelFormulario->win), "destroy",
+                   G_CALLBACK(callback), NULL);
+
+  baseDelFormulario->grid = gtk_grid_new();
+
+  gtk_grid_set_row_spacing(GTK_GRID(baseDelFormulario->grid), 20);
+  gtk_grid_set_column_spacing(GTK_GRID(baseDelFormulario->grid), 10);
+  gtk_container_add(GTK_CONTAINER(baseDelFormulario->win),
+                    baseDelFormulario->grid);
+  gtk_widget_set_halign(baseDelFormulario->grid, GTK_ALIGN_CENTER);
+  gtk_widget_set_valign(baseDelFormulario->grid, GTK_ALIGN_CENTER);
+
+  baseDelFormulario->icon =
+      gdk_pixbuf_new_from_file("../images/icon.png", NULL);
+  gtk_window_set_icon(GTK_WINDOW(baseDelFormulario->win),
+                      baseDelFormulario->icon);
 }

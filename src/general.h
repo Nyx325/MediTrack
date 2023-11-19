@@ -56,6 +56,7 @@ typedef struct Proveedor {
   Fecha     vigencia;
 }Proveedor;
 
+typedef void (*CallbackFunc)(GtkWidget *, gpointer);
 
 void        cambio_mes          (GtkComboBox *widget, gpointer data);
 char        dias_x_mes          (const gint mes);
@@ -87,12 +88,22 @@ typedef struct {
   GtkWidget *lbl;
 } EntradaCombox;
 
+typedef struct{
+  GtkWidget *win;
+  GtkWidget *grid;
+  GdkPixbuf *icon;
+}BaseForm;
+
+typedef void (*CallbackFunc)(GtkWidget *, gpointer);
+
 void        free_entradatexto   (EntradaTexto *entrada);
 void        free_entradafecha   (EntradaFecha *fecha);
 void        free_entradacombox  (EntradaCombox *entrada);
+void        free_baseform       (BaseForm *basesVentana);
 void        crear_entradatexto  (EntradaTexto *info, char *titulo, int tamEntry, int maxChars);
 void        crear_entradafecha  (EntradaFecha *fecha, char *titulo);
 void        crear_entradacombox (EntradaCombox *entrada, char *titulo, const gchar *datos[], int length);
-void        crear_boton         (GtkWidget **btn, char *titulo);
+void        crear_boton         (GtkWidget **btn, char *titulo, CallbackFunc callback);
+void        crear_ventana       (BaseForm *baseDelFormulario, int xRes, int yRes, CallbackFunc callback);
 
 #endif
