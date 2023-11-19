@@ -1,5 +1,4 @@
 #include "general.h"
-
 typedef struct {
   GtkWidget *win;
   GtkWidget *box;
@@ -35,7 +34,7 @@ void free_baselistv(BaseListv *ventana) {
   ventana->scrollWin = NULL;
 }
 
-void free_listview() {
+void free_listview(GtkWidget *widget, gpointer data) {
   gtk_widget_hide(tabla.baseVentana.win);
 
   if (!tabla.tView)
@@ -105,4 +104,6 @@ void crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes,
   gtk_window_set_icon(GTK_WINDOW(baseListv->win), baseListv->icon);
 }
 
-void listv_gen_table() {}
+void listv_gen_table() {
+    crear_ventana_listv(&tabla.baseVentana, 1280, 720, free_listview);
+}

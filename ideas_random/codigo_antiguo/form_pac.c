@@ -3,7 +3,6 @@
 #include "listv.h"
 #include <stdio.h>
 
-gboolean fp_opc; // indicar si está en modo modificar o agregar(?)
 GtkWidget *fp_win, *fp_grid, *fp_combox[6], *fp_entry[5], *fp_btn[2],
     *fp_lbl[8];
 GdkPixbuf *fp_icon;
