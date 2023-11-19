@@ -43,20 +43,19 @@ typedef struct {
 } Pacientes;
 
 typedef struct Proveedor {
-  int   estado;
-  char  nombreComercial[100];
-  char  nombreFactura[100];
-  char  rfc[15];
-  char  domicilio[100];
-  char  numeroOficina[11];
-  char  whatsappEmpresarial[11];
-  char  correoElectronico[100];
-  char  representanteComercial[100];
-  ushort permisoNarcoticos;
-  Fecha vigencia;
+  int       estado;
+  char      nombreComercial[100];
+  char      nombreFactura[100];
+  char      rfc[15];
+  char      domicilio[100];
+  char      numeroOficina[11];
+  char      whatsappEmpresarial[11];
+  char      correoElectronico[100];
+  char      representanteComercial[100];
+  ushort    permisoNarcoticos;
+  Fecha     vigencia;
 }Proveedor;
 
-extern ushort max_largo;
 
 void        cambio_mes          (GtkComboBox *widget, gpointer data);
 char        dias_x_mes          (const gint mes);
@@ -69,5 +68,31 @@ gboolean    reset_warning       (GtkWidget *widget, GdkEventButton *event, gpoin
 void        import_model        (GtkWidget *tview, GtkListStore *model, ushort numCols, char *titulos[]);
 void        agregar_err         (char *texto, GString **cadena);
 void        mostrarMed          (char nomMed[]);
+
+
+typedef struct {
+  GtkWidget *lbl;
+  GtkWidget *entry;
+} EntradaTexto;
+
+typedef struct {
+  GtkWidget *anioEntry;
+  GtkWidget *mesCombox;
+  GtkWidget *diaCombox;
+  GtkWidget *titulo;
+} EntradaFecha;
+
+typedef struct {
+  GtkWidget *combox;
+  GtkWidget *lbl;
+} EntradaCombox;
+
+void        free_entradatexto   (EntradaTexto *entrada);
+void        free_entradafecha   (EntradaFecha *fecha);
+void        free_entradacombox  (EntradaCombox *entrada);
+void        crear_entradatexto  (EntradaTexto *info, char *titulo, int tamEntry, int maxChars);
+void        crear_entradafecha  (EntradaFecha *fecha, char *titulo);
+void        crear_entradacombox (EntradaCombox *entrada, char *titulo, const gchar *datos[], int length);
+void        crear_boton         (GtkWidget **btn, char *titulo);
 
 #endif

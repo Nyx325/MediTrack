@@ -1,6 +1,6 @@
 #include "menu.h"
 #include "form_pac.h"
-#include "form_prov.h"
+// #include "form_prov.h"
 #include "listv.h"
 #include "listv_bar.h"
 
@@ -103,24 +103,22 @@ void gen_menu() {
 
 void pacientes(GtkWidget *widget, gpointer data) {
   init_listv("Gestión de Pacientes");
-  mostrarPaci("../data/pacientes.dat");
-  g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formpac),
+  //mostrarPaci("../data/pacientes.dat");
+  g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(pac_crear_form),
                    NULL);
   gtk_widget_hide(m_win);
 }
 
 void medicamento(GtkWidget *widget, gpointer data) {
   init_listv("Gestión de Medicamentos");
-  mostrarMed("../data/medicamentos.dat");
-  g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formed),
-                   NULL);
+  // mostrarMed("../data/medicamentos.dat");
+  //g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formed), NULL);
   gtk_widget_hide(m_win);
 }
 
 void proveedores(GtkWidget *widget, gpointer data) {
   init_listv("Gestión de Proveedores");
-  mostrarProv("../data/proveedores.dat");
-  g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formprov),
-                   NULL);
+  //mostrarProv("../data/proveedores.dat");
+  //g_signal_connect(G_OBJECT(bar_btn[0]), "clicked", G_CALLBACK(gen_formprov), NULL);
   gtk_widget_hide(m_win);
 }

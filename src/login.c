@@ -1,6 +1,5 @@
 #include "login.h"
 #include "menu.h"
-#include "widl.h"
 
 GtkWidget *log_win, *log_grid, *log_entry[2], *log_btn, *log_img, *log_warning;
 GdkPixbuf *log_icon;

@@ -1,4 +1,5 @@
 #include "main.h"
+#include "form_pac.h"
 #include "form_med.h"
 
 int main() {
@@ -9,12 +10,9 @@ int main() {
   gtk_init(NULL, NULL);
 
   // gen_login();
-  // gen_formpac();
-  // gen_formed();
-  // gen_formprov();
-  // gen_formcons();
-  // prueba();
-  gen_menu();
+  // gen_menu();
+  //pac_crear_form();
+  med_crear_form();
 
   gtk_main();
   return 0;

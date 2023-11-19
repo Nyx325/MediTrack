@@ -150,3 +150,109 @@ void agregar_err(char *texto, GString **cadena) {
     g_string_append(*cadena, texto);
   }
 }
+
+void free_entradatexto(EntradaTexto *entrada) {
+  if (entrada == NULL)
+    return;
+
+  if (entrada->lbl != NULL)
+    gtk_widget_destroy(entrada->lbl);
+
+  if (entrada->entry != NULL)
+    gtk_widget_destroy(entrada->entry);
+
+  entrada->lbl = NULL;
+  entrada->entry = NULL;
+}
+
+void free_entradafecha(EntradaFecha *fecha) {
+  if (fecha == NULL)
+    return;
+
+  if (fecha->anioEntry != NULL)
+    gtk_widget_destroy(fecha->anioEntry);
+
+  if (fecha->mesCombox != NULL)
+    gtk_widget_destroy(fecha->mesCombox);
+
+  if (fecha->diaCombox != NULL)
+    gtk_widget_destroy(fecha->diaCombox);
+
+  if (fecha->titulo != NULL)
+    gtk_widget_destroy(fecha->titulo);
+
+  fecha->anioEntry = NULL;
+  fecha->mesCombox = NULL;
+  fecha->diaCombox = NULL;
+  fecha->titulo = NULL;
+}
+
+void free_entradacombox(EntradaCombox *entrada) {
+  if (entrada == NULL)
+    return;
+
+  if (entrada->lbl != NULL)
+    gtk_widget_destroy(entrada->lbl);
+
+  if (entrada->combox != NULL)
+    gtk_widget_destroy(entrada->combox);
+
+  entrada->lbl = NULL;
+  entrada->combox = NULL;
+}
+
+
+void crear_entradatexto(EntradaTexto *info, char *titulo, int tamEntry,
+                        int maxChars) {
+  info->lbl = gtk_label_new(titulo);
+  info->entry = gtk_entry_new();
+  gtk_entry_set_width_chars(GTK_ENTRY(info->entry), tamEntry);
+  gtk_entry_set_max_length(GTK_ENTRY(info->entry), maxChars);
+}
+
+void crear_entradafecha(EntradaFecha *fecha, char *titulo) {
+  char j;
+  fecha->titulo = gtk_label_new(titulo);
+
+  fecha->anioEntry = gtk_entry_new();
+  gtk_entry_set_width_chars(GTK_ENTRY(fecha->anioEntry), 4);
+  gtk_entry_set_max_length(GTK_ENTRY(fecha->anioEntry), 4);
+  gtk_entry_set_placeholder_text(GTK_ENTRY(fecha->anioEntry), "Año");
+
+  fecha->mesCombox = gtk_combo_box_text_new();
+  fecha->diaCombox = gtk_combo_box_text_new();
+
+  // Hacer que el valor del día dependa del mes elegido
+  g_signal_connect(fecha->mesCombox, "changed", G_CALLBACK(cambio_mes),
+                   fecha->diaCombox);
+
+  // Agregar la opción "Mes" como valor predeterminado
+  gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(fecha->mesCombox), "Mes");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(fecha->mesCombox), 0);
+
+  // Llenar el ComboBox con números del 1 al 12
+  for (j = 1; j <= 12; j++) {
+    char buffer[3];
+    snprintf(buffer, sizeof(buffer), "%d", j);
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(fecha->mesCombox),
+                                   buffer);
+  }
+}
+
+void crear_entradacombox(EntradaCombox *entrada, char *titulo,
+                         const gchar *datos[], int length) {
+  entrada->lbl = gtk_label_new(titulo);
+  entrada->combox = gtk_combo_box_text_new();
+
+  for (int i = 0; i < length; i++)
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(entrada->combox),
+                                   datos[i]);
+}
+
+void crear_boton(GtkWidget **btn, char *titulo) {
+  *btn = gtk_button_new_with_label(titulo);
+  GtkStyleContext *context;
+  gtk_widget_set_name(*btn, "button");
+  context = gtk_widget_get_style_context(*btn);
+  gtk_style_context_add_class(context, "suggested-action");
+}
