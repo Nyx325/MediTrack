@@ -135,3 +135,57 @@ void prov_crear_form() {
 
   gtk_widget_show_all(prForm.baseVentana.win);
 }
+
+void mostrar_proveedores(char *archivoDir) {
+  long pos;
+  char fechaFormato[13];
+  GtkTreeIter iter; // Fila del modelo
+
+  // Apuntador definido en listv.c para modelo de tabla
+  tabla.listStore = gtk_list_store_new(
+      11, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+      G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_ULONG);
+
+  FILE *apProv;
+  Proveedor prov;
+  ushort a;
+
+  apProv = fopen(archivoDir, "a+b");
+  if (apProv == NULL) {
+    g_print("Archivo dañado\n");
+    return;
+  }
+
+  while (fread(&prov, sizeof(Proveedor), 1, apProv)) {
+    if (prov.estado == 1) {
+      // Crear cadena para fecha
+      sprintf(fechaFormato, "%02d/%02d/%04d", prov.vigencia.dia,
+              prov.vigencia.mes, prov.vigencia.anio);
+
+      // Obtener posición en archivo
+      pos = (unsigned long)ftell(apProv) - sizeof(Proveedor);
+
+      gtk_list_store_append(tabla.listStore, &iter); // Fila nueva
+      gtk_list_store_set(tabla.listStore, &iter, 0, prov.rfc, 1,
+                         prov.nombreComercial, 2, prov.nombreFactura, 3,
+                         prov.correoElectronico, 4, prov.numeroOficina, 5,
+                         prov.whatsappEmpresarial, 6, prov.domicilio, 7,
+                         prov.representanteComercial, 8, prov.permisoNarcoticos,
+                         9, fechaFormato, 10, pos, -1);
+    }
+  }
+  fclose(apProv);
+  char *titulos[] = {"RFC",
+                     "Nombre Comercial",
+                     "Nombre Factura",
+                     "Correo",
+                     "Num. Oficina",
+                     "Num. Whatsapp",
+                     "Domicilio",
+                     "Representante Comercial",
+                     "Venta de narcóticos",
+                     "Vigencia Permiso"};
+
+  listview_importmodel(10, titulos);
+}

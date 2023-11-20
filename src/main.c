@@ -1,7 +1,5 @@
 #include "main.h"
-#include "form_pac.h"
-#include "form_med.h"
-#include "form_prov.h"
+#include "menu.h"
 
 int main() {
   // Establecer la variable de entorno GTK_THEME con la ruta al tema descargado
@@ -12,9 +10,11 @@ int main() {
 
   // gen_login();
   // gen_menu();
-  // pac_crear_form();
+  // pac_crear_form(1);
   // med_crear_form();
-  prov_crear_form();
+  // prov_crear_form();
+  //listv_gen_table();
+  crear_menu();
 
   gtk_main();
   return 0;

@@ -58,17 +58,19 @@ typedef struct Proveedor {
 
 typedef void (*CallbackFunc)(GtkWidget *, gpointer);
 
-void        cambio_mes          (GtkComboBox *widget, gpointer data);
-char        dias_x_mes          (const gint mes);
-char        *formatear_nombre   (const gchar *input);
-gboolean    is_full_nums        (const gchar *input, gsize max_tam, gsize min_tam);
-gboolean    is_number           (const gchar *input, gsize max_tam, gsize min_tam);
-gboolean    es_vocal_acentuada  (char c);
-char        *formatear_num      (const gchar *input, gsize max_tam, gsize min_tam);
-gboolean    reset_warning       (GtkWidget *widget, GdkEventButton *event, gpointer data);
-void        import_model        (GtkWidget *tview, GtkListStore *model, ushort numCols, char *titulos[]);
-void        agregar_err         (char *texto, GString **cadena);
-void        mostrarMed          (char nomMed[]);
+void        cambio_mes              (GtkComboBox *widget, gpointer data);
+char        dias_x_mes              (const gint mes);
+char        *formatear_nombre       (const gchar *input);
+gboolean    is_full_nums            (const gchar *input, gsize max_tam, gsize min_tam);
+char        *formatear_telf         (const gchar *input);
+gboolean    is_number               (const gchar *input, gsize max_tam, gsize min_tam);
+gboolean    es_vocal_acentuada      (char c);
+char        *formatear_num          (const gchar *input, gsize max_tam, gsize min_tam);
+gboolean    reset_warning           (GtkWidget *widget, GdkEventButton *event, gpointer data);
+void        import_model            (GtkWidget *tview, GtkListStore *model, ushort numCols, char *titulos[]);
+void        agregar_err             (char *texto, GString **cadena);
+void        mostrarMed              (char nomMed[]);
+int         formatear_tsangre_num   (char *tipoS);
 
 
 typedef struct {
@@ -105,5 +107,37 @@ void        crear_entradafecha  (EntradaFecha *fecha, char *titulo);
 void        crear_entradacombox (EntradaCombox *entrada, char *titulo, const gchar *datos[], int length);
 void        crear_boton         (GtkWidget **btn, char *titulo, CallbackFunc callback);
 void        crear_ventana       (BaseForm *baseDelFormulario, int xRes, int yRes, CallbackFunc callback);
+
+
+typedef struct {
+  GtkWidget *img;
+  GtkWidget *btn;
+} BtnBase;
+
+void free_basebtn(BtnBase *bBtn);
+
+typedef struct {
+  const gchar   *textoEntry;
+  char          *entradaFormato;
+} TextoIngresado;
+
+typedef struct {
+  const gchar *anio;
+} FechaIngresada;
+
+typedef struct {
+  GtkEntry *anioEntry;
+  GtkComboBox *mesCombox;
+  GtkComboBox *diaCombox;
+} WidgetsFecha;
+
+// Puntero a una función que retorna un array y recibe un array tipo gchar
+typedef char* (*FuncFormato)(const gchar *);
+
+void capturar_formatear_texto (TextoIngresado *dato, char *registro, FuncFormato funcion, GtkWidget *entry, GString **err, char *errNom);
+void capturar_formatear_fecha(FechaIngresada *fecha, WidgetsFecha *widgets, Fecha *fechaReg, GString **err, char *errNom);
+
+
+void desconectar_señal_btn(GtkWidget **btn);
 
 #endif

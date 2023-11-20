@@ -29,7 +29,7 @@ void log_wingrid() {
 
 void gen_img() {
   GtkStyleContext *context;
-  log_img = gtk_image_new_from_file("../images/MT2(2).png");
+  log_img = gtk_image_new_from_file("../images/banner_login.png");
   gtk_grid_attach(GTK_GRID(log_grid), log_img, 0, 0, 3, 1);
 
   log_warning = gtk_label_new(NULL);
@@ -80,8 +80,10 @@ void check_login(GtkWidget *btn, gpointer data) {
 
   if (strcmp(usr_input, usr_read) == 0 &&
       strcmp(passwd_input, passwd_read) == 0) {
-    gen_menu();
-    free_login();
+    crear_menu();
+    //free_login();
+    gtk_widget_hide(log_win);
+
   } else {
     gtk_label_set_markup(
         GTK_LABEL(log_warning),

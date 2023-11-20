@@ -3,6 +3,7 @@
 
 #include "general.h"
 
-void med_crear_form(void);
+void med_crear_form         (void);
+void mostrar_medicamentos   (char *archivoDir);
 
 #endif

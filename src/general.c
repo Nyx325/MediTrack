@@ -97,6 +97,23 @@ gboolean is_full_nums(const gchar *input, gsize max_tam, gsize min_tam) {
   return TRUE;
 }
 
+char *formatear_telf(const gchar *input) {
+  const gsize tam = g_utf8_strlen(input, -1);
+  gchar *formateo = g_strdup(input);
+
+  if (tam == 0) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  if (is_full_nums(input, 10, 10) == FALSE) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  return g_strdup(formateo);
+}
+
 // Compara si la cadena contiene un número, por lo que compara si tiene
 // números y '.'
 gboolean is_number(const gchar *input, gsize max_tam, gsize min_tam) {
@@ -298,4 +315,90 @@ void crear_ventana(BaseForm *baseDelFormulario, int xRes, int yRes,
       gdk_pixbuf_new_from_file("../images/icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(baseDelFormulario->win),
                       baseDelFormulario->icon);
+}
+
+int formatear_tsangre_num(char *tipoS) {
+  if (strcmp(tipoS, "A+") == 0)
+    return 1;
+  if (strcmp(tipoS, "A-") == 0)
+    return 2;
+  if (strcmp(tipoS, "B+") == 0)
+    return 3;
+  if (strcmp(tipoS, "B-") == 0)
+    return 4;
+  if (strcmp(tipoS, "AB+") == 0)
+    return 5;
+  if (strcmp(tipoS, "AB-") == 0)
+    return 6;
+  if (strcmp(tipoS, "O+") == 0)
+    return 7;
+  if (strcmp(tipoS, "O-") == 0)
+    return 8;
+
+  return 0;
+}
+
+void free_basebtn(BtnBase *bBtn) {
+  if (!bBtn->img)
+    gtk_widget_destroy(bBtn->img);
+  if (!bBtn->btn)
+    gtk_widget_destroy(bBtn->btn);
+
+  bBtn->img = NULL;
+  bBtn->btn = NULL;
+}
+
+void crear_btn_img(BtnBase *btn, char *imgPath) {
+  btn->btn = gtk_button_new();
+  btn->img = gtk_image_new_from_file(imgPath);
+  gtk_button_set_image(GTK_BUTTON(btn->btn), btn->img);
+}
+
+// Puntero a una función que retorna un array y recibe un array tipo gchar
+typedef char *(*FuncFormato)(const gchar *);
+
+void capturar_formatear_texto(TextoIngresado *dato, char *registro,
+                              FuncFormato funcion, GtkWidget *entry,
+                              GString **err, char *errNom) {
+  dato->textoEntry = gtk_entry_get_text(GTK_ENTRY(entry));
+  dato->entradaFormato = funcion(dato->textoEntry);
+  if (dato->entradaFormato == NULL)
+    agregar_err(errNom, err);
+  else
+    strcpy(registro, dato->entradaFormato);
+}
+
+void capturar_formatear_fecha(FechaIngresada *fecha, WidgetsFecha *widgets,
+                              Fecha *fechaReg, GString **err, char *errNom) {
+  char buffer[20] = "";
+
+  fecha->anio = gtk_entry_get_text(widgets->anioEntry);
+  if (is_full_nums(fecha->anio, 4, 4) == FALSE) {
+    snprintf(buffer, sizeof(buffer), "Año %s", errNom);
+    agregar_err(errNom, err);
+  } else
+    fechaReg->anio = atoi(fecha->anio);
+
+  g_print("%s\n", buffer);
+
+  fechaReg->mes = gtk_combo_box_get_active(widgets->mesCombox);
+  if (fechaReg->mes == 0) {
+    snprintf(buffer, sizeof(buffer), "Mes %s", errNom);
+    agregar_err(errNom, err);
+  }
+
+  g_print("%s\n", buffer);
+
+  fechaReg->dia = gtk_combo_box_get_active(widgets->diaCombox);
+  if (fechaReg->dia == 0) {
+    snprintf(buffer, sizeof(buffer), "Dia %s", errNom);
+    agregar_err(errNom, err);
+  }
+
+  g_print("%s\n", buffer);
+}
+
+void desconectar_señal_btn(GtkWidget **btn) {
+  g_signal_handlers_disconnect_matched(G_OBJECT(*btn), G_SIGNAL_MATCH_DATA, 0,
+                                       0, NULL, NULL, NULL);
 }

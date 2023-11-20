@@ -1,5 +1,6 @@
 #include "form_med.h"
 #include "general.h"
+#include "listv.h"
 
 typedef struct {
   BaseForm baseVentana;
@@ -147,4 +148,56 @@ void med_crear_form() {
                   1);
 
   gtk_widget_show_all(mForm.baseVentana.win);
+}
+
+void mostrar_medicamentos(char *archivoDir) {
+  unsigned long pos;
+  Medicamento med;
+  char fechaFormato[12];
+  GtkTreeIter iter;
+  FILE *apArch;
+
+  // apuntador definido en listv.c para el modelo de la tabla
+  tabla.listStore = gtk_list_store_new(
+      12, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_FLOAT, G_TYPE_UINT,
+      G_TYPE_STRING, G_TYPE_UINT, G_TYPE_FLOAT, G_TYPE_STRING, G_TYPE_STRING,
+      G_TYPE_STRING, G_TYPE_ULONG);
+
+  apArch = fopen(archivoDir, "a+b");
+  if (apArch == NULL) {
+    g_print("Archivo dañado");
+    return;
+  }
+
+  while (fread(&med, sizeof(Medicamento), 1, apArch)) {
+    if (med.estado) {
+      pos = ftell(apArch);
+      // Formatear fecha como cadena
+      sprintf(fechaFormato, "%02d/%02d/%04d", med.fecha.dia, med.fecha.mes,
+              med.fecha.anio);
+      // Agregar fila
+      gtk_list_store_append(tabla.listStore, &iter);
+      // Agregar datos al modelo
+      gtk_list_store_set(tabla.listStore, &iter, 0, med.id, 1, med.sustancia, 2,
+                         med.marca, 3, med.gramaje, 4, med.unidadesCaja, 5,
+                         med.presentacion, 6, med.unidadesInventario, 7,
+                         med.costo, 8, med.lote, 9, fechaFormato, 10,
+                         med.laboratorio, 11, pos, -1);
+    }
+  }
+  fclose(apArch);
+
+  char *titulos[] = {"Clave",
+                     "Substancia",
+                     "Marca",
+                     "Gramaje (g)",
+                     "Cantidad",
+                     "Presentacion",
+                     "Unidades de inventario",
+                     "Costo",
+                     "Lote",
+                     "Caducidad",
+                     "Laboratorio"};
+
+  listview_importmodel(10, titulos);
 }

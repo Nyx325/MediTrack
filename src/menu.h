@@ -1,17 +1,23 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "general.h"
 #include "form_med.h"
 #include "form_pac.h"
-// #include "form_prov.h"
+#include "form_prov.h"
+#include "general.h"
+#include "listv.h"
+#include "listv_bar.h"
 
-extern GtkWidget *m_win;
+typedef struct {
+  BaseForm baseVentana;
+  BtnBase medicamentos;
+  BtnBase pacientes;
+  BtnBase proveedores;
+  GtkWidget *banner;
+  GtkWidget *titulos[3];
+} WinMenu;
 
-void    gen_menu            (void);
-void    pacientes           (GtkWidget *widget, gpointer data);
-void    medicamento         (GtkWidget *widget, gpointer data);
-void    proveedores         (GtkWidget *widget, gpointer data);
-void    free_menu           (void);
+
+void crear_menu (void);
 
 #endif

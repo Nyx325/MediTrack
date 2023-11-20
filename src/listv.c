@@ -1,17 +1,5 @@
-#include "general.h"
-typedef struct {
-  GtkWidget *win;
-  GtkWidget *box;
-  GdkPixbuf *icon;
-  GtkWidget *scrollWin;
-} BaseListv;
-
-typedef struct {
-  BaseListv baseVentana;
-  GtkWidget *tView;
-  GtkListStore *listStore;
-  GtkTreeSelection *filaActual;
-} ListView;
+#include "listv.h"
+#include "listv_bar.h"
 
 ListView tabla;
 
@@ -46,6 +34,8 @@ void free_listview(GtkWidget *widget, gpointer data) {
 
   free_baselistv(&tabla.baseVentana);
 
+  free_barlistv();
+
   tabla.tView = NULL;
   tabla.listStore = NULL;
   tabla.filaActual = NULL;
@@ -57,6 +47,7 @@ void listview_importmodel(ushort numCols, char *titulos[]) {
     gtk_widget_destroy(tabla.tView);
 
   tabla.tView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(tabla.listStore));
+  tabla.filaActual = gtk_tree_view_get_selection(GTK_TREE_VIEW(tabla.tView));
 
   // Crear, configurar columnas y agregar al treeview
   for (i = 0; i < numCols; i++) {
@@ -85,9 +76,8 @@ void crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes,
 
   gtk_window_set_default_size(GTK_WINDOW(baseListv->win), xRes, yRes);
   gtk_window_set_position(GTK_WINDOW(baseListv->win), GTK_WIN_POS_CENTER);
-  gtk_container_set_border_width(GTK_CONTAINER(baseListv->win), 20);
   g_signal_connect(G_OBJECT(baseListv->win), "destroy", G_CALLBACK(callback),
-                   NULL);
+                   gtk_main_quit);
 
   baseListv->box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
 
@@ -105,5 +95,11 @@ void crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes,
 }
 
 void listv_gen_table() {
-    crear_ventana_listv(&tabla.baseVentana, 1280, 720, free_listview);
+  crear_ventana_listv(&tabla.baseVentana, 1280, 720, free_listview);
+
+  crear_bar();
+  gtk_box_pack_start(GTK_BOX(tabla.baseVentana.box), bar.mainbox, FALSE, FALSE,
+                     0);
+
+  gtk_widget_show_all(tabla.baseVentana.win);
 }
