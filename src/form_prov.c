@@ -164,7 +164,7 @@ void mostrar_proveedores(char *archivoDir) {
               prov.vigencia.mes, prov.vigencia.anio);
 
       // Obtener posición en archivo
-      pos = (unsigned long)ftell(apProv) - sizeof(Proveedor);
+      pos = ftell(apProv) - sizeof(Proveedor);
 
       gtk_list_store_append(tabla.listStore, &iter); // Fila nueva
       gtk_list_store_set(tabla.listStore, &iter, 0, prov.rfc, 1,

@@ -65,7 +65,9 @@ void cargar_medicamento_reguistro() {
     return;
   }
 
+  g_print("a\n");
   gtk_tree_model_get(model, &iter, 11, &posArch, -1);
+  g_print("%ld\n", posArch);
 
   apArch = fopen("../data/medicamentos.dat", "rb");
   if (apArch == NULL) {
@@ -108,6 +110,8 @@ void cargar_medicamento_reguistro() {
                            registro.fecha.mes);
   gtk_combo_box_set_active(GTK_COMBO_BOX(mForm.caducidad.diaCombox),
                            registro.fecha.dia);
+
+  gtk_entry_set_text(GTK_ENTRY(mForm.lab.entry), registro.laboratorio);
 }
 
 void med_crear_form(Opc modo) {
@@ -213,7 +217,7 @@ void med_crear_form(Opc modo) {
 }
 
 void mostrar_medicamentos(char *archivoDir) {
-  unsigned long pos;
+  long pos;
   Medicamento med;
   char fechaFormato[12];
   GtkTreeIter iter;
@@ -233,7 +237,7 @@ void mostrar_medicamentos(char *archivoDir) {
 
   while (fread(&med, sizeof(Medicamento), 1, apArch)) {
     if (med.estado) {
-      pos = ftell(apArch);
+      pos = ftell(apArch) - sizeof(Medicamento);
       // Formatear fecha como cadena
       sprintf(fechaFormato, "%02d/%02d/%04d", med.fecha.dia, med.fecha.mes,
               med.fecha.anio);
@@ -390,9 +394,42 @@ void agregar_medicamentos_callback(GtkWidget *btn, gpointer data) {
                    G_CALLBACK(registrar_datos_medicamento), NULL);
 }
 
+gboolean modificar_datos_medicamento(GtkWidget *btn, gpointer data){
+  long pos;
+  FILE *apArch;
+  Medicamento registro = validar_formulario_medicamento();
+  GtkTreeModel *modelo;
+  GtkTreeIter iter;
+
+  if(registro.estado == 0)
+      return FALSE;
+
+  free_medform(NULL, NULL);
+
+  gtk_tree_selection_get_selected(tabla.filaActual, &modelo, &iter);
+  gtk_tree_model_get(modelo, &iter, 11, &pos, -1);
+
+
+  apArch = fopen("../data/medicamentos.dat", "r+b");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado\n");
+    return FALSE;
+  }
+
+  fseek(apArch, pos, SEEK_SET);
+
+  fwrite(&registro, sizeof(Medicamento), 1, apArch);
+  fclose(apArch);
+
+  gtk_list_store_clear(tabla.listStore);
+  mostrar_medicamentos("../data/medicamentos.dat");
+
+  return TRUE;
+}
+
 void modificar_medicamentos_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&mForm.aceptBtn);
   med_crear_form(1);
-  // g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",
-  //                  G_CALLBACK(registrar_datos_medicamento), NULL);
+  g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",
+                    G_CALLBACK(modificar_datos_medicamento), NULL);
 }
