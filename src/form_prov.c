@@ -50,6 +50,12 @@ void free_provform(GtkWidget *widget, gpointer data) {
   prForm.cancelBtn = NULL;
 }
 
+void cargar_proveedor_registro(){
+    long posArch;
+    char anioPermiso[5];
+    
+}
+
 void prov_crear_form() {
   crear_ventana(&prForm.baseVentana, 611, 220, free_provform);
 
