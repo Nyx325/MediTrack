@@ -476,14 +476,8 @@ void imprimir_paciente(Pacientes p) {
 }
 
 gboolean gchar_a_char(gchar *cadenaOrigen, char *cadenaDestino) {
-  if (g_utf8_strlen(cadenaOrigen, -1) > sizeof(cadenaDestino) - 1)
-    return FALSE;
-
   char *cadenaConvertida = g_strdup(cadenaOrigen);
   strcpy(cadenaDestino, cadenaConvertida);
-
-  g_print("Cadena sin C: %s\n", cadenaOrigen);
-  g_print("Cadena C: %s\n\n", cadenaConvertida);
 
   g_free(cadenaConvertida);
   return TRUE;

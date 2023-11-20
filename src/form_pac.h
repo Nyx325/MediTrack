@@ -4,17 +4,6 @@
 #include "general.h"
 #include "listv.h"
 
-typedef struct {
-  gchar *curp;
-  gchar *nombre;
-  gchar *fechaN;
-  gchar *sexo;
-  gchar *telf;
-  gchar *tpSangre;
-  gchar *fechaC;
-  long  pos;
-} PacientesSinFormato;
-
 void pac_crear_form(Opc modo);
 void mostrar_pacientes(char *archivoDir);
 void pac_agregar_callback(GtkWidget *btn, gpointer data);

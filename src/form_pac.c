@@ -433,9 +433,19 @@ void pac_mod_callback(GtkWidget *btn, gpointer data) {
                    G_CALLBACK(modificar_datos_paciente), NULL);
 }
 
+typedef struct {
+  gchar *curp;
+  gchar *nombre;
+  gchar *fechaN;
+  gchar *sexo;
+  gchar *telf;
+  gchar *tpSangre;
+  gchar *fechaC;
+  long pos;
+} PacientesSinFormato;
+
 void eliminar_datos_paciente(GtkWidget *btn, gpointer data) {
   // Como no sé en que byte se encuentra el estado, leo el registro completo
-  long pos;
   char sexo[2];
   FILE *apArch;
   GtkTreeIter iter;
@@ -448,41 +458,30 @@ void eliminar_datos_paciente(GtkWidget *btn, gpointer data) {
       FALSE)
     return;
 
+  gtk_tree_model_get(modelo, &iter, 0, &p.curp, -1);
   gtk_tree_model_get(modelo, &iter, 0, &p.curp, 1, &p.nombre, 2, &p.fechaN, 3,
                      &p.sexo, 4, &p.telf, 5, &p.tpSangre, 6, &p.fechaC, 7,
                      &p.pos, -1);
 
-  g_print("a\n");
   gchar_a_char(p.curp, paciente.CURP);
-  g_print("a\n");
   gchar_a_char(p.nombre, paciente.nombre);
-  g_print("a\n");
   gchar_a_char(p.telf, paciente.telf);
-  g_print("a\n");
   gchar_a_char(p.tpSangre, paciente.tpSangre);
-  g_print("a\n");
 
-  imprimir_paciente(paciente);
-  g_print("pos: %ld\n\n", p.pos);
-
+  g_print("%s\n\n", p.fechaN);
   if (sscanf(p.fechaN, "%d/%d/%d", &paciente.fechas.dia, &paciente.fechas.mes,
              &paciente.fechas.anio) != 3) {
-    g_print("%s , %d, %d, %d\n\n", fechaFormato[0], paciente.fechas.dia,
-            paciente.fechas.mes, paciente.fechas.anio);
     g_print("ERROR: No se pudo formatear fecha de nacimiento\n\n");
     return;
   }
 
-  if (sscanf(fechaFormato[1], "%d/%d/%d", &paciente.fechasC.dia,
-             &paciente.fechasC.mes, &paciente.fechasC.anio) != 3) {
+  if (sscanf(p.fechaC, "%d/%d/%d", &paciente.fechasC.dia, &paciente.fechasC.mes,
+             &paciente.fechasC.anio) != 3) {
     g_print("ERROR: No se pudo formatear fecha primer consulta\n\n");
     return;
   }
 
-  if (sscanf(sexo, "%c", &paciente.sexo) != 1) {
-    g_print("ERROR: No se pudo formatear el sexo\n\n");
-    return;
-  }
+  paciente.sexo = p.sexo[0];
 
   paciente.estado = 0;
 
@@ -492,7 +491,7 @@ void eliminar_datos_paciente(GtkWidget *btn, gpointer data) {
     return;
   }
 
-  fseek(apArch, pos, SEEK_SET);
+  fseek(apArch, p.pos, SEEK_SET);
   fwrite(&paciente, sizeof(Pacientes), 1, apArch);
   fclose(apArch);
 
