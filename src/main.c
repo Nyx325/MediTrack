@@ -11,9 +11,8 @@ int main() {
   // gen_login();
   // gen_menu();
   // pac_crear_form(1);
-  // med_crear_form();
   // prov_crear_form();
-  //listv_gen_table();
+  // listv_gen_table();
   crear_menu();
 
   gtk_main();

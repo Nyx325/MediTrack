@@ -26,10 +26,10 @@ void free_menu(GtkWidget *widget, gpointer data) {
   menu.banner = NULL;
 }
 
-
 void pacientes(GtkWidget *widget, gpointer data) {
   desconectar_señal_btn(&bar.agregar.base.btn);
   desconectar_señal_btn(&bar.modificar.base.btn);
+  desconectar_señal_btn(&bar.eliminar.base.btn);
 
   listv_gen_table();
   mostrar_pacientes("../data/pacientes.dat");
@@ -39,20 +39,31 @@ void pacientes(GtkWidget *widget, gpointer data) {
                    G_CALLBACK(pac_agregar_callback), NULL);
   g_signal_connect(G_OBJECT(bar.modificar.base.btn), "clicked",
                    G_CALLBACK(pac_mod_callback), NULL);
+  g_signal_connect(G_OBJECT(bar.eliminar.base.btn), "clicked",
+                   G_CALLBACK(eliminar_datos_paciente), NULL);
 }
 
 void medicamentos(GtkWidget *widget, gpointer data) {
   desconectar_señal_btn(&bar.agregar.base.btn);
   desconectar_señal_btn(&bar.modificar.base.btn);
+  desconectar_señal_btn(&bar.eliminar.base.btn);
 
   listv_gen_table();
   mostrar_medicamentos("../data/medicamentos.dat");
   free_menu(NULL, NULL);
+
+  g_signal_connect(G_OBJECT(bar.agregar.base.btn), "clicked",
+                   G_CALLBACK(agregar_medicamentos_callback), NULL);
+  g_signal_connect(G_OBJECT(bar.modificar.base.btn), "clicked",
+                   G_CALLBACK(pac_mod_callback), NULL);
+  // g_signal_connect(G_OBJECT(bar.eliminar.base.btn), "clicked",
+  //                  G_CALLBACK(eliminar_datos_paciente), NULL);
 }
 
 void proveedores(GtkWidget *widget, gpointer data) {
   desconectar_señal_btn(&bar.agregar.base.btn);
   desconectar_señal_btn(&bar.modificar.base.btn);
+  desconectar_señal_btn(&bar.eliminar.base.btn);
 
   listv_gen_table();
   mostrar_proveedores("../data/proveedores.dat");

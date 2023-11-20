@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 
-// :D
+// Retorno de el número de dias máximos según el mes
 char dias_x_mes(const gint mes) {
   if (mes > 12 || mes < 1)
     return 0;
@@ -47,7 +47,7 @@ void cambio_mes(GtkComboBox *widget, gpointer data) {
 }
 
 // Formatea una cadena con primer letra de cada palabra mayúscula y el resto
-// minúscula
+// minúscula, no admite números
 char *formatear_nombre(const gchar *input) {
   const gsize tam = g_utf8_strlen(input, -1);
   gboolean flag = TRUE;
@@ -60,6 +60,12 @@ char *formatear_nombre(const gchar *input) {
 
   for (gsize i = 0; i < tam; i++) {
     gunichar2 character = g_utf8_get_char(formateo + i);
+
+    if (g_unichar_isdigit(character)) {
+      g_free(formateo);
+      return NULL;
+    }
+
     if (flag) {
       // Volver mayúscula la primera letra de la palabra
       formateo[i] = g_unichar_toupper(character);
@@ -71,6 +77,36 @@ char *formatear_nombre(const gchar *input) {
 
     if (g_unichar_isspace(character))
       flag = TRUE;
+  }
+
+  return g_strdup(formateo);
+}
+
+// Formatea una cadena con primer letra de cada palabra mayúscula y el resto
+// minúscula, admite números
+char *formatear_palabra(const gchar *input) {
+  const gsize tam = g_utf8_strlen(input, -1);
+  gboolean inicioPalabra = TRUE;
+  gchar *formateo = g_strdup(input);
+
+  if (tam == 0) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  for (gsize i = 0; i < tam; i++) {
+    gunichar2 character = g_utf8_get_char(formateo + i);
+
+    if (inicioPalabra == TRUE && !g_unichar_isdigit(character)) {
+      formateo[i] = g_unichar_toupper(character);
+      inicioPalabra = FALSE;
+    } else if (inicioPalabra == FALSE && !g_unichar_isdigit(character))
+      formateo[i] = g_unichar_tolower(character);
+    else
+      formateo[i] = character;
+
+    if (g_unichar_isspace(character))
+      inicioPalabra = TRUE;
   }
 
   return g_strdup(formateo);
@@ -97,23 +133,6 @@ gboolean is_full_nums(const gchar *input, gsize max_tam, gsize min_tam) {
   return TRUE;
 }
 
-char *formatear_telf(const gchar *input) {
-  const gsize tam = g_utf8_strlen(input, -1);
-  gchar *formateo = g_strdup(input);
-
-  if (tam == 0) {
-    g_free(formateo);
-    return NULL;
-  }
-
-  if (is_full_nums(input, 10, 10) == FALSE) {
-    g_free(formateo);
-    return NULL;
-  }
-
-  return g_strdup(formateo);
-}
-
 // Compara si la cadena contiene un número, por lo que compara si tiene
 // números y '.'
 gboolean is_number(const gchar *input, gsize max_tam, gsize min_tam) {
@@ -134,6 +153,44 @@ gboolean is_number(const gchar *input, gsize max_tam, gsize min_tam) {
   }
 
   return TRUE;
+}
+
+// Comprueba que una cadena sea completamente de números y que su largo
+// mínimo y máximo sea de 10 después lo convierte a char*
+char *formatear_telf(const gchar *input) {
+  const gsize tam = g_utf8_strlen(input, -1);
+  gchar *formateo = g_strdup(input);
+
+  if (tam == 0) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  if (is_full_nums(input, 10, 10) == FALSE) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  return g_strdup(formateo);
+}
+
+// Recibe una cadena que debe convertirse en un número ya sea flotante o entero,
+// verifica que sea un número válido
+char *formatear_num(const gchar *input) {
+  const gsize tam = g_utf8_strlen(input, -1);
+  gchar *formateo = g_strdup(input);
+
+  if (tam == 0) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  if (is_number(input, 9, -1) == FALSE) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  return g_strdup(formateo);
 }
 
 // Dado lv_lstore inicializado con datos dentro genera la tabla de cada
@@ -234,6 +291,8 @@ void free_baseform(BaseForm *basesVentana) {
   basesVentana->win = NULL;
 }
 
+// Crea un entry y un label para un apartado de texto, se agrega el tamaño del
+// entry y caracteres máximos, además titulo del label
 void crear_entradatexto(EntradaTexto *info, char *titulo, int tamEntry,
                         int maxChars) {
   info->lbl = gtk_label_new(titulo);
@@ -242,6 +301,7 @@ void crear_entradatexto(EntradaTexto *info, char *titulo, int tamEntry,
   gtk_entry_set_max_length(GTK_ENTRY(info->entry), maxChars);
 }
 
+// Crea un label, un entry y dos combo box que corresponden a dia, mes y año
 void crear_entradafecha(EntradaFecha *fecha, char *titulo) {
   char j;
   fecha->titulo = gtk_label_new(titulo);
@@ -271,6 +331,8 @@ void crear_entradafecha(EntradaFecha *fecha, char *titulo) {
   }
 }
 
+// Crea un label y un combobox, recibe como arreglo de cadenas las opciones
+// que se agregan, así como el numero de opciones
 void crear_entradacombox(EntradaCombox *entrada, char *titulo,
                          const gchar *datos[], int length) {
   entrada->lbl = gtk_label_new(titulo);
@@ -281,6 +343,8 @@ void crear_entradacombox(EntradaCombox *entrada, char *titulo,
                                    datos[i]);
 }
 
+// Crea un botón con titulo, además recibe la función que llamará cuando se
+// presione
 void crear_boton(GtkWidget **btn, char *titulo, CallbackFunc callback) {
   *btn = gtk_button_new_with_label(titulo);
   GtkStyleContext *context;
@@ -366,6 +430,8 @@ void capturar_formatear_texto(TextoIngresado *dato, char *registro,
     agregar_err(errNom, err);
   else
     strcpy(registro, dato->entradaFormato);
+
+  g_free(dato->entradaFormato);
 }
 
 void capturar_formatear_fecha(FechaIngresada *fecha, WidgetsFecha *widgets,
@@ -394,11 +460,31 @@ void capturar_formatear_fecha(FechaIngresada *fecha, WidgetsFecha *widgets,
     snprintf(buffer, sizeof(buffer), "Dia %s", errNom);
     agregar_err(errNom, err);
   }
-
-  g_print("%s\n", buffer);
 }
 
 void desconectar_señal_btn(GtkWidget **btn) {
   g_signal_handlers_disconnect_matched(G_OBJECT(*btn), G_SIGNAL_MATCH_DATA, 0,
                                        0, NULL, NULL, NULL);
+}
+
+void imprimir_paciente(Pacientes p) {
+  g_print("Estado: %d Nombre: %s Curp: %s\n", p.estado, p.nombre, p.CURP);
+  g_print("FechaN: %d/%d/%d ", p.fechas.dia, p.fechas.mes, p.fechas.anio);
+  g_print("Sexo %c Tel: %s\n", p.sexo, p.telf);
+  g_print("T. Sangre %s ", p.tpSangre);
+  g_print("FechaC: %d/%d/%d\n", p.fechasC.dia, p.fechasC.mes, p.fechasC.anio);
+}
+
+gboolean gchar_a_char(gchar *cadenaOrigen, char *cadenaDestino) {
+  if (g_utf8_strlen(cadenaOrigen, -1) > sizeof(cadenaDestino) - 1)
+    return FALSE;
+
+  char *cadenaConvertida = g_strdup(cadenaOrigen);
+  strcpy(cadenaDestino, cadenaConvertida);
+
+  g_print("Cadena sin C: %s\n", cadenaOrigen);
+  g_print("Cadena C: %s\n\n", cadenaConvertida);
+
+  g_free(cadenaConvertida);
+  return TRUE;
 }

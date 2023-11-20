@@ -51,18 +51,77 @@ void free_medform(GtkWidget *widget, gpointer data) {
   mForm.cancelBtn = NULL;
 }
 
-void med_crear_form() {
+void cargar_medicamento_reguistro() {
+  long posArch;
+  char cualquierDatoNumerico[11];
+  Medicamento registro;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  FILE *apArch;
+
+  if (gtk_tree_selection_get_selected(tabla.filaActual, &model, &iter) ==
+      FALSE) {
+    free_medform(NULL, NULL);
+    return;
+  }
+
+  gtk_tree_model_get(model, &iter, 11, &posArch, -1);
+
+  apArch = fopen("../data/medicamentos.dat", "rb");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado");
+    return;
+  }
+  fseek(apArch, posArch, SEEK_SET);
+  fread(&registro, sizeof(Medicamento), 1, apArch);
+  fclose(apArch);
+
+  sprintf(cualquierDatoNumerico, "%d", registro.id);
+  gtk_entry_set_text(GTK_ENTRY(mForm.id.entry), cualquierDatoNumerico);
+
+  gtk_entry_set_text(GTK_ENTRY(mForm.substancia.entry), registro.sustancia);
+
+  gtk_entry_set_text(GTK_ENTRY(mForm.marca.entry), registro.marca);
+
+  sprintf(cualquierDatoNumerico, "%.2f", registro.gramaje);
+  gtk_entry_set_text(GTK_ENTRY(mForm.gramaje.entry), cualquierDatoNumerico);
+
+  sprintf(cualquierDatoNumerico, "%d", registro.unidadesCaja);
+  gtk_entry_set_text(GTK_ENTRY(mForm.unidadesC.entry), cualquierDatoNumerico);
+
+  gtk_entry_set_text(GTK_ENTRY(mForm.presentacion.entry),
+                     registro.presentacion);
+
+  sprintf(cualquierDatoNumerico, "%d", registro.unidadesInventario);
+  gtk_entry_set_text(GTK_ENTRY(mForm.unidadesI.entry), cualquierDatoNumerico);
+
+  sprintf(cualquierDatoNumerico, "%.2f", registro.costo);
+  gtk_entry_set_text(GTK_ENTRY(mForm.costo.entry), cualquierDatoNumerico);
+
+  gtk_entry_set_text(GTK_ENTRY(mForm.lote.entry), registro.lote);
+
+  sprintf(cualquierDatoNumerico, "%d", registro.fecha.anio);
+  gtk_entry_set_text(GTK_ENTRY(mForm.caducidad.anioEntry),
+                     cualquierDatoNumerico);
+
+  gtk_combo_box_set_active(GTK_COMBO_BOX(mForm.caducidad.mesCombox),
+                           registro.fecha.mes);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(mForm.caducidad.diaCombox),
+                           registro.fecha.dia);
+}
+
+void med_crear_form(Opc modo) {
   crear_ventana(&mForm.baseVentana, 611, 220, free_medform);
 
-  crear_entradatexto(&mForm.id, "Clave", 10, 10);
+  crear_entradatexto(&mForm.id, "Clave", 10, 11);
   crear_entradatexto(&mForm.substancia, "Substancia", 10, 49);
-  crear_entradatexto(&mForm.gramaje, "Gramaje", 7, 5);
+  crear_entradatexto(&mForm.gramaje, "Gramaje", 7, 8);
   crear_entradatexto(&mForm.unidadesC, "Unidades\nCaja", 10, 10);
   crear_entradatexto(&mForm.presentacion, "Presentacion", 10, 49);
   crear_entradatexto(&mForm.lab, "Laboratorio", 10, 49);
-  crear_entradatexto(&mForm.costo, "Costo", 7, 5);
+  crear_entradatexto(&mForm.costo, "Costo", 7, 9);
   crear_entradatexto(&mForm.lote, "Lote", 5, 5);
-  crear_entradatexto(&mForm.unidadesI, "Unidades\nInventario", 5, 5);
+  crear_entradatexto(&mForm.unidadesI, "Unidades\nInventario", 5, 10);
   crear_entradatexto(&mForm.marca, "Marca", 5, 49);
 
   crear_entradafecha(&mForm.caducidad, "Caducidad");
@@ -147,6 +206,9 @@ void med_crear_form() {
   gtk_grid_attach(GTK_GRID(mForm.baseVentana.grid), mForm.cancelBtn, 6, 6, 4,
                   1);
 
+  if (modo)
+    cargar_medicamento_reguistro();
+
   gtk_widget_show_all(mForm.baseVentana.win);
 }
 
@@ -165,7 +227,7 @@ void mostrar_medicamentos(char *archivoDir) {
 
   apArch = fopen(archivoDir, "a+b");
   if (apArch == NULL) {
-    g_print("Archivo dañado");
+    g_print("ERROR: Archivo dañado");
     return;
   }
 
@@ -200,4 +262,137 @@ void mostrar_medicamentos(char *archivoDir) {
                      "Laboratorio"};
 
   listview_importmodel(10, titulos);
+}
+
+typedef struct {
+  TextoIngresado id;
+  TextoIngresado marca;
+  TextoIngresado substancia;
+  TextoIngresado gramaje;
+  TextoIngresado presentacion;
+  TextoIngresado laboratorio;
+  TextoIngresado unidadesCaja;
+  TextoIngresado costo;
+  TextoIngresado lote;
+  FechaIngresada caducidad;
+  TextoIngresado unidadesInventario;
+} DatosFormularioMedicamento;
+
+typedef struct {
+  char idSF[11];
+  char gramajeSF[9];
+  char unidadesCaja[11];
+  char costo[10];
+  char unidadesInventario[11];
+} NumsSinFormato;
+
+char *formatear_id(const gchar *input) {
+  const gsize tam = g_utf8_strlen(input, -1);
+  gchar *formateo = g_strdup(input);
+
+  if (tam == 0) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  if (is_full_nums(input, -1, -1) == FALSE) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  return g_strdup(formateo);
+}
+
+Medicamento validar_formulario_medicamento() {
+  GString *err = g_string_new("");
+  Medicamento registro;
+  DatosFormularioMedicamento cap;
+  WidgetsFecha widFecha;
+  NumsSinFormato reg;
+
+  registro.estado = 0;
+
+  capturar_formatear_texto(&cap.id, reg.idSF, formatear_id, mForm.id.entry,
+                           &err, "Clave");
+  registro.id = atoi(reg.idSF);
+
+  capturar_formatear_texto(&cap.marca, registro.marca, formatear_palabra,
+                           mForm.marca.entry, &err, "Marca");
+  capturar_formatear_texto(&cap.substancia, registro.sustancia,
+                           formatear_nombre, mForm.substancia.entry, &err,
+                           "Substancia");
+  capturar_formatear_texto(&cap.gramaje, reg.gramajeSF, formatear_num,
+                           mForm.gramaje.entry, &err, "Gramaje");
+  registro.gramaje = atof(reg.gramajeSF);
+
+  capturar_formatear_texto(&cap.presentacion, registro.presentacion,
+                           formatear_nombre, mForm.presentacion.entry, &err,
+                           "Presentacion");
+  capturar_formatear_texto(&cap.laboratorio, registro.laboratorio,
+                           formatear_palabra, mForm.lab.entry, &err,
+                           "Laboratorio");
+  capturar_formatear_texto(&cap.unidadesCaja, reg.unidadesCaja, formatear_num,
+                           mForm.unidadesC.entry, &err, "Unidades Caja");
+  capturar_formatear_texto(&cap.costo, reg.costo, formatear_num,
+                           mForm.costo.entry, &err, "Costo");
+  registro.costo = atof(reg.costo);
+
+  capturar_formatear_texto(&cap.lote, registro.lote, formatear_palabra,
+                           mForm.lote.entry, &err, "Lote");
+  capturar_formatear_texto(&cap.unidadesInventario, reg.unidadesInventario,
+                           formatear_num, mForm.unidadesI.entry, &err,
+                           "Unidades Inventario");
+  registro.unidadesInventario = atoi(reg.unidadesInventario);
+
+  widFecha.anioEntry = GTK_ENTRY(mForm.caducidad.anioEntry);
+  widFecha.mesCombox = GTK_COMBO_BOX(mForm.caducidad.mesCombox);
+  widFecha.diaCombox = GTK_COMBO_BOX(mForm.caducidad.diaCombox);
+  capturar_formatear_fecha(&cap.caducidad, &widFecha, &registro.fecha, &err,
+                           "Caducidad");
+
+  if (err->len != 0) {
+    g_string_append(err, " no válido(s)");
+    gtk_label_set_markup(GTK_LABEL(mForm.warningLbl), err->str);
+  } else
+    registro.estado = 1;
+
+  return registro;
+}
+
+gboolean registrar_datos_medicamento(GtkWidget *btn, gpointer data) {
+  FILE *apArch;
+  Medicamento registro = validar_formulario_medicamento();
+
+  if (registro.estado == 0)
+    return FALSE;
+
+  free_medform(NULL, NULL);
+
+  apArch = fopen("../data/medicamentos.dat", "ab");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado");
+    return FALSE;
+  }
+
+  fwrite(&registro, sizeof(Medicamento), 1, apArch);
+  fclose(apArch);
+
+  gtk_list_store_clear(tabla.listStore);
+  mostrar_medicamentos("../data/medicamentos.dat");
+
+  return TRUE;
+}
+
+void agregar_medicamentos_callback(GtkWidget *btn, gpointer data) {
+  desconectar_señal_btn(&mForm.aceptBtn);
+  med_crear_form(0);
+  g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",
+                   G_CALLBACK(registrar_datos_medicamento), NULL);
+}
+
+void modificar_medicamentos_callback(GtkWidget *btn, gpointer data) {
+  desconectar_señal_btn(&mForm.aceptBtn);
+  med_crear_form(1);
+  // g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",
+  //                  G_CALLBACK(registrar_datos_medicamento), NULL);
 }

@@ -86,12 +86,18 @@ void cargar_de_registro() {
   // Fecha primer consulta
   sprintf(anio, "%4d", registro.fechasC.anio);
   gtk_entry_set_text(GTK_ENTRY(pForm.primCons.anioEntry), anio);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(pForm.primCons.mesCombox),
+                           registro.fechasC.mes);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(pForm.primCons.diaCombox),
+                           registro.fechasC.dia);
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(pForm.tSangre.combox),
                            formatear_tsangre_num(registro.tpSangre));
 
   if (registro.sexo == 'H')
     gtk_combo_box_set_active(GTK_COMBO_BOX(pForm.sexo.combox), 1);
+  else
+    gtk_combo_box_set_active(GTK_COMBO_BOX(pForm.sexo.combox), 0);
 }
 
 void pac_crear_form(Opc modo) {
@@ -106,7 +112,8 @@ void pac_crear_form(Opc modo) {
 
   const gchar *sexoOpc[] = {"M", "H"};
   crear_entradacombox(&pForm.sexo, "Sexo", sexoOpc, G_N_ELEMENTS(sexoOpc));
-  const gchar *tipos[] = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+  const gchar *tipos[] = {"Tipo", "A+",  "A-", "B+", "B-",
+                          "AB+",  "AB-", "O+", "O-"};
   crear_entradacombox(&pForm.tSangre, "T. Sangre", tipos, G_N_ELEMENTS(tipos));
 
   pForm.warningLbl = gtk_label_new("");
@@ -157,11 +164,11 @@ void pac_crear_form(Opc modo) {
                   7, 2, 1, 1);
 
   gtk_grid_attach(GTK_GRID(pForm.basesVentana.grid), pForm.warningLbl, 0, 3, 8,
-                  3);
+                  1);
 
-  gtk_grid_attach(GTK_GRID(pForm.basesVentana.grid), pForm.acepBtn, 0, 4, 4, 3);
+  gtk_grid_attach(GTK_GRID(pForm.basesVentana.grid), pForm.acepBtn, 0, 4, 4, 1);
   gtk_grid_attach(GTK_GRID(pForm.basesVentana.grid), pForm.cancelBtn, 5, 4, 3,
-                  3);
+                  1);
 
   if (modo)
     cargar_de_registro();
@@ -170,7 +177,10 @@ void pac_crear_form(Opc modo) {
 }
 
 void mostrar_pacientes(char *archivoDir) {
+  FILE *apPaci;
+  long pos;
   char fechaFormato[2][12];
+  Pacientes paciente;
   GtkTreeIter iter; // estructura para identificar fila en modelo
 
   // apuntador definido en listv.c para el modelo de la tabla
@@ -178,16 +188,11 @@ void mostrar_pacientes(char *archivoDir) {
       8, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
       G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
 
-  FILE *apPaci;
-  Pacientes paciente;
-
   apPaci = fopen(archivoDir, "a+b");
   if (apPaci == NULL) {
-    g_print("Archivo danaño\n");
+    g_print("ERROR: Archivo danaño\n");
     return;
   }
-
-  long pos;
 
   while (fread(&paciente, sizeof(Pacientes), 1, apPaci)) {
     if (paciente.estado) {
@@ -283,10 +288,12 @@ const gchar *formatear_tsangre(GtkComboBox *combox) {
   }
 }
 
-gunichar formatear_sexo(GtkComboBoxText *combox) {
-  gchar *formateo = gtk_combo_box_text_get_active_text(combox);
-  gunichar sexo = g_utf8_get_char(&formateo[0]);
-  return sexo;
+char formatear_sexo(GtkComboBox *combox) {
+  int ind = gtk_combo_box_get_active(combox);
+  if (ind)
+    return 'H';
+  else
+    return 'M';
 }
 
 typedef struct {
@@ -296,12 +303,12 @@ typedef struct {
   FechaIngresada fechaN;
   FechaIngresada primerCons;
   const gchar *tpSangre;
-} DatosFormulario;
+} DatosFormularioPaciente;
 
 Pacientes validar_formulario_pacientes() {
   GString *err = g_string_new("");
   Pacientes registro;
-  DatosFormulario captura;
+  DatosFormularioPaciente captura;
   WidgetsFecha widFecha;
 
   registro.estado = 0;
@@ -323,13 +330,13 @@ Pacientes validar_formulario_pacientes() {
   widFecha.mesCombox = GTK_COMBO_BOX(pForm.fechaN.mesCombox);
   widFecha.diaCombox = GTK_COMBO_BOX(pForm.fechaN.diaCombox);
   capturar_formatear_fecha(&captura.fechaN, &widFecha, &registro.fechas, &err,
-                          "de nacimiento");
+                           "de nacimiento");
 
   widFecha.anioEntry = GTK_ENTRY(pForm.primCons.anioEntry);
   widFecha.mesCombox = GTK_COMBO_BOX(pForm.primCons.mesCombox);
   widFecha.diaCombox = GTK_COMBO_BOX(pForm.primCons.diaCombox);
   capturar_formatear_fecha(&captura.fechaN, &widFecha, &registro.fechasC, &err,
-                          "de nacimiento");
+                           "de nacimiento");
 
   captura.tpSangre = formatear_tsangre(GTK_COMBO_BOX(pForm.tSangre.combox));
   if (captura.tpSangre == NULL)
@@ -337,7 +344,7 @@ Pacientes validar_formulario_pacientes() {
   else
     strcpy(registro.tpSangre, captura.tpSangre);
 
-  //registro.sexo = formatear_sexo(GTK_COMBO_BOX_TEXT(pForm.sexo.combox));
+  registro.sexo = formatear_sexo(GTK_COMBO_BOX(pForm.sexo.combox));
 
   if (err->len != 0) {
     g_string_append(err, " no válido(s)");
@@ -348,16 +355,28 @@ Pacientes validar_formulario_pacientes() {
   return registro;
 }
 
-void registrar_datos_paciente(GtkWidget *btn, gpointer data) {
+gboolean registrar_datos_paciente(GtkWidget *btn, gpointer data) {
+  FILE *apArch;
   Pacientes registro = validar_formulario_pacientes();
 
-  g_print("Nom: %s\nCurp: %s\n", registro.nombre, registro.CURP);
-  g_print("FechaN %d/%d/%d\n", registro.fechasC.dia, registro.fechasC.mes,
-          registro.fechasC.anio);
-  g_print("Sexo: %c Tel: %s\n", registro.sexo, registro.telf);
-  g_print("TSangre: %s ", registro.tpSangre);
-  g_print("Fecha1C: %d/%d/%d\n\n", registro.fechasC.dia, registro.fechasC.mes,
-          registro.fechasC.anio);
+  if (registro.estado == 0)
+    return FALSE;
+
+  free_PacForm(NULL, NULL);
+
+  apArch = fopen("../data/pacientes.dat", "ab");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado\n");
+    return FALSE;
+  }
+
+  fwrite(&registro, sizeof(Pacientes), 1, apArch);
+  fclose(apArch);
+
+  gtk_list_store_clear(tabla.listStore);
+  mostrar_pacientes("../data/pacientes.dat");
+
+  return TRUE;
 }
 
 void pac_agregar_callback(GtkWidget *btn, gpointer data) {
@@ -367,4 +386,118 @@ void pac_agregar_callback(GtkWidget *btn, gpointer data) {
                    G_CALLBACK(registrar_datos_paciente), NULL);
 }
 
-void pac_mod_callback(GtkWidget *btn, gpointer data) { pac_crear_form(1); }
+gboolean modificar_datos_paciente(GtkWidget *btn, gpointer data) {
+  long pos;
+  FILE *apArch;
+  Pacientes registro = validar_formulario_pacientes();
+  GtkTreeModel *modelo;
+  GtkTreeIter iter;
+
+  if (registro.estado == 0)
+    return FALSE;
+
+  free_PacForm(NULL, NULL);
+
+  gtk_tree_selection_get_selected(tabla.filaActual, &modelo, &iter);
+  gtk_tree_model_get(modelo, &iter, 7, &pos, -1);
+
+  apArch = fopen("../data/pacientes.dat", "r+b");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado\n");
+    return FALSE;
+  }
+
+  fseek(apArch, pos, SEEK_SET);
+
+  fwrite(&registro, sizeof(Pacientes), 1, apArch);
+  fclose(apArch);
+
+  gtk_list_store_clear(tabla.listStore);
+  mostrar_pacientes("../data/pacientes.dat");
+
+  return TRUE;
+}
+
+void pac_mod_callback(GtkWidget *btn, gpointer data) {
+  GtkTreeModel *modelo;
+  GtkTreeIter iter;
+
+  // Si no se ha seleccionado una fila
+  if (gtk_tree_selection_get_selected(tabla.filaActual, &modelo, &iter) ==
+      FALSE)
+    return;
+
+  desconectar_señal_btn(&pForm.acepBtn);
+  pac_crear_form(1);
+  g_signal_connect(G_OBJECT(pForm.acepBtn), "clicked",
+                   G_CALLBACK(modificar_datos_paciente), NULL);
+}
+
+void eliminar_datos_paciente(GtkWidget *btn, gpointer data) {
+  // Como no sé en que byte se encuentra el estado, leo el registro completo
+  long pos;
+  char sexo[2];
+  FILE *apArch;
+  GtkTreeIter iter;
+  PacientesSinFormato p;
+  Pacientes paciente;
+  GtkTreeModel *modelo;
+  char fechaFormato[2][12];
+
+  if (gtk_tree_selection_get_selected(tabla.filaActual, &modelo, &iter) ==
+      FALSE)
+    return;
+
+  gtk_tree_model_get(modelo, &iter, 0, &p.curp, 1, &p.nombre, 2, &p.fechaN, 3,
+                     &p.sexo, 4, &p.telf, 5, &p.tpSangre, 6, &p.fechaC, 7,
+                     &p.pos, -1);
+
+  g_print("a\n");
+  gchar_a_char(p.curp, paciente.CURP);
+  g_print("a\n");
+  gchar_a_char(p.nombre, paciente.nombre);
+  g_print("a\n");
+  gchar_a_char(p.telf, paciente.telf);
+  g_print("a\n");
+  gchar_a_char(p.tpSangre, paciente.tpSangre);
+  g_print("a\n");
+
+  imprimir_paciente(paciente);
+  g_print("pos: %ld\n\n", p.pos);
+
+  if (sscanf(p.fechaN, "%d/%d/%d", &paciente.fechas.dia, &paciente.fechas.mes,
+             &paciente.fechas.anio) != 3) {
+    g_print("%s , %d, %d, %d\n\n", fechaFormato[0], paciente.fechas.dia,
+            paciente.fechas.mes, paciente.fechas.anio);
+    g_print("ERROR: No se pudo formatear fecha de nacimiento\n\n");
+    return;
+  }
+
+  if (sscanf(fechaFormato[1], "%d/%d/%d", &paciente.fechasC.dia,
+             &paciente.fechasC.mes, &paciente.fechasC.anio) != 3) {
+    g_print("ERROR: No se pudo formatear fecha primer consulta\n\n");
+    return;
+  }
+
+  if (sscanf(sexo, "%c", &paciente.sexo) != 1) {
+    g_print("ERROR: No se pudo formatear el sexo\n\n");
+    return;
+  }
+
+  paciente.estado = 0;
+
+  apArch = fopen("../data/pacientes.dat", "r+b");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado");
+    return;
+  }
+
+  fseek(apArch, pos, SEEK_SET);
+  fwrite(&paciente, sizeof(Pacientes), 1, apArch);
+  fclose(apArch);
+
+  gtk_list_store_clear(tabla.listStore);
+  mostrar_pacientes("../data/pacientes.dat");
+
+  return;
+}

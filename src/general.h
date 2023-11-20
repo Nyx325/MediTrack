@@ -61,16 +61,19 @@ typedef void (*CallbackFunc)(GtkWidget *, gpointer);
 void        cambio_mes              (GtkComboBox *widget, gpointer data);
 char        dias_x_mes              (const gint mes);
 char        *formatear_nombre       (const gchar *input);
+char        *formatear_palabra      (const gchar *input);
 gboolean    is_full_nums            (const gchar *input, gsize max_tam, gsize min_tam);
 char        *formatear_telf         (const gchar *input);
 gboolean    is_number               (const gchar *input, gsize max_tam, gsize min_tam);
 gboolean    es_vocal_acentuada      (char c);
-char        *formatear_num          (const gchar *input, gsize max_tam, gsize min_tam);
+char        *formatear_num          (const gchar *input);
 gboolean    reset_warning           (GtkWidget *widget, GdkEventButton *event, gpointer data);
 void        import_model            (GtkWidget *tview, GtkListStore *model, ushort numCols, char *titulos[]);
 void        agregar_err             (char *texto, GString **cadena);
 void        mostrarMed              (char nomMed[]);
 int         formatear_tsangre_num   (char *tipoS);
+void        imprimir_paciente       (Pacientes p);
+gboolean    gchar_a_char            (gchar *cadenaOrigen, char *cadenaDestino);
 
 
 typedef struct {
