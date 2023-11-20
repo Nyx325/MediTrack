@@ -76,8 +76,8 @@ void crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes,
 
   gtk_window_set_default_size(GTK_WINDOW(baseListv->win), xRes, yRes);
   gtk_window_set_position(GTK_WINDOW(baseListv->win), GTK_WIN_POS_CENTER);
-  g_signal_connect(G_OBJECT(baseListv->win), "destroy", G_CALLBACK(callback),
-                   gtk_main_quit);
+  g_signal_connect(G_OBJECT(baseListv->win), "destroy", G_CALLBACK(gtk_main_quit),
+                   NULL);
 
   baseListv->box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
 
