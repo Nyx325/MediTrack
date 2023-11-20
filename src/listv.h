@@ -1,14 +1,28 @@
 #ifndef LISTV_H
 #define LISTV_H
 
-#include "listv_bar.h"
 #include "general.h"
+#include "listv_bar.h"
 
-extern GtkWidget *lv_win, *lv_box, *lv_tview, *lv_scrollw;
-extern GtkListStore *lv_lstore;
+typedef struct {
+  GtkWidget *win;
+  GtkWidget *box;
+  GdkPixbuf *icon;
+  GtkWidget *scrollWin;
+} BaseListv;
 
-void    free_listv          (void);
-void    lv_importmodel      (unsigned short numCols, char *titulos[]);
-void    init_listv          (char *titulo);
+typedef struct {
+  BaseListv baseVentana;
+  GtkWidget *tView;
+  GtkListStore *listStore;
+  GtkTreeSelection *filaActual;
+} ListView;
+
+extern ListView tabla;
+
+void listv_gen_table        (void);
+void free_listview          (GtkWidget *widget, gpointer data);
+void listview_importmodel   (ushort numCols, char *titulos[]);
 
 #endif
+

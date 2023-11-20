@@ -2,15 +2,29 @@
 #define LISTV_BAR_H
 
 #include "general.h"
-#include "form_pac.h"
-#include "listv.h"
-#include "menu.h"
 
-void    gen_bar                 (void);
-void    set_entry_placeholders  (char *ph1, char *ph2);
-void    free_bar                (void);
+typedef struct {
+  GtkWidget *box;
+  GtkWidget *lbl;
+  BtnBase base;
+} BarBtn;
 
-// Potencial mala práctica
-extern GtkWidget *bar_box, *bar_entry[2], *bar_btn[5];
+typedef struct {
+  GtkWidget *mainbox;
+  BarBtn agregar;
+  BarBtn modificar;
+  BarBtn eliminar;
+  GtkWidget *separador;
+  GtkWidget *entrys[2];
+  BtnBase backBtn;
+  BtnBase searchBtn;
+} BarListv;
+
+extern BarListv bar;
+
+void free_barlistv      (void);
+void crear_bar          (void);
+void poner_plaholders   (char *phEntry1, char *phEntry2);
+void crear_btn_img      (BtnBase *btn, char *imgPath);
 
 #endif

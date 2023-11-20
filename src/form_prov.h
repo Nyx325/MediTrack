@@ -4,9 +4,7 @@
 #include "general.h"
 #include "listv.h"
 
-void gen_formprov       (void);
-void agregarProveedor   (char *dirArchivo, Proveedor proveedor);
-void prov_aceptar       (GtkWidget *Wid, gpointer data);
-void mostrarProv        (char *archivoDir);
+void prov_crear_form        (void);
+void mostrar_proveedores    (char *archivoDir);
 
 #endif

@@ -4,13 +4,21 @@
 #include "general.h"
 #include "listv.h"
 
+typedef struct {
+  gchar *curp;
+  gchar *nombre;
+  gchar *fechaN;
+  gchar *sexo;
+  gchar *telf;
+  gchar *tpSangre;
+  gchar *fechaC;
+  long  pos;
+} PacientesSinFormato;
 
-
-//void fp_wingrid();
-void        gen_formpac     (GtkWidget *wid, gpointer data);
-void        fp_aceptar      (GtkWidget *wid, gpointer data);
-gboolean    reset_warning   (GtkWidget *widget, GdkEventButton *event, gpointer data);
-int         addPaciente     (char nomPac[], Pacientes paciente);
-void        mostrarPaci     (char nomPac[]);
+void pac_crear_form(Opc modo);
+void mostrar_pacientes(char *archivoDir);
+void pac_agregar_callback(GtkWidget *btn, gpointer data);
+void pac_mod_callback(GtkWidget *btn, gpointer data);
+void eliminar_datos_paciente(GtkWidget *btn, gpointer data);
 
 #endif

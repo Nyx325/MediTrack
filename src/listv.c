@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "general.h"
 
 typedef struct {
@@ -16,6 +17,13 @@ typedef struct {
 
 ListView tabla;
 
+=======
+#include "listv.h"
+#include "listv_bar.h"
+
+ListView tabla;
+
+>>>>>>> form_pac_reinicio
 void free_baselistv(BaseListv *ventana) {
   if (ventana == NULL)
     return;
@@ -47,6 +55,11 @@ void free_listview(GtkWidget *widget, gpointer data) {
 
   free_baselistv(&tabla.baseVentana);
 
+<<<<<<< HEAD
+=======
+  free_barlistv();
+
+>>>>>>> form_pac_reinicio
   tabla.tView = NULL;
   tabla.listStore = NULL;
   tabla.filaActual = NULL;
@@ -58,6 +71,10 @@ void listview_importmodel(ushort numCols, char *titulos[]) {
     gtk_widget_destroy(tabla.tView);
 
   tabla.tView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(tabla.listStore));
+<<<<<<< HEAD
+=======
+  tabla.filaActual = gtk_tree_view_get_selection(GTK_TREE_VIEW(tabla.tView));
+>>>>>>> form_pac_reinicio
 
   // Crear, configurar columnas y agregar al treeview
   for (i = 0; i < numCols; i++) {
@@ -86,8 +103,12 @@ void crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes,
 
   gtk_window_set_default_size(GTK_WINDOW(baseListv->win), xRes, yRes);
   gtk_window_set_position(GTK_WINDOW(baseListv->win), GTK_WIN_POS_CENTER);
+<<<<<<< HEAD
   gtk_container_set_border_width(GTK_CONTAINER(baseListv->win), 20);
   g_signal_connect(G_OBJECT(baseListv->win), "destroy", G_CALLBACK(callback),
+=======
+  g_signal_connect(G_OBJECT(baseListv->win), "destroy", G_CALLBACK(gtk_main_quit),
+>>>>>>> form_pac_reinicio
                    NULL);
 
   baseListv->box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
@@ -106,7 +127,17 @@ void crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes,
 }
 
 void listv_gen_table() {
+<<<<<<< HEAD
     crear_ventana_listv(&tabla.baseVentana, 1280, 720, free_listview);
 
 
+=======
+  crear_ventana_listv(&tabla.baseVentana, 1280, 720, free_listview);
+
+  crear_bar();
+  gtk_box_pack_start(GTK_BOX(tabla.baseVentana.box), bar.mainbox, FALSE, FALSE,
+                     0);
+
+  gtk_widget_show_all(tabla.baseVentana.win);
+>>>>>>> form_pac_reinicio
 }
