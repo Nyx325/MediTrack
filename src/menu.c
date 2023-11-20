@@ -68,6 +68,10 @@ void proveedores(GtkWidget *widget, gpointer data) {
   listv_gen_table();
   mostrar_proveedores("../data/proveedores.dat");
   free_menu(NULL, NULL);
+  g_signal_connect(G_OBJECT(bar.agregar.base.btn), "clicked",
+                   G_CALLBACK(agregar_proveedor_callback), NULL);
+  g_signal_connect(G_OBJECT(bar.modificar.base.btn), "clicked",
+                   G_CALLBACK(modificar_proveedor_callback), NULL);
 }
 
 void crear_menu() {

@@ -1,4 +1,5 @@
 #include "form_prov.h"
+#include "general.h"
 
 typedef struct {
   BaseForm baseVentana;
@@ -50,13 +51,56 @@ void free_provform(GtkWidget *widget, gpointer data) {
   prForm.cancelBtn = NULL;
 }
 
-void cargar_proveedor_registro(){
-    long posArch;
-    char anioPermiso[5];
-    
+void cargar_proveedor_registro() {
+  long posArch;
+  char anioPermiso[5];
+  Proveedor registro;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  FILE *apArch;
+
+  if (gtk_tree_selection_get_selected(tabla.filaActual, &model, &iter) ==
+      FALSE) {
+    free_provform(NULL, NULL);
+    return;
+  }
+
+  gtk_tree_model_get(model, &iter, 10, &posArch, -1);
+  apArch = fopen("../data/proveedores.dat", "rb");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado");
+    return;
+  }
+  fseek(apArch, posArch, SEEK_SET);
+  fread(&registro, sizeof(Proveedor), 1, apArch);
+  fclose(apArch);
+
+  gtk_entry_set_text(GTK_ENTRY(prForm.nomComercial.entry),
+                     registro.nombreComercial);
+  gtk_entry_set_text(GTK_ENTRY(prForm.nomFactura.entry),
+                     registro.nombreFactura);
+  gtk_entry_set_text(GTK_ENTRY(prForm.rfc.entry), registro.rfc);
+  gtk_entry_set_text(GTK_ENTRY(prForm.domicilio.entry), registro.domicilio);
+  gtk_entry_set_text(GTK_ENTRY(prForm.numOficina.entry),
+                     registro.numeroOficina);
+  gtk_entry_set_text(GTK_ENTRY(prForm.wsp.entry), registro.whatsappEmpresarial);
+  gtk_entry_set_text(GTK_ENTRY(prForm.correo.entry),
+                     registro.correoElectronico);
+  gtk_entry_set_text(GTK_ENTRY(prForm.repComercial.entry),
+                     registro.representanteComercial);
+
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prForm.narcoticosCheckBtn),
+                               registro.permisoNarcoticos);
+
+  sprintf(anioPermiso, "%d", registro.vigencia.anio);
+  gtk_entry_set_text(GTK_ENTRY(prForm.vigenciaPersmiso.anioEntry), anioPermiso);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(prForm.vigenciaPersmiso.mesCombox),
+                           registro.vigencia.mes);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(prForm.vigenciaPersmiso.diaCombox),
+                           registro.vigencia.dia);
 }
 
-void prov_crear_form() {
+void prov_crear_form(Opc modo) {
   crear_ventana(&prForm.baseVentana, 611, 220, free_provform);
 
   crear_entradatexto(&prForm.nomComercial, "Nombre Comercial", 30, 100);
@@ -66,6 +110,7 @@ void prov_crear_form() {
   crear_entradatexto(&prForm.wsp, "Whatsapp", 10, 10);
   crear_entradatexto(&prForm.correo, "Correo", 20, 100);
   crear_entradatexto(&prForm.repComercial, "Representante Comercial", 30, 30);
+  crear_entradatexto(&prForm.domicilio, "Domicilio", 30, 99);
 
   crear_entradafecha(&prForm.vigenciaPersmiso, "Vigencia");
 
@@ -137,7 +182,8 @@ void prov_crear_form() {
   gtk_grid_attach(GTK_GRID(prForm.baseVentana.grid), prForm.cancelBtn, 2, 8, 3,
                   1);
 
-  // Apartado de carga de datos según sea el caso(?)
+  if (modo)
+    cargar_proveedor_registro();
 
   gtk_widget_show_all(prForm.baseVentana.win);
 }
@@ -194,4 +240,214 @@ void mostrar_proveedores(char *archivoDir) {
                      "Vigencia Permiso"};
 
   listview_importmodel(10, titulos);
+}
+
+char *formatear_rfc(const gchar *input) {
+  char *formateo = g_strdup(input);
+  unsigned int i, max_letras;
+  const gchar tam = g_utf8_strlen(input, -1);
+
+  if (tam != 12 && tam != 13) {
+    g_free(formateo);
+    return NULL;
+  }
+
+  // Si persona física
+  if (tam == 13) {
+    // Verificar caracteres de nombre
+    for (i = 0; i < 4; i++) {
+      if (!isalpha(formateo[i])) {
+        g_free(formateo);
+        return NULL;
+      }
+
+      formateo[i] = toupper(formateo[i]);
+    }
+
+    // Verificar caracteres de nombre
+    for (i = 4; i < 8; i++) {
+      if (!isdigit(formateo[i])) {
+        g_free(formateo);
+        return NULL;
+      }
+    }
+
+    // Validar homoclave
+    for (i = 8; i < 13; i++) {
+      if (isalpha(formateo[i]))
+        formateo[i] = toupper(formateo[i]);
+    }
+  }
+  // Si persona moral
+  else {
+    // Validar denominación
+    for (i = 0; i < 3; i++) {
+      if (!isalpha(formateo[i])) {
+        g_free(formateo);
+        return NULL;
+      }
+
+      formateo[i] = toupper(formateo[i]);
+    }
+
+    // Validar fecha de creación
+    for (i = 3; i < 9; i++) {
+      if (!isdigit(formateo[i])) {
+        g_free(formateo);
+        return NULL;
+      }
+    }
+
+    // Validar homoclave
+    for (i = 9; i < 12; i++) {
+      if (isalpha(formateo[i]))
+        formateo[i] = toupper(formateo[i]);
+    }
+  }
+
+  return formateo;
+}
+
+char *formatear_correo(const gchar *input) {
+  char *output = g_strdup(input);
+  if (strstr(output, "@") && strlen(output) > 6) {
+    return output;
+  } else
+    return NULL;
+}
+
+typedef struct {
+  TextoIngresado nomComercial;
+  TextoIngresado nomFactura;
+  TextoIngresado rfc;
+  TextoIngresado correo;
+  TextoIngresado wsp;
+  TextoIngresado numOficina;
+  TextoIngresado representante;
+  TextoIngresado domicilio;
+  FechaIngresada vigenciaPermiso;
+} DatosFormularioProveedor;
+
+Proveedor validar_formulario_proveedor() {
+  GString *err = g_string_new("");
+  Proveedor registro;
+  DatosFormularioProveedor cap;
+  WidgetsFecha widFecha;
+
+  registro.estado = 0;
+
+  capturar_formatear_texto(&cap.nomComercial, registro.nombreComercial,
+                           formatear_palabra, prForm.nomComercial.entry, &err,
+                           "Nombre comercial");
+  capturar_formatear_texto(&cap.nomFactura, registro.nombreFactura,
+                           formatear_nombre, prForm.nomFactura.entry, &err,
+                           "Nombre factura");
+  capturar_formatear_texto(&cap.rfc, registro.rfc, formatear_rfc,
+                           prForm.rfc.entry, &err, "RFC");
+  capturar_formatear_texto(&cap.domicilio, registro.domicilio,
+                           formatear_palabra, prForm.domicilio.entry, &err,
+                           "Domicilio");
+  capturar_formatear_texto(&cap.numOficina, registro.numeroOficina,
+                           formatear_telf, prForm.numOficina.entry, &err,
+                           "Num. Oficina");
+  capturar_formatear_texto(&cap.wsp, registro.whatsappEmpresarial,
+                           formatear_telf, prForm.wsp.entry, &err, "Whatsapp");
+  capturar_formatear_texto(&cap.correo, registro.correoElectronico,
+                           formatear_correo, prForm.correo.entry, &err,
+                           "Correo");
+  capturar_formatear_texto(&cap.representante, registro.representanteComercial,
+                           formatear_nombre, prForm.repComercial.entry, &err,
+                           "Representante");
+  registro.permisoNarcoticos = gtk_toggle_button_get_active(
+      GTK_TOGGLE_BUTTON(prForm.narcoticosCheckBtn));
+
+  if (registro.permisoNarcoticos == 0) {
+    registro.vigencia.dia = 0;
+    registro.vigencia.mes = 0;
+    registro.vigencia.anio = 0;
+  } else {
+
+    widFecha.anioEntry = GTK_ENTRY(prForm.vigenciaPersmiso.anioEntry);
+    widFecha.mesCombox = GTK_COMBO_BOX(prForm.vigenciaPersmiso.mesCombox);
+    widFecha.diaCombox = GTK_COMBO_BOX(prForm.vigenciaPersmiso.diaCombox);
+    capturar_formatear_fecha(&cap.vigenciaPermiso, &widFecha,
+                             &registro.vigencia, &err, "Vigencia");
+  }
+
+  if (err->len != 0) {
+    g_string_append(err, " no válido(s)");
+    gtk_label_set_markup(GTK_LABEL(prForm.warningLbl), err->str);
+  } else
+    registro.estado = 1;
+
+  return registro;
+}
+
+gboolean registrar_datos_proveedor(GtkWidget *btn, gpointer data) {
+  FILE *apArch;
+  Proveedor registro = validar_formulario_proveedor();
+
+  if (registro.estado == 0)
+    return FALSE;
+
+  free_provform(NULL, NULL);
+
+  apArch = fopen("../data/proveedores.dat", "ab");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado");
+    return FALSE;
+  }
+
+  fwrite(&registro, sizeof(Proveedor), 1, apArch);
+  fclose(apArch);
+
+  gtk_list_store_clear(tabla.listStore);
+  mostrar_proveedores("../data/proveedores.dat");
+  
+  return TRUE;
+}
+
+void agregar_proveedor_callback(GtkWidget *btn, gpointer data) {
+  desconectar_señal_btn(&prForm.aceptBtn);
+  prov_crear_form(0);
+  g_signal_connect(G_OBJECT(prForm.aceptBtn), "clicked",
+                   G_CALLBACK(registrar_datos_proveedor), NULL);
+}
+
+gboolean modificar_datos_proveedor(GtkWidget *btn, gpointer data){
+  long pos;  
+  FILE *apArch;
+  Proveedor registro = validar_formulario_proveedor();
+  GtkTreeModel *modelo;
+  GtkTreeIter iter;
+
+  if (registro.estado == 0)
+    return FALSE;
+
+  free_provform(NULL, NULL);
+
+  gtk_tree_selection_get_selected(tabla.filaActual, &modelo, &iter);
+  gtk_tree_model_get(modelo, &iter, 10, &pos, -1);
+
+  apArch = fopen("../data/proveedores.dat", "r+b");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado");
+    return FALSE;
+  }
+
+  fseek(apArch, pos, SEEK_SET);
+  fwrite(&registro, sizeof(Proveedor), 1, apArch);
+  fclose(apArch);
+
+  gtk_list_store_clear(tabla.listStore);
+  mostrar_proveedores("../data/proveedores.dat");
+  
+  return TRUE;
+}
+
+void modificar_proveedor_callback(GtkWidget *btn, gpointer data) {
+  desconectar_señal_btn(&prForm.aceptBtn);
+  prov_crear_form(1);
+  g_signal_connect(G_OBJECT(prForm.aceptBtn), "clicked",
+                   G_CALLBACK(modificar_datos_proveedor), NULL);
 }

@@ -65,9 +65,7 @@ void cargar_medicamento_reguistro() {
     return;
   }
 
-  g_print("a\n");
   gtk_tree_model_get(model, &iter, 11, &posArch, -1);
-  g_print("%ld\n", posArch);
 
   apArch = fopen("../data/medicamentos.dat", "rb");
   if (apArch == NULL) {
@@ -124,7 +122,7 @@ void med_crear_form(Opc modo) {
   crear_entradatexto(&mForm.presentacion, "Presentacion", 10, 49);
   crear_entradatexto(&mForm.lab, "Laboratorio", 10, 49);
   crear_entradatexto(&mForm.costo, "Costo", 7, 9);
-  crear_entradatexto(&mForm.lote, "Lote", 5, 5);
+  crear_entradatexto(&mForm.lote, "Lote", 5, 20);
   crear_entradatexto(&mForm.unidadesI, "Unidades\nInventario", 5, 10);
   crear_entradatexto(&mForm.marca, "Marca", 5, 49);
 
