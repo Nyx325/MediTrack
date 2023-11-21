@@ -285,8 +285,8 @@ void free_baseform(BaseForm *basesVentana) {
     g_object_unref(basesVentana->icon);
   if (basesVentana->grid != NULL)
     gtk_widget_destroy(basesVentana->grid);
-  if (basesVentana->win != NULL)
-    gtk_widget_destroy(basesVentana->win);
+  // if (basesVentana->win != NULL)
+  //   gtk_widget_destroy(basesVentana->win);
 
   basesVentana->icon = NULL;
   basesVentana->grid = NULL;

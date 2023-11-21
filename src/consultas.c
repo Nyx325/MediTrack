@@ -112,29 +112,31 @@ void free_formcons(GtkWidget *widget, gpointer data) {
   if(cForm.warningLbl)
       gtk_widget_destroy(cForm.warningLbl);
 }
+/*
+static void caracteres_restantes(GtkTextBuffer *buffer, const GtkTextIter *location, const char *text, int len, gpointer data) {
+    EntradaTextv *textV = (EntradaTextv*)data;
 
-void maxcaracteres_textview(GtkTextBuffer *buffer, gpointer data) {
-  int *maxChars = (int *)data;
+    GtkTextIter end_iter;
+    gtk_text_buffer_get_end_iter(buffer, &end_iter);
 
-  // Obtener la longitud del texto actual en el buffer
-  GtkTextIter start, end;
-  gtk_text_buffer_get_bounds(buffer, &start, &end);
-  int longitud = gtk_text_iter_get_offset(&end);
+    int charsEscritos = gtk_text_iter_get_offset(&end_iter);
 
-  // Verificar si la longitud excede el límite
-  if (longitud > *maxChars) {
-    // Si excede, retroceder el buffer al límite
-    gtk_text_buffer_get_iter_at_offset(buffer, &end, *maxChars);
-    gtk_text_buffer_delete(buffer, &start, &end);
-  }
+    // Update the label with the character count information
+    char label_text[100];
+    snprintf(label_text, sizeof(label_text), "Characters: %d / %d", charsEscritos, textV->maxChars);
+    gtk_label_set_text(GTK_LABEL(textV->cEscritos), label_text);
 }
 
 void crear_entradatextv(EntradaTextv *info, char *titulo, int maxChars) {
+  char buffer[10];
   info->lbl = gtk_label_new(titulo);
-  info->textV = gtk_text_view_new();
-  g_signal_connect(G_OBJECT(info->textV), "changed",
-                   G_CALLBACK(maxcaracteres_textview), &maxChars);
-}
+  info->buffer = gtk_text_buffer_new(NULL);
+  gtk_text_buffer_set_max_length(info->buffer, maxChars);
+  info->textV = gtk_text_view_new_with_buffer(info->buffer);
+  sprintf(buffer, "0/%d", info->maxChars);
+  info->cEscritos = gtk_label_new(buffer);
+  info->maxChars = maxChars;
+}*/
 
 EntradaPresion crear_entradapresion() {
   EntradaPresion p;
@@ -151,17 +153,30 @@ EntradaPresion crear_entradapresion() {
   return p;
 }
 
+void cargar_consulta_registro(){
+  long posArch;
+  Consultas registro;
+  GtkTreeModel *mode;
+  GtkTreeIter iter;
+  FILE *apArch;
+
+
+
+}
+
 void crear_formulario_consulta(Opc modo) {
   crear_ventana(&cForm.baseForm, 1000, 400, free_formcons);
 
   crear_entradatexto(&cForm.nomPac, "Nombre Paciente", 10, 50);
   crear_entradatexto(&cForm.edad, "Edad", 3, 3);
-  crear_entradatexto(&cForm.edad, "Peso", 3, 4);
+  crear_entradatexto(&cForm.peso, "Peso", 3, 4);
   crear_entradatexto(&cForm.altura, "Altura", 4, 4);
   crear_entradatexto(&cForm.nomDr, "Doctor", 10, 50);
   crear_entradatexto(&cForm.nomDr, "Doctor", 10, 50);
 
   crear_entradafecha(&cForm.fConsulta, "Fecha Consulta");
+
+  //crear_entradatextv(&cForm.sintomas, "Síntomas", 5);
 
   cForm.presion = crear_entradapresion();
 
@@ -169,4 +184,30 @@ void crear_formulario_consulta(Opc modo) {
 
   crear_boton(&cForm.aceptBtn, "Aceptar", no_callback);
   crear_boton(&cForm.aceptBtn, "Cancelar", free_formcons);
+
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.nomPac.lbl, 0, 0, 1, 1);
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.nomPac.entry, 1, 0, 4, 1);
+
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.edad.lbl, 0, 1, 1, 1);
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.edad.entry, 1, 1, 1, 1);
+
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.peso.lbl, 2, 1, 1, 1);
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.peso.entry, 3, 1, 1, 1);
+
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.altura.lbl, 4, 1, 1, 1);
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.altura.entry, 5, 1, 1, 1);
+
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.presion.lbl, 0, 2, 1, 1);
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.presion.sistEntry, 1, 2, 1, 1);
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.presion.diastEntry, 2, 2, 1, 1);
+
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.temp.lbl, 3, 2, 1, 1);
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.temp.entry, 4, 2, 1, 1);
+
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.sintomas.lbl, 0, 3, 1, 1);
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.sintomas.textV, 0, 4, 10, 6);
+
+  gtk_widget_show_all(cForm.baseForm.win);
 }
+
+void agregar_consulta(){}

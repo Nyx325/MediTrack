@@ -4,12 +4,16 @@
 #include "general.h"
 #include "listv.h"
 
-void free_tabla_consultas (GtkWidget *widget, gpointer data);
-void crear_tabla_consultas  (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
+void free_tabla_consultas       (GtkWidget *widget, gpointer data);
+void crear_tabla_consultas      (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
+void crear_formulario_consulta  (Opc modo);
 
 typedef struct{
   GtkWidget *lbl;
   GtkWidget *textV;
+  GtkTextBuffer *buffer;
+  GtkWidget *cEscritos;
+  int maxChars;
 }EntradaTextv;
 
 typedef struct{

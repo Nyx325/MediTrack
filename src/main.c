@@ -1,4 +1,5 @@
 #include "login.h"
+#include "consultas.h"
 
 int main() {
   // Establecer la variable de entorno GTK_THEME con la ruta al tema descargado
@@ -25,6 +26,7 @@ int main() {
   // prov_crear_form(0);
   // listv_gen_table();
   // crear_menu();
+  crear_formulario_consulta(0);
 
   gtk_main();
   return 0;

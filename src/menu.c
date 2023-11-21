@@ -7,7 +7,7 @@ WinMenu menu;
 
 void free_menu(GtkWidget *widget, gpointer data) {
   ushort i;
-
+  gtk_widget_hide(menu.baseVentana.win);
   if (menu.banner != NULL)
     gtk_widget_destroy(menu.banner);
 
@@ -24,8 +24,6 @@ void free_menu(GtkWidget *widget, gpointer data) {
   free_baseform(&menu.baseVentana);
 
   menu.banner = NULL;
-
-  gtk_widget_hide(menu.baseVentana.win);
 }
 
 void pacientes(GtkWidget *widget, gpointer data) {
