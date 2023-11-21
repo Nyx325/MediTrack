@@ -314,7 +314,7 @@ Medicamento validar_formulario_medicamento() {
 
   registro.estado = 0;
 
-  capturar_formatear_texto(&cap.id, reg.idSF, formatear_id, mForm.id.entry,
+  capturar_formatear_texto(&cap.id, reg.idSF, formatear_num, mForm.id.entry,
                            &err, "Clave");
   registro.id = atoi(reg.idSF);
 
@@ -392,21 +392,20 @@ void agregar_medicamentos_callback(GtkWidget *btn, gpointer data) {
                    G_CALLBACK(registrar_datos_medicamento), NULL);
 }
 
-gboolean modificar_datos_medicamento(GtkWidget *btn, gpointer data){
+gboolean modificar_datos_medicamento(GtkWidget *btn, gpointer data) {
   long pos;
   FILE *apArch;
   Medicamento registro = validar_formulario_medicamento();
   GtkTreeModel *modelo;
   GtkTreeIter iter;
 
-  if(registro.estado == 0)
-      return FALSE;
+  if (registro.estado == 0)
+    return FALSE;
 
   free_medform(NULL, NULL);
 
   gtk_tree_selection_get_selected(tabla.filaActual, &modelo, &iter);
   gtk_tree_model_get(modelo, &iter, 11, &pos, -1);
-
 
   apArch = fopen("../data/medicamentos.dat", "r+b");
   if (apArch == NULL) {
@@ -429,5 +428,63 @@ void modificar_medicamentos_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&mForm.aceptBtn);
   med_crear_form(1);
   g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",
-                    G_CALLBACK(modificar_datos_medicamento), NULL);
+                   G_CALLBACK(modificar_datos_medicamento), NULL);
+}
+
+typedef struct {
+  gchar *id;
+  gchar *marca;
+  gchar *sustancia;
+  gchar *gramaje;
+  gchar *presentacion;
+  gchar *laboratorio;
+  gchar *unidadesC;
+  gchar *costo;
+  gchar *lote;
+  gchar *fecha;
+  gchar *unidadesI;
+  long pos;
+} MedicamentosSinFormato;
+
+void eliminar_datos_medicamentos(GtkWidget *btn, gpointer data) {
+  FILE *apArch;
+  GtkTreeIter iter;
+  Medicamento medicamento;
+  GtkTreeModel *modelo;
+  char fechaFormato[2][12];
+  MedicamentosSinFormato med;
+
+  if (gtk_tree_selection_get_selected(tabla.filaActual, &modelo, &iter) ==
+      FALSE)
+    return;
+
+  gtk_tree_model_get(
+      modelo, &iter, 0, &med.id, 1, &med.sustancia, 2, &med.marca, 3,
+      &medicamento.gramaje, 4, &medicamento.unidadesCaja, 5, &med.presentacion,
+      6, &medicamento.unidadesInventario, 7, &medicamento.costo, 8, &med.lote,
+      9, &med.fecha, 10, &med.laboratorio, 11, &med.pos, -1);
+
+  gchar_a_char(med.sustancia, medicamento.sustancia);
+  gchar_a_char(med.marca, medicamento.marca);
+  gchar_a_char(med.presentacion, medicamento.presentacion);
+  gchar_a_char(med.lote, medicamento.lote);
+  gchar_a_char(med.laboratorio, medicamento.laboratorio);
+
+  if (!fechaGchar_a_int(med.fecha, &medicamento.fecha))
+    return;
+
+  medicamento.estado = 0;
+
+  apArch = fopen("../data/medicamentos.dat", "r+b");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado");
+    return;
+  }
+
+  fseek(apArch, med.pos, SEEK_SET);
+  fwrite(&medicamento, sizeof(Medicamento), 1, apArch);
+  fclose(apArch);
+
+  gtk_list_store_clear(tabla.listStore);
+  mostrar_medicamentos("../data/medicamentos.dat");
 }

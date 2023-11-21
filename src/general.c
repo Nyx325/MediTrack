@@ -482,3 +482,36 @@ gboolean gchar_a_char(gchar *cadenaOrigen, char *cadenaDestino) {
   g_free(cadenaConvertida);
   return TRUE;
 }
+
+gboolean fechaGchar_a_int(gchar *entrada, Fecha *salida) {
+  if (sscanf(entrada, "%d/%d/%d", &salida->dia, &salida->mes, &salida->anio) !=
+      3) {
+    g_print("ERROR: No se pudo formatear fecha\n\n");
+    return FALSE;
+  }
+  return TRUE;
+}
+
+void gchar_a_int(gchar *entrada, int *dato) {
+  char *cadenaSinFromato = g_strdup(entrada);
+  *dato = atoi(cadenaSinFromato);
+  g_free(cadenaSinFromato);
+}
+
+gboolean gchar_a_uint(gchar *cadena, unsigned int *resultado) {
+  char *cadenaConvertida = g_strdup(cadena);
+
+  // Intenta convertir la cadena a unsigned long
+  char *endptr;
+  unsigned long valorUnsignedLong = strtoul(cadenaConvertida, &endptr, 10);
+
+  // Verifica si la conversión fue exitosa
+  if (*endptr == '\0') {
+    *resultado = (unsigned int)valorUnsignedLong;
+    g_free(cadenaConvertida);
+    return TRUE;
+  }
+
+  g_free(cadenaConvertida);
+  return FALSE;
+}

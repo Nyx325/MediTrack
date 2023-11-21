@@ -56,8 +56,8 @@ void medicamentos(GtkWidget *widget, gpointer data) {
                    G_CALLBACK(agregar_medicamentos_callback), NULL);
   g_signal_connect(G_OBJECT(bar.modificar.base.btn), "clicked",
                    G_CALLBACK(modificar_medicamentos_callback), NULL);
-  // g_signal_connect(G_OBJECT(bar.eliminar.base.btn), "clicked",
-  //                  G_CALLBACK(eliminar_datos_paciente), NULL);
+  g_signal_connect(G_OBJECT(bar.eliminar.base.btn), "clicked",
+                    G_CALLBACK(eliminar_datos_medicamentos), NULL);
 }
 
 void proveedores(GtkWidget *widget, gpointer data) {

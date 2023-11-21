@@ -446,7 +446,6 @@ typedef struct {
 
 void eliminar_datos_paciente(GtkWidget *btn, gpointer data) {
   // Como no sé en que byte se encuentra el estado, leo el registro completo
-  char sexo[2];
   FILE *apArch;
   GtkTreeIter iter;
   PacientesSinFormato p;
@@ -468,18 +467,8 @@ void eliminar_datos_paciente(GtkWidget *btn, gpointer data) {
   gchar_a_char(p.telf, paciente.telf);
   gchar_a_char(p.tpSangre, paciente.tpSangre);
 
-  g_print("%s\n\n", p.fechaN);
-  if (sscanf(p.fechaN, "%d/%d/%d", &paciente.fechas.dia, &paciente.fechas.mes,
-             &paciente.fechas.anio) != 3) {
-    g_print("ERROR: No se pudo formatear fecha de nacimiento\n\n");
+  if (!fechaGchar_a_int(p.fechaN, &paciente.fechas))
     return;
-  }
-
-  if (sscanf(p.fechaC, "%d/%d/%d", &paciente.fechasC.dia, &paciente.fechasC.mes,
-             &paciente.fechasC.anio) != 3) {
-    g_print("ERROR: No se pudo formatear fecha primer consulta\n\n");
-    return;
-  }
 
   paciente.sexo = p.sexo[0];
 

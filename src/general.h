@@ -74,6 +74,10 @@ void        mostrarMed              (char nomMed[]);
 int         formatear_tsangre_num   (char *tipoS);
 void        imprimir_paciente       (Pacientes p);
 gboolean    gchar_a_char            (gchar *cadenaOrigen, char *cadenaDestino);
+gboolean    fechaGchar_a_int        (gchar *entrada, Fecha *salida);
+void        gchar_a_int             (gchar *entrada, int *dato);
+gboolean    gchar_a_uint            (gchar *entrada, unsigned int *dato);
+void        gchar_a_float           (gchar *entrada, float *dato);
 
 
 typedef struct {
@@ -134,13 +138,13 @@ typedef struct {
   GtkComboBox *diaCombox;
 } WidgetsFecha;
 
-// Puntero a una función que retorna un array y recibe un array tipo gchar
+// Puntero a una función que retorna una dir a un array char y recibe un array tipo gchar
 typedef char* (*FuncFormato)(const gchar *);
 
-void capturar_formatear_texto (TextoIngresado *dato, char *registro, FuncFormato funcion, GtkWidget *entry, GString **err, char *errNom);
-void capturar_formatear_fecha(FechaIngresada *fecha, WidgetsFecha *widgets, Fecha *fechaReg, GString **err, char *errNom);
+void capturar_formatear_texto   (TextoIngresado *dato, char *registro, FuncFormato funcion, GtkWidget *entry, GString **err, char *errNom);
+void capturar_formatear_fecha   (FechaIngresada *fecha, WidgetsFecha *widgets, Fecha *fechaReg, GString **err, char *errNom);
 
 
-void desconectar_señal_btn(GtkWidget **btn);
+void desconectar_señal_btn      (GtkWidget **btn);
 
 #endif
