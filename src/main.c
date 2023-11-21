@@ -8,12 +8,12 @@ int main() {
   // Inicializar gtk
   gtk_init(NULL, NULL);
 
-  // gen_login();
+  gen_login();
   // gen_menu();
   // pac_crear_form(1);
   // prov_crear_form(0);
   // listv_gen_table();
-  crear_menu();
+  // crear_menu();
 
   gtk_main();
   return 0;

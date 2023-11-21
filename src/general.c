@@ -2,6 +2,8 @@
 #include <ctype.h>
 #include <string.h>
 
+void no_callback(GtkWidget *widget, gpointer data) {}
+
 // Retorno de el número de dias máximos según el mes
 char dias_x_mes(const gint mes) {
   if (mes > 12 || mes < 1)
@@ -363,8 +365,9 @@ void crear_ventana(BaseForm *baseDelFormulario, int xRes, int yRes,
   gtk_window_set_position(GTK_WINDOW(baseDelFormulario->win),
                           GTK_WIN_POS_CENTER);
   gtk_container_set_border_width(GTK_CONTAINER(baseDelFormulario->win), 20);
-  g_signal_connect(G_OBJECT(baseDelFormulario->win), "destroy",
-                   G_CALLBACK(callback), NULL);
+  if (callback != NULL)
+    g_signal_connect(G_OBJECT(baseDelFormulario->win), "destroy",
+                     G_CALLBACK(callback), NULL);
 
   baseDelFormulario->grid = gtk_grid_new();
 
@@ -463,8 +466,9 @@ void capturar_formatear_fecha(FechaIngresada *fecha, WidgetsFecha *widgets,
 }
 
 void desconectar_señal_btn(GtkWidget **btn) {
-  g_signal_handlers_disconnect_matched(G_OBJECT(*btn), G_SIGNAL_MATCH_DATA, 0,
-                                       0, NULL, NULL, NULL);
+  if (*btn != NULL)
+    g_signal_handlers_disconnect_matched(G_OBJECT(*btn), G_SIGNAL_MATCH_DATA, 0,
+                                         0, NULL, NULL, NULL);
 }
 
 void imprimir_paciente(Pacientes p) {

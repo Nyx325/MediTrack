@@ -388,6 +388,7 @@ gboolean registrar_datos_medicamento(GtkWidget *btn, gpointer data) {
 void agregar_medicamentos_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&mForm.aceptBtn);
   med_crear_form(0);
+  gtk_window_set_title(GTK_WINDOW(mForm.baseVentana.win), "Agregar Medicamento");
   g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",
                    G_CALLBACK(registrar_datos_medicamento), NULL);
 }
@@ -427,6 +428,7 @@ gboolean modificar_datos_medicamento(GtkWidget *btn, gpointer data) {
 void modificar_medicamentos_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&mForm.aceptBtn);
   med_crear_form(1);
+  gtk_window_set_title(GTK_WINDOW(mForm.baseVentana.win), "Modificar Medicamento");
   g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",
                    G_CALLBACK(modificar_datos_medicamento), NULL);
 }
@@ -435,14 +437,10 @@ typedef struct {
   gchar *id;
   gchar *marca;
   gchar *sustancia;
-  gchar *gramaje;
   gchar *presentacion;
   gchar *laboratorio;
-  gchar *unidadesC;
-  gchar *costo;
   gchar *lote;
   gchar *fecha;
-  gchar *unidadesI;
   long pos;
 } MedicamentosSinFormato;
 
@@ -451,7 +449,6 @@ void eliminar_datos_medicamentos(GtkWidget *btn, gpointer data) {
   GtkTreeIter iter;
   Medicamento medicamento;
   GtkTreeModel *modelo;
-  char fechaFormato[2][12];
   MedicamentosSinFormato med;
 
   if (gtk_tree_selection_get_selected(tabla.filaActual, &modelo, &iter) ==

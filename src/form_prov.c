@@ -403,19 +403,20 @@ gboolean registrar_datos_proveedor(GtkWidget *btn, gpointer data) {
 
   gtk_list_store_clear(tabla.listStore);
   mostrar_proveedores("../data/proveedores.dat");
-  
+
   return TRUE;
 }
 
 void agregar_proveedor_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&prForm.aceptBtn);
   prov_crear_form(0);
+  gtk_window_set_title(GTK_WINDOW(prForm.baseVentana.win), "Agregar Proveedor");
   g_signal_connect(G_OBJECT(prForm.aceptBtn), "clicked",
                    G_CALLBACK(registrar_datos_proveedor), NULL);
 }
 
-gboolean modificar_datos_proveedor(GtkWidget *btn, gpointer data){
-  long pos;  
+gboolean modificar_datos_proveedor(GtkWidget *btn, gpointer data) {
+  long pos;
   FILE *apArch;
   Proveedor registro = validar_formulario_proveedor();
   GtkTreeModel *modelo;
@@ -441,13 +442,88 @@ gboolean modificar_datos_proveedor(GtkWidget *btn, gpointer data){
 
   gtk_list_store_clear(tabla.listStore);
   mostrar_proveedores("../data/proveedores.dat");
-  
+
   return TRUE;
 }
 
 void modificar_proveedor_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&prForm.aceptBtn);
   prov_crear_form(1);
+  gtk_window_set_title(GTK_WINDOW(prForm.baseVentana.win), "Modificar Proveedor");
   g_signal_connect(G_OBJECT(prForm.aceptBtn), "clicked",
                    G_CALLBACK(modificar_datos_proveedor), NULL);
+}
+
+typedef struct {
+  gchar *nombreC;
+  gchar *nombreF;
+  gchar *rfc;
+  gchar *domicilio;
+  gchar *numOficina;
+  gchar *wsp;
+  gchar *correo;
+  gchar *repCom;
+  gchar *fechaPermiso;
+  long pos;
+} ProveedorSinFormato;
+
+/*
+typedef struct Proveedor {
+  int       estado;
+  char      nombreComercial[100];
+  char      nombreFactura[100];
+  char      rfc[15];
+  char      domicilio[100];
+  char      numeroOficina[11];
+  char      whatsappEmpresarial[11];
+  char      correoElectronico[100];
+  char      representanteComercial[100];
+  ushort    permisoNarcoticos;
+  Fecha     vigencia;
+}Proveedor;
+*/
+
+void eliminar_datos_proveedor(GtkWidget *btn, gpointer data) {
+  FILE *apArch;
+  GtkTreeIter iter;
+  Proveedor proveedor;
+  GtkTreeModel *modelo;
+  ProveedorSinFormato prov;
+
+  if (gtk_tree_selection_get_selected(tabla.filaActual, &modelo, &iter) ==
+      FALSE)
+    return;
+
+  gtk_list_store_set(tabla.listStore, &iter, 0, &prov.rfc, 1, &prov.nombreC, 2,
+                     &prov.nombreF, 3, &prov.correo, 4, &prov.numOficina, 5,
+                     &prov.wsp, 6, &prov.domicilio, 7, &prov.repCom, 8,
+                     &proveedor.permisoNarcoticos, 9, &prov.fechaPermiso, 10,
+                     &prov.pos, -1);
+
+  if (!fechaGchar_a_int(prov.fechaPermiso, &proveedor.vigencia))
+    return;
+
+  gchar_a_char(prov.repCom, proveedor.representanteComercial);
+  gchar_a_char(prov.nombreC, proveedor.nombreComercial);
+  gchar_a_char(prov.wsp, proveedor.whatsappEmpresarial);
+  gchar_a_char(prov.domicilio, proveedor.domicilio);
+  gchar_a_char(prov.rfc, proveedor.rfc);
+  gchar_a_char(prov.correo, proveedor.correoElectronico);
+  gchar_a_char(prov.nombreF, proveedor.nombreFactura);
+  gchar_a_char(prov.numOficina, proveedor.numeroOficina);
+
+  proveedor.estado = 0;
+
+  apArch = fopen("../data/proveedores.dat", "r+b");
+  if (apArch == NULL) {
+    g_print("ERROR: Archivo dañado");
+    return;
+  }
+
+  fseek(apArch, prov.pos, SEEK_SET);
+  // fwrite(&proveedor, sizeof(Proveedor), 1, apArch);
+  fclose(apArch);
+
+  gtk_list_store_clear(tabla.listStore);
+  mostrar_proveedores("../data/proveedores.dat");
 }

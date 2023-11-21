@@ -75,22 +75,22 @@ void check_login(GtkWidget *btn, gpointer data) {
     gtk_main_quit();
   }
 
-  fscanf(arch, "%[^;]%*c%[^;]", usr_read, passwd_read);
+  fscanf(arch, "%[^;]%*c%[^;]%*c", usr_read, passwd_read);
+  while (!feof(arch)) {
+    fscanf(arch, "%[^;]%*c%[^;]%*c", usr_read, passwd_read);
+    if (strcmp(usr_input, usr_read) == 0 &&
+        strcmp(passwd_input, passwd_read) == 0) {
+      fclose(arch);
+      crear_menu();
+      gtk_widget_hide(log_win);
+      return;
+    }
+  }
   fclose(arch);
 
-  if (strcmp(usr_input, usr_read) == 0 &&
-      strcmp(passwd_input, passwd_read) == 0) {
-    crear_menu();
-    //free_login();
-    gtk_widget_hide(log_win);
-
-  } else {
-    gtk_label_set_markup(
-        GTK_LABEL(log_warning),
-        "<span foreground='red'>Usuario o contraseña incorrectos</span>");
-  }
-
-  g_print("a");
+  gtk_label_set_markup(
+      GTK_LABEL(log_warning),
+      "<span foreground='red'>Usuario o contraseña incorrectos</span>");
 }
 
 void gen_login() {

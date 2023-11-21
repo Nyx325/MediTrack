@@ -382,6 +382,7 @@ gboolean registrar_datos_paciente(GtkWidget *btn, gpointer data) {
 void pac_agregar_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&pForm.acepBtn);
   pac_crear_form(0);
+  gtk_window_set_title(GTK_WINDOW(pForm.basesVentana.win), "Agregar Paciente");
   g_signal_connect(G_OBJECT(pForm.acepBtn), "clicked",
                    G_CALLBACK(registrar_datos_paciente), NULL);
 }
@@ -429,6 +430,7 @@ void pac_mod_callback(GtkWidget *btn, gpointer data) {
 
   desconectar_señal_btn(&pForm.acepBtn);
   pac_crear_form(1);
+  gtk_window_set_title(GTK_WINDOW(pForm.basesVentana.win), "Modificar Paciente");
   g_signal_connect(G_OBJECT(pForm.acepBtn), "clicked",
                    G_CALLBACK(modificar_datos_paciente), NULL);
 }
