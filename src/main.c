@@ -4,7 +4,8 @@
 int main() {
   // Establecer la variable de entorno GTK_THEME con la ruta al tema descargado
   g_setenv("GTK_THEME", "../theme/gtk.css", TRUE);
-
+  
+/*
 #ifdef _WIN32
   if (carpeta_existe("..\\data\\"))
     if (!carpeta_existe("..\\data\\consultas"))
@@ -14,7 +15,7 @@ int main() {
     if (!carpeta_existe("../data/consultas"))
       return 1;
 #endif
-
+*/
   // Inicializar gtk
   gtk_init(NULL, NULL);
 

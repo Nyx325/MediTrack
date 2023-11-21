@@ -76,8 +76,8 @@ void check_login(GtkWidget *btn, gpointer data) {
   }
 
   fscanf(arch, "%[^;]%*c%[^;]%*c", usr_read, passwd_read);
+  g_print("%s, %s", usr_input, usr_read);
   while (!feof(arch)) {
-    fscanf(arch, "%[^;]%*c%[^;]%*c", usr_read, passwd_read);
     if (strcmp(usr_input, usr_read) == 0 &&
         strcmp(passwd_input, passwd_read) == 0) {
       fclose(arch);
@@ -85,6 +85,7 @@ void check_login(GtkWidget *btn, gpointer data) {
       gtk_widget_hide(log_win);
       return;
     }
+    fscanf(arch, "%[^;]%*c%[^;]%*c", usr_read, passwd_read);
   }
   fclose(arch);
 

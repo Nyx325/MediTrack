@@ -520,6 +520,7 @@ gboolean gchar_a_uint(gchar *cadena, unsigned int *resultado) {
   return FALSE;
 }
 
+/*
 gboolean carpeta_existe(const char *dirCarpeta) {
 #ifdef _WIN32
   DWORD attrib = GetFileAttributesA(dirCarpeta);
@@ -565,7 +566,8 @@ void preparar_carpetas() {
       exit(1);
 #endif
 }
-
+*/
+/*
 gboolean preparar_archivos() {
 #ifdef _WIN32
   if (!GetFileAttributesA("..\\data\\usr") != INVALID_FILE_ATTRIBUTES) {
@@ -575,3 +577,4 @@ gboolean preparar_archivos() {
 
 #endif
 }
+*/
