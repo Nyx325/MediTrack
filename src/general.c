@@ -519,3 +519,59 @@ gboolean gchar_a_uint(gchar *cadena, unsigned int *resultado) {
   g_free(cadenaConvertida);
   return FALSE;
 }
+
+gboolean carpeta_existe(const char *dirCarpeta) {
+#ifdef _WIN32
+  DWORD attrib = GetFileAttributesA(dirCarpeta);
+  if (attrib != INVALID_FILE_ATTRIBUTES &&
+      (attrib & FILE_ATTRIBUTE_DIRECTORY)) {
+    return TRUE; // Carpeta existe en Windows
+  } else {
+    if (_mkdir(dirCarpeta) == 0) {
+      return TRUE; // Carpeta creada exitosamente en Windows
+    } else {
+      perror("Error al crear la carpeta");
+      return FALSE; // Error al crear la carpeta en Windows
+    }
+  }
+#else
+  struct stat st;
+  if (stat(dirCarpeta, &st) == 0) {
+    if (S_ISDIR(st.st_mode)) {
+      return TRUE; // Carpeta existe en Linux
+    } else {
+      printf("La ruta existe pero no es una carpeta en Linux.\n");
+      return FALSE; // No es una carpeta en Linux
+    }
+  } else {
+    if (mkdir(dirCarpeta, 0777) == 0) {
+      return TRUE; // Carpeta creada exitosamente en Linux
+    } else {
+      perror("Error al crear la carpeta");
+      return FALSE; // Error al crear la carpeta en Linux
+    }
+  }
+#endif
+}
+
+void preparar_carpetas() {
+#ifdef _WIN32
+  if (carpeta_existe("..\\data\\"))
+    if (!carpeta_existe("..\\data\\consultas"))
+      exit(1);
+#else
+  if (carpeta_existe("../data/"))
+    if (!carpeta_existe("../data/consultas"))
+      exit(1);
+#endif
+}
+
+gboolean preparar_archivos() {
+#ifdef _WIN32
+  if (!GetFileAttributesA("..\\data\\usr") != INVALID_FILE_ATTRIBUTES) {
+  FILE *apArch
+  
+#else
+
+#endif
+}

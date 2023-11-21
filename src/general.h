@@ -147,4 +147,15 @@ void capturar_formatear_fecha   (FechaIngresada *fecha, WidgetsFecha *widgets, F
 
 void desconectar_señal_btn      (GtkWidget **btn);
 
+//Para crear carpetas
+#ifdef _WIN32
+  #include <direct.h>
+#elif __linux__
+  #include <sys/types.h>
+  #include <sys/stat.h>
+  #include <unistd.h>
+#endif
+
+gboolean carpeta_existe (const char *dirCarpeta);
+
 #endif
