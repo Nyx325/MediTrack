@@ -1,8 +1,6 @@
 #include "form_pac.h"
 #include "general.h"
 #include "listv.h"
-#include <stdio.h>
-#include <string.h>
 
 typedef struct {
   BaseForm basesVentana;
@@ -221,7 +219,9 @@ void mostrar_pacientes(char *archivoDir) {
       "CURP",     "Nombre",         "Fecha de nacimineto",  "Sexo",
       "Teléfono", "Tipo sanguineo", "Fecha primer consulta"};
 
-  listview_importmodel(7, titulos);
+  listview_importmodel(&tabla, 7, titulos);
+  g_signal_connect(G_OBJECT(tabla.tView), "row-activated",
+                   G_CALLBACK(crear_tabla_consultas), NULL);
 }
 
 char *formatear_curp(const char *input) {
@@ -385,6 +385,8 @@ void pac_agregar_callback(GtkWidget *btn, gpointer data) {
   gtk_window_set_title(GTK_WINDOW(pForm.basesVentana.win), "Agregar Paciente");
   g_signal_connect(G_OBJECT(pForm.acepBtn), "clicked",
                    G_CALLBACK(registrar_datos_paciente), NULL);
+  g_signal_connect(G_OBJECT(tabla.tView), "row-activated",
+                   G_CALLBACK(crear_tabla_consultas), NULL);
 }
 
 gboolean modificar_datos_paciente(GtkWidget *btn, gpointer data) {
@@ -430,7 +432,8 @@ void pac_mod_callback(GtkWidget *btn, gpointer data) {
 
   desconectar_señal_btn(&pForm.acepBtn);
   pac_crear_form(1);
-  gtk_window_set_title(GTK_WINDOW(pForm.basesVentana.win), "Modificar Paciente");
+  gtk_window_set_title(GTK_WINDOW(pForm.basesVentana.win),
+                       "Modificar Paciente");
   g_signal_connect(G_OBJECT(pForm.acepBtn), "clicked",
                    G_CALLBACK(modificar_datos_paciente), NULL);
 }

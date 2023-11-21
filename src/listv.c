@@ -34,20 +34,20 @@ void free_listview(GtkWidget *widget, gpointer data) {
 
   free_baselistv(&tabla.baseVentana);
 
-  free_barlistv();
+  free_barlistv(&tabla.bar);
 
   tabla.tView = NULL;
   tabla.listStore = NULL;
   tabla.filaActual = NULL;
 }
 
-void listview_importmodel(ushort numCols, char *titulos[]) {
+void listview_importmodel(ListView *tabla, ushort numCols, char *titulos[]) {
   ushort i;
-  if (tabla.tView)
-    gtk_widget_destroy(tabla.tView);
+  if (tabla->tView)
+    gtk_widget_destroy(tabla->tView);
 
-  tabla.tView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(tabla.listStore));
-  tabla.filaActual = gtk_tree_view_get_selection(GTK_TREE_VIEW(tabla.tView));
+  tabla->tView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(tabla->listStore));
+  tabla->filaActual = gtk_tree_view_get_selection(GTK_TREE_VIEW(tabla->tView));
 
   // Crear, configurar columnas y agregar al treeview
   for (i = 0; i < numCols; i++) {
@@ -60,29 +60,26 @@ void listview_importmodel(ushort numCols, char *titulos[]) {
     gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
     // Ajustar propiedades para expandir
     gtk_tree_view_column_set_expand(column, TRUE);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(tabla.tView), column);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(tabla->tView), column);
   }
 
-  gtk_container_add(GTK_CONTAINER(tabla.baseVentana.scrollWin), tabla.tView);
-  gtk_box_pack_start(GTK_BOX(tabla.baseVentana.box),
-                     tabla.baseVentana.scrollWin, TRUE, TRUE, 0);
+  gtk_container_add(GTK_CONTAINER(tabla->baseVentana.scrollWin), tabla->tView);
+  gtk_box_pack_start(GTK_BOX(tabla->baseVentana.box),
+                     tabla->baseVentana.scrollWin, TRUE, TRUE, 0);
 
-  gtk_widget_show_all(tabla.baseVentana.win);
+  gtk_widget_show_all(tabla->baseVentana.win);
 }
 
-void crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes,
-                         CallbackFunc callback) {
+guint crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes) {
+  guint handler_id;
   baseListv->win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
   gtk_window_set_default_size(GTK_WINDOW(baseListv->win), xRes, yRes);
   gtk_window_set_position(GTK_WINDOW(baseListv->win), GTK_WIN_POS_CENTER);
-  g_signal_connect(G_OBJECT(baseListv->win), "destroy", G_CALLBACK(gtk_main_quit),
-                   NULL);
+  handler_id = g_signal_connect(G_OBJECT(baseListv->win), "destroy",
+                                G_CALLBACK(gtk_main_quit), NULL);
 
   baseListv->box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
-
-  // gtk_box_pack_start(GTK_BOX(tabla.baseVentana.box), bar_box, FALSE, TRUE,
-  // 0);
 
   baseListv->scrollWin = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(baseListv->scrollWin),
@@ -92,14 +89,16 @@ void crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes,
 
   baseListv->icon = gdk_pixbuf_new_from_file("../images/icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(baseListv->win), baseListv->icon);
+
+  return handler_id;
 }
 
 void listv_gen_table() {
-  crear_ventana_listv(&tabla.baseVentana, 1280, 720, free_listview);
+  crear_ventana_listv(&tabla.baseVentana, 1280, 720);
 
-  crear_bar();
-  gtk_box_pack_start(GTK_BOX(tabla.baseVentana.box), bar.mainbox, FALSE, FALSE,
-                     0);
+  tabla.bar = crear_bar();
+  gtk_box_pack_start(GTK_BOX(tabla.baseVentana.box), tabla.bar.mainbox, FALSE,
+                     FALSE, 0);
 
   gtk_widget_show_all(tabla.baseVentana.win);
 }

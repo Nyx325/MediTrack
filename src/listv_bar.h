@@ -20,11 +20,11 @@ typedef struct {
   BtnBase searchBtn;
 } BarListv;
 
-extern BarListv bar;
+// extern BarListv bar;
 
-void free_barlistv      (void);
-void crear_bar          (void);
-void poner_plaholders   (char *phEntry1, char *phEntry2);
-void crear_btn_img      (BtnBase *btn, char *imgPath);
+void      free_barlistv      (BarListv *bar);
+BarListv  crear_bar          (void);
+void      poner_plaholders   (char *phEntry1, char *phEntry2, BarListv *bar);
+void      crear_btn_img      (BtnBase *btn, char *imgPath);
 
 #endif

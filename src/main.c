@@ -1,4 +1,3 @@
-#include "general.h"
 #include "login.h"
 
 int main() {
@@ -19,6 +18,7 @@ int main() {
   // Inicializar gtk
   gtk_init(NULL, NULL);
 
+  // crear_tabla_consultas();
   gen_login();
   // gen_menu();
   // pac_crear_form(1);

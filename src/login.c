@@ -73,10 +73,10 @@ void check_login(GtkWidget *btn, gpointer data) {
   if (arch == NULL) {
     g_print("archivo usr no encontrado\n");
     gtk_main_quit();
+    return;
   }
 
   fscanf(arch, "%[^;]%*c%[^;]%*c", usr_read, passwd_read);
-  g_print("%s, %s", usr_input, usr_read);
   while (!feof(arch)) {
     if (strcmp(usr_input, usr_read) == 0 &&
         strcmp(passwd_input, passwd_read) == 0) {

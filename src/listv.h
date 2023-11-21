@@ -16,13 +16,16 @@ typedef struct {
   GtkWidget *tView;
   GtkListStore *listStore;
   GtkTreeSelection *filaActual;
+  BarListv bar;
 } ListView;
 
 extern ListView tabla;
 
-void listv_gen_table        (void);
-void free_listview          (GtkWidget *widget, gpointer data);
-void listview_importmodel   (ushort numCols, char *titulos[]);
+void    listv_gen_table         (void);
+void    free_baselistv          (BaseListv *ventana);
+void    free_listview           (GtkWidget *widget, gpointer data);
+void    listview_importmodel    (ListView *tabla, ushort numCols, char *titulos[]);
+guint   crear_ventana_listv     (BaseListv *baseListv, int xRes, int yRes);
 
 #endif
 

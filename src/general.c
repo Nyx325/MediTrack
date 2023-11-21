@@ -281,11 +281,11 @@ void free_baseform(BaseForm *basesVentana) {
   if (basesVentana == NULL)
     return;
 
-  if (!basesVentana->icon)
+  if (basesVentana->icon != NULL)
     g_object_unref(basesVentana->icon);
-  if (!basesVentana->grid)
+  if (basesVentana->grid != NULL)
     gtk_widget_destroy(basesVentana->grid);
-  if (!basesVentana->win)
+  if (basesVentana->win != NULL)
     gtk_widget_destroy(basesVentana->win);
 
   basesVentana->icon = NULL;
@@ -406,9 +406,9 @@ int formatear_tsangre_num(char *tipoS) {
 }
 
 void free_basebtn(BtnBase *bBtn) {
-  if (!bBtn->img)
+  if (bBtn->img != NULL)
     gtk_widget_destroy(bBtn->img);
-  if (!bBtn->btn)
+  if (bBtn->btn != NULL)
     gtk_widget_destroy(bBtn->btn);
 
   bBtn->img = NULL;

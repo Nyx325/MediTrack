@@ -23,13 +23,13 @@ FormProv prForm;
 void free_provform(GtkWidget *widget, gpointer data) {
   gtk_widget_hide(prForm.baseVentana.win);
 
-  if (!prForm.narcoticosCheckBtn)
+  if (prForm.narcoticosCheckBtn)
     gtk_widget_destroy(prForm.narcoticosCheckBtn);
-  if (!prForm.warningLbl)
+  if (prForm.warningLbl)
     gtk_widget_destroy(prForm.warningLbl);
-  if (!prForm.aceptBtn)
+  if (prForm.aceptBtn)
     gtk_widget_destroy(prForm.aceptBtn);
-  if (!prForm.cancelBtn)
+  if (prForm.cancelBtn)
     gtk_widget_destroy(prForm.cancelBtn);
 
   free_entradatexto(&prForm.nomComercial);
@@ -239,7 +239,7 @@ void mostrar_proveedores(char *archivoDir) {
                      "Venta de narcóticos",
                      "Vigencia Permiso"};
 
-  listview_importmodel(10, titulos);
+  listview_importmodel(&tabla, 10, titulos);
 }
 
 char *formatear_rfc(const gchar *input) {

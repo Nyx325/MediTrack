@@ -1,9 +1,8 @@
 #include "listv_bar.h"
 #include "menu.h"
-#include "listv.h"
+#include "general.h"
 
-BarListv bar;
-
+// BarListv bar;
 
 void free_barbtn_con_texto(BarBtn *bBtn) {
   if (!bBtn->box)
@@ -17,26 +16,26 @@ void free_barbtn_con_texto(BarBtn *bBtn) {
   bBtn->lbl = NULL;
 }
 
-void free_barlistv() {
+void free_barlistv(BarListv *bar) {
   ushort i;
-  if (!bar.mainbox)
-    gtk_widget_destroy(bar.mainbox);
-  if (!bar.separador)
-    gtk_widget_destroy(bar.separador);
+  if (!bar->mainbox)
+    gtk_widget_destroy(bar->mainbox);
+  if (!bar->separador)
+    gtk_widget_destroy(bar->separador);
 
   for (i = 0; i < 2; i++)
-    if (!bar.entrys[i])
-      gtk_widget_destroy(bar.entrys[i]);
+    if (!bar->entrys[i])
+      gtk_widget_destroy(bar->entrys[i]);
 
-  free_barbtn_con_texto(&bar.agregar);
-  free_barbtn_con_texto(&bar.modificar);
-  free_barbtn_con_texto(&bar.eliminar);
+  free_barbtn_con_texto(&bar->agregar);
+  free_barbtn_con_texto(&bar->modificar);
+  free_barbtn_con_texto(&bar->eliminar);
 
-  free_basebtn(&bar.backBtn);
-  free_basebtn(&bar.searchBtn);
+  free_basebtn(&bar->backBtn);
+  free_basebtn(&bar->searchBtn);
 
-  bar.mainbox = NULL;
-  bar.separador = NULL;
+  bar->mainbox = NULL;
+  bar->separador = NULL;
 }
 
 void crear_btn_imglbl(BarBtn *btn, char *imgPath, char *titulo) {
@@ -49,17 +48,18 @@ void crear_btn_imglbl(BarBtn *btn, char *imgPath, char *titulo) {
   gtk_container_add(GTK_CONTAINER(btn->base.btn), btn->box);
 }
 
-void volver_menu(GtkWidget *btn, gpointer data){
-    crear_menu();
-    free_listview(NULL, NULL);
+void volver_menu(GtkWidget *btn, gpointer data) {
+  crear_menu();
+  free_listview(NULL, NULL);
 }
 
-void poner_plaholders(char *phEntry1, char *phEntry2) {
-  gtk_entry_set_placeholder_text(GTK_ENTRY(bar.entrys[0]), phEntry1);
-  gtk_entry_set_placeholder_text(GTK_ENTRY(bar.entrys[1]), phEntry2);
+void poner_plaholders(char *phEntry1, char *phEntry2, BarListv *bar) {
+  gtk_entry_set_placeholder_text(GTK_ENTRY(bar->entrys[0]), phEntry1);
+  gtk_entry_set_placeholder_text(GTK_ENTRY(bar->entrys[1]), phEntry2);
 }
 
-void crear_bar() {
+BarListv crear_bar() {
+  BarListv bar;
   bar.mainbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   bar.separador = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 
@@ -87,5 +87,6 @@ void crear_bar() {
   gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.entrys[0], TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.entrys[1], TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.searchBtn.btn, FALSE, FALSE, 0);
-  
+
+  return bar;
 }

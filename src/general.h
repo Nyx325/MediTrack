@@ -56,8 +56,29 @@ typedef struct Proveedor {
   Fecha     vigencia;
 }Proveedor;
 
+typedef struct{
+  ushort sist;
+  ushort diasto;
+}Presion;
+
+typedef struct{
+  ushort    edo;
+  char      nombre[50];
+  Fecha     fecha;
+  ushort    edad;
+  float     peso;
+  float     altura;
+  char      Dr[50];
+  Presion   presion;
+  float     temp;
+  char      alergias[201];
+  char      enfermedades[201];
+  char      sintomas[501];
+}Consultas;
+
 typedef void (*CallbackFunc)(GtkWidget *, gpointer);
 
+void        no_callback             (GtkWidget *widget, gpointer data);
 void        cambio_mes              (GtkComboBox *widget, gpointer data);
 char        dias_x_mes              (const gint mes);
 char        *formatear_nombre       (const gchar *input);
@@ -78,7 +99,6 @@ gboolean    fechaGchar_a_int        (gchar *entrada, Fecha *salida);
 void        gchar_a_int             (gchar *entrada, int *dato);
 gboolean    gchar_a_uint            (gchar *entrada, unsigned int *dato);
 void        gchar_a_float           (gchar *entrada, float *dato);
-
 
 typedef struct {
   GtkWidget *lbl;

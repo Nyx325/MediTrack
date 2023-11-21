@@ -23,12 +23,11 @@ typedef struct {
 MedForm mForm;
 
 void free_medform(GtkWidget *widget, gpointer data) {
-  gtk_widget_hide(mForm.baseVentana.win);
-  if (!mForm.warningLbl)
+  if (mForm.warningLbl)
     gtk_widget_destroy(mForm.warningLbl);
-  if (!mForm.aceptBtn)
+  if (mForm.aceptBtn)
     gtk_widget_destroy(mForm.aceptBtn);
-  if (!mForm.cancelBtn)
+  if (mForm.cancelBtn)
     gtk_widget_destroy(mForm.cancelBtn);
 
   free_entradatexto(&mForm.id);
@@ -49,6 +48,8 @@ void free_medform(GtkWidget *widget, gpointer data) {
   mForm.warningLbl = NULL;
   mForm.aceptBtn = NULL;
   mForm.cancelBtn = NULL;
+
+  gtk_widget_hide(mForm.baseVentana.win);
 }
 
 void cargar_medicamento_reguistro() {
@@ -130,7 +131,7 @@ void med_crear_form(Opc modo) {
 
   mForm.warningLbl = gtk_label_new("");
 
-  crear_boton(&mForm.aceptBtn, "Aceptar", NULL);
+  crear_boton(&mForm.aceptBtn, "Aceptar", no_callback);
   crear_boton(&mForm.cancelBtn, "Cancelar", free_medform);
 
   // Clave
@@ -263,7 +264,7 @@ void mostrar_medicamentos(char *archivoDir) {
                      "Caducidad",
                      "Laboratorio"};
 
-  listview_importmodel(10, titulos);
+  listview_importmodel(&tabla, 10, titulos);
 }
 
 typedef struct {
@@ -388,7 +389,8 @@ gboolean registrar_datos_medicamento(GtkWidget *btn, gpointer data) {
 void agregar_medicamentos_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&mForm.aceptBtn);
   med_crear_form(0);
-  gtk_window_set_title(GTK_WINDOW(mForm.baseVentana.win), "Agregar Medicamento");
+  gtk_window_set_title(GTK_WINDOW(mForm.baseVentana.win),
+                       "Agregar Medicamento");
   g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",
                    G_CALLBACK(registrar_datos_medicamento), NULL);
 }
@@ -428,7 +430,8 @@ gboolean modificar_datos_medicamento(GtkWidget *btn, gpointer data) {
 void modificar_medicamentos_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&mForm.aceptBtn);
   med_crear_form(1);
-  gtk_window_set_title(GTK_WINDOW(mForm.baseVentana.win), "Modificar Medicamento");
+  gtk_window_set_title(GTK_WINDOW(mForm.baseVentana.win),
+                       "Modificar Medicamento");
   g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",
                    G_CALLBACK(modificar_datos_medicamento), NULL);
 }

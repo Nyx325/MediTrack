@@ -1,18 +1,18 @@
 #include "menu.h"
 #include "form_med.h"
 #include "listv.h"
+#include "consultas.h"
 
 WinMenu menu;
 
 void free_menu(GtkWidget *widget, gpointer data) {
   ushort i;
-  gtk_widget_hide(menu.baseVentana.win);
 
-  if (!menu.banner)
+  if (menu.banner != NULL)
     gtk_widget_destroy(menu.banner);
 
   for (i = 0; i < 2; i++)
-    if (!menu.titulos[i]) {
+    if (menu.titulos[i] != NULL) {
       gtk_widget_destroy(menu.titulos[i]);
       menu.titulos[i] = NULL;
     }
@@ -24,58 +24,60 @@ void free_menu(GtkWidget *widget, gpointer data) {
   free_baseform(&menu.baseVentana);
 
   menu.banner = NULL;
+
+  gtk_widget_hide(menu.baseVentana.win);
 }
 
 void pacientes(GtkWidget *widget, gpointer data) {
-  desconectar_señal_btn(&bar.agregar.base.btn);
-  desconectar_señal_btn(&bar.modificar.base.btn);
-  desconectar_señal_btn(&bar.eliminar.base.btn);
+  desconectar_señal_btn(&tabla.bar.agregar.base.btn);
+  desconectar_señal_btn(&tabla.bar.modificar.base.btn);
+  desconectar_señal_btn(&tabla.bar.eliminar.base.btn);
 
   listv_gen_table();
   gtk_window_set_title(GTK_WINDOW(tabla.baseVentana.win), "Pacientes");
   mostrar_pacientes("../data/pacientes.dat");
   free_menu(NULL, NULL);
 
-  g_signal_connect(G_OBJECT(bar.agregar.base.btn), "clicked",
+  g_signal_connect(G_OBJECT(tabla.bar.agregar.base.btn), "clicked",
                    G_CALLBACK(pac_agregar_callback), NULL);
-  g_signal_connect(G_OBJECT(bar.modificar.base.btn), "clicked",
+  g_signal_connect(G_OBJECT(tabla.bar.modificar.base.btn), "clicked",
                    G_CALLBACK(pac_mod_callback), NULL);
-  g_signal_connect(G_OBJECT(bar.eliminar.base.btn), "clicked",
+  g_signal_connect(G_OBJECT(tabla.bar.eliminar.base.btn), "clicked",
                    G_CALLBACK(eliminar_datos_paciente), NULL);
 }
 
 void medicamentos(GtkWidget *widget, gpointer data) {
-  desconectar_señal_btn(&bar.agregar.base.btn);
-  desconectar_señal_btn(&bar.modificar.base.btn);
-  desconectar_señal_btn(&bar.eliminar.base.btn);
+  desconectar_señal_btn(&tabla.bar.agregar.base.btn);
+  desconectar_señal_btn(&tabla.bar.modificar.base.btn);
+  desconectar_señal_btn(&tabla.bar.eliminar.base.btn);
 
   listv_gen_table();
   gtk_window_set_title(GTK_WINDOW(tabla.baseVentana.win), "Medicamentos");
   mostrar_medicamentos("../data/medicamentos.dat");
   free_menu(NULL, NULL);
 
-  g_signal_connect(G_OBJECT(bar.agregar.base.btn), "clicked",
+  g_signal_connect(G_OBJECT(tabla.bar.agregar.base.btn), "clicked",
                    G_CALLBACK(agregar_medicamentos_callback), NULL);
-  g_signal_connect(G_OBJECT(bar.modificar.base.btn), "clicked",
+  g_signal_connect(G_OBJECT(tabla.bar.modificar.base.btn), "clicked",
                    G_CALLBACK(modificar_medicamentos_callback), NULL);
-  g_signal_connect(G_OBJECT(bar.eliminar.base.btn), "clicked",
+  g_signal_connect(G_OBJECT(tabla.bar.eliminar.base.btn), "clicked",
                    G_CALLBACK(eliminar_datos_medicamentos), NULL);
 }
 
 void proveedores(GtkWidget *widget, gpointer data) {
-  desconectar_señal_btn(&bar.agregar.base.btn);
-  desconectar_señal_btn(&bar.modificar.base.btn);
-  desconectar_señal_btn(&bar.eliminar.base.btn);
+  desconectar_señal_btn(&tabla.bar.agregar.base.btn);
+  desconectar_señal_btn(&tabla.bar.modificar.base.btn);
+  desconectar_señal_btn(&tabla.bar.eliminar.base.btn);
 
   listv_gen_table();
   gtk_window_set_title(GTK_WINDOW(tabla.baseVentana.win), "Proveedores");
   mostrar_proveedores("../data/proveedores.dat");
   free_menu(NULL, NULL);
-  g_signal_connect(G_OBJECT(bar.agregar.base.btn), "clicked",
+  g_signal_connect(G_OBJECT(tabla.bar.agregar.base.btn), "clicked",
                    G_CALLBACK(agregar_proveedor_callback), NULL);
-  g_signal_connect(G_OBJECT(bar.modificar.base.btn), "clicked",
+  g_signal_connect(G_OBJECT(tabla.bar.modificar.base.btn), "clicked",
                    G_CALLBACK(modificar_proveedor_callback), NULL);
-  g_signal_connect(G_OBJECT(bar.eliminar.base.btn), "clicked",
+  g_signal_connect(G_OBJECT(tabla.bar.eliminar.base.btn), "clicked",
                    G_CALLBACK(eliminar_datos_proveedor), NULL);
 }
 
