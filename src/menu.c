@@ -33,8 +33,9 @@ void pacientes(GtkWidget *widget, gpointer data) {
   desconectar_señal_btn(&tabla.bar.modificar.base.btn);
   desconectar_señal_btn(&tabla.bar.eliminar.base.btn);
 
-  listv_gen_table();
-  tabla.bar = crear_bar(BAR_GENERICA);
+  listv_gen_table(BAR_GENERICA);
+  gtk_window_set_title(GTK_WINDOW(tabla.baseVentana.win), "Pacientes");
+  mostrar_pacientes("../data/pacientes.dat");
 
   g_signal_connect(G_OBJECT(tabla.bar.agregar.base.btn), "clicked",
                    G_CALLBACK(pac_agregar_callback), NULL);
@@ -49,7 +50,7 @@ void medicamentos(GtkWidget *widget, gpointer data) {
   desconectar_señal_btn(&tabla.bar.modificar.base.btn);
   desconectar_señal_btn(&tabla.bar.eliminar.base.btn);
 
-  listv_gen_table();
+  listv_gen_table(BAR_GENERICA);
   gtk_window_set_title(GTK_WINDOW(tabla.baseVentana.win), "Medicamentos");
   mostrar_medicamentos("../data/medicamentos.dat");
   gtk_widget_hide(menu.baseVentana.win);
@@ -67,7 +68,7 @@ void proveedores(GtkWidget *widget, gpointer data) {
   desconectar_señal_btn(&tabla.bar.modificar.base.btn);
   desconectar_señal_btn(&tabla.bar.eliminar.base.btn);
 
-  listv_gen_table();
+  listv_gen_table(BAR_GENERICA);
   gtk_window_set_title(GTK_WINDOW(tabla.baseVentana.win), "Proveedores");
   mostrar_proveedores("../data/proveedores.dat");
   gtk_widget_hide(menu.baseVentana.win);

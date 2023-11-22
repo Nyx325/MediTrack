@@ -32,7 +32,7 @@ typedef struct {
 
 extern ListView tabla;
 
-void    listv_gen_table         (void);
+void    listv_gen_table         (Opc tipoBar);
 void    free_baselistv          (BaseListv *ventana);
 void    free_listview           (GtkWidget *widget, gpointer data);
 void    listview_importmodel    (ListView *tabla, ushort numCols, char *titulos[]);

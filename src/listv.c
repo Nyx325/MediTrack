@@ -93,10 +93,10 @@ guint crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes) {
   return handler_id;
 }
 
-void listv_gen_table() {
+void listv_gen_table(Opc tipoBar) {
   crear_ventana_listv(&tabla.baseVentana, 1280, 720);
 
-  tabla.bar = crear_bar(BAR_GENERICA);
+  tabla.bar = crear_bar(tipoBar);
   gtk_box_pack_start(GTK_BOX(tabla.baseVentana.box), tabla.bar.mainbox, FALSE,
                      FALSE, 0);
 
