@@ -447,7 +447,6 @@ void registrar_consulta(GtkWidget *btn, gpointer data) {
   GtkTreeIter iter;
   GtkTreeModel *model;
   Consultas registro = validar_formulario_consultas();
-  g_print("a\n");
 
   if (registro.edo == 0)
     return;
@@ -461,7 +460,6 @@ void registrar_consulta(GtkWidget *btn, gpointer data) {
     return;
   }
 
-  g_print("%s\n", registro.nombre);
   fwrite(&registro, sizeof(Consultas), 1, apArch);
   fclose(apArch);
 

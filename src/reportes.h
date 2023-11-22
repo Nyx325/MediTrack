@@ -2,12 +2,13 @@
 #define REPORTES_H
 
 #include "general.h"
+#include "consultas.h"
 #include "listv.h"
 
 
 typedef struct {
-  gchar *curp;
-  gchar *nombre;
+  gchar curp[19];
+  gchar nombre[50];
 } rDatosPaciente;
 
 typedef struct {
@@ -15,7 +16,7 @@ typedef struct {
   char presion[9];
   char temp[9];
   char imc[5];
-  char altura[5];
+  char altura[7];
   char peso[10];
   char dirArch[50];
 } Buffer;

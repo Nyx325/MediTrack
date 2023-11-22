@@ -1,7 +1,30 @@
 #include "reportes.h"
+#include "consultas.h"
+#include "general.h"
 
 ListView reporte;
 rDatosPaciente paciente;
+
+gboolean buscar_paciente(gchar *curpPac, rDatosPaciente *paciente) {
+  char *buffer;
+  Pacientes registro;
+  FILE *arch = fopen("../data/pacientes.dat", "rb");
+  if (arch == NULL)
+    return FALSE;
+
+  while (fread(&registro, sizeof(Pacientes), 1, arch)) {
+    if (strcmp(registro.CURP, curpPac) == 0) {
+      fclose(arch);
+      g_print("%s\n", registro.nombre);
+      strcpy(paciente->curp, registro.CURP);
+      strcpy(paciente->nombre, registro.nombre);
+      return TRUE;
+    }
+  }
+
+  fclose(arch);
+  return FALSE;
+}
 
 void crear_bar_reportes(BarReportes *bar) {
   char buffer[61];
@@ -13,20 +36,11 @@ void crear_bar_reportes(BarReportes *bar) {
   bar->promLbl = gtk_label_new("Promedios\n");
   crear_boton(&bar->btn, "Generar", no_callback);
 
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->pNomLbl, 0, 0, 1, 1);
+  gtk_grid_attach(GTK_GRID(bar->grid), bar->pNomLbl, 0, 0, 5, 1);
+  gtk_grid_attach(GTK_GRID(bar->grid), bar->promLbl, 0, 1, 5, 1);
 
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->rangoIn.titulo, 0, 0, 1, 1);
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->rangoIn.anioEntry, 0, 0, 1, 1);
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->rangoIn.mesCombox, 0, 0, 1, 1);
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->rangoIn.diaCombox, 0, 0, 1, 1);
-
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->rangoFin.titulo, 0, 0, 1, 1);
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->rangoFin.anioEntry, 0, 0, 1, 1);
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->rangoFin.mesCombox, 0, 0, 1, 1);
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->rangoFin.diaCombox, 0, 0, 1, 1);
-
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->promLbl, 0, 0, 1, 1);
-  gtk_grid_attach(GTK_GRID(bar->grid), bar->btn, 0, 0, 1, 1);
+  gtk_box_pack_start(GTK_BOX(reporte.baseVentana.box), reporte.barR.grid, FALSE,
+                     FALSE, 0);
 }
 
 void crear_reporte(GtkWidget *btn, gpointer data) {
@@ -36,12 +50,16 @@ void crear_reporte(GtkWidget *btn, gpointer data) {
   GtkTreeIter iter;
   Consultas datosReporte;
   Criterios conteo = {{0, 0}, {0, 0}, {0, 0}};
+
   guint handler_id = crear_ventana_listv(&reporte.baseVentana, 400, 800);
   g_signal_handler_disconnect(G_OBJECT(reporte.baseVentana.win), handler_id);
 
+  if (buscar_paciente(curpPac, &paciente) == FALSE) {
+    g_print("ERROR: No se pudo crear reporte, paciente no encontrado\n");
+    return;
+  }
+
   crear_bar_reportes(&reporte.barR);
-  gtk_box_pack_start(GTK_BOX(reporte.baseVentana.box), reporte.barR.grid, TRUE,
-                     TRUE, 0);
 
   reporte.listStore = gtk_list_store_new(
       6, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
@@ -79,13 +97,25 @@ void crear_reporte(GtkWidget *btn, gpointer data) {
     }
   }
   fclose(apArch);
+  char *titulos[] = {"Fecha", "Presión", "Temp", "IMC", "Altura", "Peso"};
+  g_print("a\n");
+  listview_importmodel(&reporte, 6, titulos);
 
+  g_print("a\n");
   conteo.imc.prom /= conteo.imc.numD;
   conteo.peso.prom /= conteo.peso.numD;
   conteo.temp.prom /= conteo.temp.numD;
 
+  g_print("a\n");
+
   // Se usa dirArch pero es formato para el lbl de los promedios
-  sprintf(buffer.dirArch, "Primerdios\nTemperatura: %.2f IMC: %.2f Peso: %.2f",
+  sprintf(buffer.dirArch, "Promerdios\nTemperatura: %.2f IMC: %.2f Peso: %.2f",
           conteo.temp.prom, conteo.imc.prom, conteo.peso.prom);
+
+  g_print("a\n");
   gtk_label_set_text(GTK_LABEL(reporte.barR.promLbl), buffer.dirArch);
+
+  g_print("a\n");
+  gtk_box_pack_end(GTK_BOX(reporte.baseVentana.box),
+                   reporte.baseVentana.scrollWin, TRUE, TRUE, 0);
 }
