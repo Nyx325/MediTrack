@@ -1,8 +1,9 @@
 #include "menu.h"
+#include "consultas.h"
 #include "form_med.h"
 #include "listv.h"
-#include "consultas.h"
 
+Opc tipoUsr;
 WinMenu menu;
 
 void free_menu(GtkWidget *widget, gpointer data) {
@@ -34,7 +35,7 @@ void pacientes(GtkWidget *widget, gpointer data) {
   listv_gen_table();
   gtk_window_set_title(GTK_WINDOW(tabla.baseVentana.win), "Pacientes");
   mostrar_pacientes("../data/pacientes.dat");
-  free_menu(NULL, NULL);
+  gtk_widget_hide(menu.baseVentana.win);
 
   g_signal_connect(G_OBJECT(tabla.bar.agregar.base.btn), "clicked",
                    G_CALLBACK(pac_agregar_callback), NULL);
@@ -52,7 +53,7 @@ void medicamentos(GtkWidget *widget, gpointer data) {
   listv_gen_table();
   gtk_window_set_title(GTK_WINDOW(tabla.baseVentana.win), "Medicamentos");
   mostrar_medicamentos("../data/medicamentos.dat");
-  free_menu(NULL, NULL);
+  gtk_widget_hide(menu.baseVentana.win);
 
   g_signal_connect(G_OBJECT(tabla.bar.agregar.base.btn), "clicked",
                    G_CALLBACK(agregar_medicamentos_callback), NULL);
@@ -70,7 +71,7 @@ void proveedores(GtkWidget *widget, gpointer data) {
   listv_gen_table();
   gtk_window_set_title(GTK_WINDOW(tabla.baseVentana.win), "Proveedores");
   mostrar_proveedores("../data/proveedores.dat");
-  free_menu(NULL, NULL);
+  gtk_widget_hide(menu.baseVentana.win);
   g_signal_connect(G_OBJECT(tabla.bar.agregar.base.btn), "clicked",
                    G_CALLBACK(agregar_proveedor_callback), NULL);
   g_signal_connect(G_OBJECT(tabla.bar.modificar.base.btn), "clicked",
@@ -79,8 +80,45 @@ void proveedores(GtkWidget *widget, gpointer data) {
                    G_CALLBACK(eliminar_datos_proveedor), NULL);
 }
 
-void crear_menu() {
-  crear_ventana(&menu.baseVentana, 1280, 720, NULL);
+void usuarioFarmacia() {
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.banner, 0, 0, 3, 1);
+  // Opc medicamentos
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.medicamentos.btn, 0, 1,
+                  1, 2);
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.titulos[0], 0, 3, 1, 1);
+  // Opc proveedores
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.proveedores.btn, 2, 1,
+                  1, 2);
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.titulos[2], 2, 3, 2, 1);
+}
+
+void usuarioDoctor() {
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.banner, 0, 0, 6, 1);
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.banner, 0, 0, 6, 1);
+  // Opc pacientes
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.pacientes.btn, 2, 1, 2,
+                  2);
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.titulos[1], 2, 3, 2, 2);
+}
+
+void usuarioAdmin() {
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.banner, 0, 0, 6, 1);
+  // Opc medicamentos
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.medicamentos.btn, 0, 1,
+                  1, 2);
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.titulos[0], 0, 3, 2, 1);
+  // Opc proveedores
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.proveedores.btn, 2, 1,
+                  1, 2);
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.titulos[2], 2, 3, 2, 1);
+  // Opc pacientes
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.pacientes.btn, 5, 1, 1,
+                  2);
+  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.titulos[1], 5, 3, 2, 1);
+}
+
+void crear_menu(Opc usuario) {
+  crear_ventana(&menu.baseVentana, 800, 500, NULL);
   g_signal_connect(G_OBJECT(menu.baseVentana.win), "destroy",
                    G_CALLBACK(gtk_main_quit), NULL);
 
@@ -101,19 +139,19 @@ void crear_menu() {
   for (i = 0; i < 3; i++)
     menu.titulos[i] = gtk_label_new(titulos[i]);
 
-  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.banner, 0, 0, 6, 1);
-  // Opc medicamentos
-  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.medicamentos.btn, 0, 1,
-                  1, 2);
-  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.titulos[0], 0, 3, 2, 1);
-  // Opc pacientes
-  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.pacientes.btn, 5, 1, 1,
-                  2);
-  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.titulos[1], 5, 3, 2, 1);
-  // Opc proveedores
-  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.proveedores.btn, 2, 1,
-                  1, 2);
-  gtk_grid_attach(GTK_GRID(menu.baseVentana.grid), menu.titulos[2], 2, 3, 2, 1);
+  switch (usuario) {
+  case USUARIO_FARMACIA:
+    usuarioFarmacia();
+    break;
+  case USUARIO_DOCTOR:
+    usuarioDoctor();
+    break;
+  case USUARIO_ADMIN:
+    usuarioAdmin();
+    break;
+  default:
+    exit(1);
+  }
 
   gtk_widget_show_all(menu.baseVentana.win);
 }

@@ -8,6 +8,10 @@
 #include "listv.h"
 #include "listv_bar.h"
 
+#define USUARIO_FARMACIA 0
+#define USUARIO_DOCTOR 1
+#define USUARIO_ADMIN 2
+
 typedef struct {
   BaseForm baseVentana;
   BtnBase medicamentos;
@@ -17,7 +21,9 @@ typedef struct {
   GtkWidget *titulos[3];
 } WinMenu;
 
+extern Opc tipoUsr;
+extern WinMenu menu;
 
-void crear_menu (void);
+void crear_menu (Opc usuario);
 
 #endif

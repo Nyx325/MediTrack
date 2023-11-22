@@ -49,7 +49,8 @@ void crear_btn_imglbl(BarBtn *btn, char *imgPath, char *titulo) {
 }
 
 void volver_menu(GtkWidget *btn, gpointer data) {
-  crear_menu();
+  //crear_menu(tipoUsr);
+  gtk_widget_show_all(menu.baseVentana.win);
   free_listview(NULL, NULL);
 }
 
