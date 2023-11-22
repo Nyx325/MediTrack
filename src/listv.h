@@ -11,12 +11,23 @@ typedef struct {
   GtkWidget *scrollWin;
 } BaseListv;
 
+
 typedef struct {
-  BaseListv baseVentana;
-  GtkWidget *tView;
-  GtkListStore *listStore;
-  GtkTreeSelection *filaActual;
-  BarListv bar;
+  GtkWidget     *grid;
+  GtkWidget     *pNomLbl;
+  GtkWidget     *promLbl;
+  EntradaFecha  rangoIn;
+  EntradaFecha  rangoFin;
+  GtkWidget     *btn;
+} BarReportes;
+
+typedef struct {
+  BaseListv         baseVentana;
+  GtkWidget         *tView;
+  GtkListStore      *listStore;
+  GtkTreeSelection  *filaActual;
+  BarListv          bar;
+  BarReportes       barR; // Unico para reportes.c
 } ListView;
 
 extern ListView tabla;

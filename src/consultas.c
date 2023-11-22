@@ -1,6 +1,8 @@
 #include "consultas.h"
 #include "general.h"
+#include "reportes.h"
 #include "listv.h"
+#include "listv_bar.h"
 #include <stdio.h>
 
 ListView Consult;
@@ -45,8 +47,6 @@ void mostrar_consultas(char *archivoDir) {
   while (fread(&registro, sizeof(Consultas), 1, apArch)) {
     if (registro.edo) {
       pos = ftell(apArch) - sizeof(Consultas);
-      g_print("%ld\n", pos);
-      // Formatear fecha como cadena
       sprintf(textoFormato, "%02d/%02d/%04d", registro.fecha.dia,
               registro.fecha.mes, registro.fecha.anio);
 
@@ -79,7 +79,14 @@ void crear_tabla_consultas(GtkTreeView *tree_view, GtkTreePath *path,
   sprintf(tituloVentana, "Consultas %s", curpPac);
   gtk_window_set_title(GTK_WINDOW(Consult.baseVentana.win), tituloVentana);
 
-  Consult.bar = crear_bar();
+  Consult.bar = crear_bar(BAR_PACIENTES);
+  // Solución cutre xD
+  gtk_container_remove(GTK_CONTAINER(Consult.baseVentana.box), Consult.bar.mainbox);
+  free_barlistv(&Consult.bar);
+  Consult.bar = crear_bar(BAR_PACIENTES);
+  gtk_box_pack_start(GTK_BOX(Consult.baseVentana.box), Consult.bar.mainbox, FALSE,
+                     FALSE, 0);
+
   g_signal_connect(G_OBJECT(Consult.bar.agregar.base.btn), "clicked",
                    G_CALLBACK(agregar_consulta_callback), NULL);
   g_signal_connect(G_OBJECT(Consult.bar.modificar.base.btn), "clicked",

@@ -2,6 +2,7 @@
 #include "consultas.h"
 #include "form_med.h"
 #include "listv.h"
+#include "listv_bar.h"
 
 Opc tipoUsr;
 WinMenu menu;
@@ -33,9 +34,7 @@ void pacientes(GtkWidget *widget, gpointer data) {
   desconectar_señal_btn(&tabla.bar.eliminar.base.btn);
 
   listv_gen_table();
-  gtk_window_set_title(GTK_WINDOW(tabla.baseVentana.win), "Pacientes");
-  mostrar_pacientes("../data/pacientes.dat");
-  gtk_widget_hide(menu.baseVentana.win);
+  tabla.bar = crear_bar(BAR_GENERICA);
 
   g_signal_connect(G_OBJECT(tabla.bar.agregar.base.btn), "clicked",
                    G_CALLBACK(pac_agregar_callback), NULL);

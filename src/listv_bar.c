@@ -1,6 +1,7 @@
 #include "listv_bar.h"
-#include "menu.h"
 #include "general.h"
+#include "menu.h"
+#include "reportes.h"
 
 // BarListv bar;
 
@@ -46,10 +47,11 @@ void crear_btn_imglbl(BarBtn *btn, char *imgPath, char *titulo) {
   gtk_box_pack_start(GTK_BOX(btn->box), btn->lbl, FALSE, FALSE, 0);
   btn->base.btn = gtk_button_new();
   gtk_container_add(GTK_CONTAINER(btn->base.btn), btn->box);
+
 }
 
 void volver_menu(GtkWidget *btn, gpointer data) {
-  //crear_menu(tipoUsr);
+  // crear_menu(tipoUsr);
   gtk_widget_show_all(menu.baseVentana.win);
   free_listview(NULL, NULL);
 }
@@ -59,7 +61,7 @@ void poner_plaholders(char *phEntry1, char *phEntry2, BarListv *bar) {
   gtk_entry_set_placeholder_text(GTK_ENTRY(bar->entrys[1]), phEntry2);
 }
 
-BarListv crear_bar() {
+BarListv crear_bar(Opc modo) {
   BarListv bar;
   bar.mainbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   bar.separador = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
@@ -84,6 +86,15 @@ BarListv crear_bar() {
                      0);
   gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.eliminar.base.btn, FALSE, FALSE,
                      0);
+
+  if (modo == BAR_PACIENTES) {
+    crear_btn_imglbl(&bar.reportes, "../images/report.png", "Reportes");
+    g_signal_connect(G_OBJECT(bar.reportes.base.btn), "clicked",
+                     G_CALLBACK(crear_reporte), NULL);
+    gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.reportes.base.btn, FALSE,
+                       FALSE, 0);
+  }
+
   gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.separador, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.entrys[0], TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.entrys[1], TRUE, TRUE, 0);
