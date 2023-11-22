@@ -19,14 +19,7 @@ int main() {
   // Inicializar gtk
   gtk_init(NULL, NULL);
 
-  // crear_tabla_consultas();
   gen_login();
-  // gen_menu();
-  // pac_crear_form(1);
-  // prov_crear_form(0);
-  // listv_gen_table();
-  // crear_menu();
-  crear_formulario_consulta(0);
 
   gtk_main();
   return 0;

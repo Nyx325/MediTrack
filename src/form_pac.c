@@ -18,8 +18,6 @@ typedef struct {
 
 PacForm pForm;
 
-// Opc modo; //1 para modificar, 0 para agregar
-
 void free_PacForm(GtkWidget *widget, gpointer data) {
   gtk_widget_hide(pForm.basesVentana.win);
 
@@ -381,7 +379,7 @@ gboolean registrar_datos_paciente(GtkWidget *btn, gpointer data) {
 
 void pac_agregar_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&pForm.acepBtn);
-  pac_crear_form(0);
+  pac_crear_form(NUEVO_REGISTRO);
   gtk_window_set_title(GTK_WINDOW(pForm.basesVentana.win), "Agregar Paciente");
   g_signal_connect(G_OBJECT(pForm.acepBtn), "clicked",
                    G_CALLBACK(registrar_datos_paciente), NULL);
@@ -431,7 +429,7 @@ void pac_mod_callback(GtkWidget *btn, gpointer data) {
     return;
 
   desconectar_señal_btn(&pForm.acepBtn);
-  pac_crear_form(1);
+  pac_crear_form(MODIFICAR_REGISTRO);
   gtk_window_set_title(GTK_WINDOW(pForm.basesVentana.win),
                        "Modificar Paciente");
   g_signal_connect(G_OBJECT(pForm.acepBtn), "clicked",
@@ -462,7 +460,6 @@ void eliminar_datos_paciente(GtkWidget *btn, gpointer data) {
       FALSE)
     return;
 
-  gtk_tree_model_get(modelo, &iter, 0, &p.curp, -1);
   gtk_tree_model_get(modelo, &iter, 0, &p.curp, 1, &p.nombre, 2, &p.fechaN, 3,
                      &p.sexo, 4, &p.telf, 5, &p.tpSangre, 6, &p.fechaC, 7,
                      &p.pos, -1);
@@ -491,6 +488,4 @@ void eliminar_datos_paciente(GtkWidget *btn, gpointer data) {
 
   gtk_list_store_clear(tabla.listStore);
   mostrar_pacientes("../data/pacientes.dat");
-
-  return;
 }

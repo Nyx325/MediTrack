@@ -409,7 +409,7 @@ gboolean registrar_datos_proveedor(GtkWidget *btn, gpointer data) {
 
 void agregar_proveedor_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&prForm.aceptBtn);
-  prov_crear_form(0);
+  prov_crear_form(NUEVO_REGISTRO);
   gtk_window_set_title(GTK_WINDOW(prForm.baseVentana.win), "Agregar Proveedor");
   g_signal_connect(G_OBJECT(prForm.aceptBtn), "clicked",
                    G_CALLBACK(registrar_datos_proveedor), NULL);
@@ -448,7 +448,8 @@ gboolean modificar_datos_proveedor(GtkWidget *btn, gpointer data) {
 
 void modificar_proveedor_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&prForm.aceptBtn);
-  prov_crear_form(1);
+  prov_crear_form(MODIFICAR_REGISTRO);
+
   gtk_window_set_title(GTK_WINDOW(prForm.baseVentana.win), "Modificar Proveedor");
   g_signal_connect(G_OBJECT(prForm.aceptBtn), "clicked",
                    G_CALLBACK(modificar_datos_proveedor), NULL);

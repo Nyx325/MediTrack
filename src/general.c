@@ -371,7 +371,7 @@ void crear_ventana(BaseForm *baseDelFormulario, int xRes, int yRes,
 
   baseDelFormulario->grid = gtk_grid_new();
 
-  gtk_grid_set_row_spacing(GTK_GRID(baseDelFormulario->grid), 20);
+  gtk_grid_set_row_spacing(GTK_GRID(baseDelFormulario->grid), 10);
   gtk_grid_set_column_spacing(GTK_GRID(baseDelFormulario->grid), 10);
   gtk_container_add(GTK_CONTAINER(baseDelFormulario->win),
                     baseDelFormulario->grid);

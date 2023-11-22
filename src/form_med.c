@@ -281,13 +281,15 @@ typedef struct {
   TextoIngresado unidadesInventario;
 } DatosFormularioMedicamento;
 
+// Datos que se capturan y convierten a char deben tener formato
+// numérico (int, float, etc)
 typedef struct {
   char idSF[11];
   char gramajeSF[9];
   char unidadesCaja[11];
   char costo[10];
   char unidadesInventario[11];
-} NumsSinFormato;
+} MedNumsSinFormato;
 
 char *formatear_id(const gchar *input) {
   const gsize tam = g_utf8_strlen(input, -1);
@@ -311,14 +313,12 @@ Medicamento validar_formulario_medicamento() {
   Medicamento registro;
   DatosFormularioMedicamento cap;
   WidgetsFecha widFecha;
-  NumsSinFormato reg;
+  MedNumsSinFormato reg;
 
   registro.estado = 0;
 
   capturar_formatear_texto(&cap.id, reg.idSF, formatear_num, mForm.id.entry,
                            &err, "Clave");
-  registro.id = atoi(reg.idSF);
-
   capturar_formatear_texto(&cap.marca, registro.marca, formatear_palabra,
                            mForm.marca.entry, &err, "Marca");
   capturar_formatear_texto(&cap.substancia, registro.sustancia,
@@ -326,8 +326,6 @@ Medicamento validar_formulario_medicamento() {
                            "Substancia");
   capturar_formatear_texto(&cap.gramaje, reg.gramajeSF, formatear_num,
                            mForm.gramaje.entry, &err, "Gramaje");
-  registro.gramaje = atof(reg.gramajeSF);
-
   capturar_formatear_texto(&cap.presentacion, registro.presentacion,
                            formatear_nombre, mForm.presentacion.entry, &err,
                            "Presentacion");
@@ -338,13 +336,15 @@ Medicamento validar_formulario_medicamento() {
                            mForm.unidadesC.entry, &err, "Unidades Caja");
   capturar_formatear_texto(&cap.costo, reg.costo, formatear_num,
                            mForm.costo.entry, &err, "Costo");
-  registro.costo = atof(reg.costo);
-
   capturar_formatear_texto(&cap.lote, registro.lote, formatear_palabra,
                            mForm.lote.entry, &err, "Lote");
   capturar_formatear_texto(&cap.unidadesInventario, reg.unidadesInventario,
                            formatear_num, mForm.unidadesI.entry, &err,
                            "Unidades Inventario");
+
+  registro.id = atoi(reg.idSF);
+  registro.gramaje = atof(reg.gramajeSF);
+  registro.costo = atof(reg.costo);
   registro.unidadesInventario = atoi(reg.unidadesInventario);
 
   widFecha.anioEntry = GTK_ENTRY(mForm.caducidad.anioEntry);
@@ -388,7 +388,8 @@ gboolean registrar_datos_medicamento(GtkWidget *btn, gpointer data) {
 
 void agregar_medicamentos_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&mForm.aceptBtn);
-  med_crear_form(0);
+  med_crear_form(NUEVO_REGISTRO);
+
   gtk_window_set_title(GTK_WINDOW(mForm.baseVentana.win),
                        "Agregar Medicamento");
   g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",
@@ -429,7 +430,8 @@ gboolean modificar_datos_medicamento(GtkWidget *btn, gpointer data) {
 
 void modificar_medicamentos_callback(GtkWidget *btn, gpointer data) {
   desconectar_señal_btn(&mForm.aceptBtn);
-  med_crear_form(1);
+  med_crear_form(MODIFICAR_REGISTRO);
+
   gtk_window_set_title(GTK_WINDOW(mForm.baseVentana.win),
                        "Modificar Medicamento");
   g_signal_connect(G_OBJECT(mForm.aceptBtn), "clicked",

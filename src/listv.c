@@ -41,13 +41,13 @@ void free_listview(GtkWidget *widget, gpointer data) {
   tabla.filaActual = NULL;
 }
 
-void listview_importmodel(ListView *tabla, ushort numCols, char *titulos[]) {
+void listview_importmodel(ListView *lviewStruct, ushort numCols, char *titulos[]) {
   ushort i;
-  if (tabla->tView)
-    gtk_widget_destroy(tabla->tView);
+  if (lviewStruct->tView)
+    gtk_widget_destroy(lviewStruct->tView);
 
-  tabla->tView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(tabla->listStore));
-  tabla->filaActual = gtk_tree_view_get_selection(GTK_TREE_VIEW(tabla->tView));
+  lviewStruct->tView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(lviewStruct->listStore));
+  lviewStruct->filaActual = gtk_tree_view_get_selection(GTK_TREE_VIEW(lviewStruct->tView));
 
   // Crear, configurar columnas y agregar al treeview
   for (i = 0; i < numCols; i++) {
@@ -60,14 +60,14 @@ void listview_importmodel(ListView *tabla, ushort numCols, char *titulos[]) {
     gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
     // Ajustar propiedades para expandir
     gtk_tree_view_column_set_expand(column, TRUE);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(tabla->tView), column);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(lviewStruct->tView), column);
   }
 
-  gtk_container_add(GTK_CONTAINER(tabla->baseVentana.scrollWin), tabla->tView);
-  gtk_box_pack_start(GTK_BOX(tabla->baseVentana.box),
-                     tabla->baseVentana.scrollWin, TRUE, TRUE, 0);
+  gtk_container_add(GTK_CONTAINER(lviewStruct->baseVentana.scrollWin), lviewStruct->tView);
+  gtk_box_pack_start(GTK_BOX(lviewStruct->baseVentana.box),
+                     lviewStruct->baseVentana.scrollWin, TRUE, TRUE, 0);
 
-  gtk_widget_show_all(tabla->baseVentana.win);
+  gtk_widget_show_all(lviewStruct->baseVentana.win);
 }
 
 guint crear_ventana_listv(BaseListv *baseListv, int xRes, int yRes) {

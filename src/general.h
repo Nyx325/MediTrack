@@ -8,6 +8,8 @@
 #include <string.h>
 
 typedef unsigned char Opc;
+#define NUEVO_REGISTRO 0
+#define MODIFICAR_REGISTRO 1
 typedef unsigned short ushort;
 
 typedef struct {
