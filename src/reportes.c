@@ -51,7 +51,7 @@ void crear_reporte(GtkWidget *btn, gpointer data) {
   Consultas datosReporte;
   Criterios conteo = {{0, 0}, {0, 0}, {0, 0}};
 
-  guint handler_id = crear_ventana_listv(&reporte.baseVentana, 400, 800);
+  guint handler_id = crear_ventana_listv(&reporte.baseVentana, 400, 500);
   g_signal_handler_disconnect(G_OBJECT(reporte.baseVentana.win), handler_id);
 
   if (buscar_paciente(curpPac, &paciente) == FALSE) {
