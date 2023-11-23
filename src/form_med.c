@@ -22,7 +22,52 @@ typedef struct {
 
 MedForm mForm;
 
+void ordenar_medicamentos() {
+  FILE *archivo = fopen("../data/medicamentos.dat", "rb+");
+
+  if (archivo == NULL) {
+    perror("Error al abrir el archivo");
+    return;
+  }
+
+  int tamRegistro = sizeof(Medicamento);
+  fseek(archivo, 0, SEEK_END);
+  long tamArchivo = ftell(archivo);
+  fseek(archivo, 0, SEEK_SET);
+
+  int totalRegistros = tamArchivo / tamRegistro;
+
+  for (int i = 1; i < totalRegistros; i++) {
+    fseek(archivo, i * tamRegistro, SEEK_SET);
+
+    int j;
+    Medicamento tmp;
+    fread(&tmp, sizeof(Medicamento), 1, archivo);
+
+    j = i - 1;
+    while (j >= 0) {
+      Medicamento actual;
+      fseek(archivo, j * tamRegistro, SEEK_SET);
+      fread(&actual, sizeof(Medicamento), 1, archivo);
+
+      if (actual.id < tmp.id)
+        break;
+
+      fseek(archivo, (j + 1) * tamRegistro, SEEK_SET);
+      fwrite(&actual, sizeof(Medicamento), 1, archivo);
+
+      j--;
+    }
+
+    fseek(archivo, (j + 1) * tamRegistro, SEEK_SET);
+    fwrite(&tmp, sizeof(Medicamento), 1, archivo);
+  }
+
+  fclose(archivo);
+}
+
 void free_medform(GtkWidget *widget, gpointer data) {
+  gtk_widget_hide(mForm.baseVentana.win);
   if (mForm.warningLbl)
     gtk_widget_destroy(mForm.warningLbl);
   if (mForm.aceptBtn)
@@ -380,6 +425,7 @@ gboolean registrar_datos_medicamento(GtkWidget *btn, gpointer data) {
   fwrite(&registro, sizeof(Medicamento), 1, apArch);
   fclose(apArch);
 
+  ordenar_medicamentos();
   gtk_list_store_clear(tabla.listStore);
   mostrar_medicamentos("../data/medicamentos.dat");
 
@@ -422,6 +468,7 @@ gboolean modificar_datos_medicamento(GtkWidget *btn, gpointer data) {
   fwrite(&registro, sizeof(Medicamento), 1, apArch);
   fclose(apArch);
 
+  ordenar_medicamentos();
   gtk_list_store_clear(tabla.listStore);
   mostrar_medicamentos("../data/medicamentos.dat");
 

@@ -18,6 +18,50 @@ typedef struct {
 
 PacForm pForm;
 
+void ordenar_pacientes() {
+  FILE *archivo = fopen("../data/pacientes.dat", "rb+");
+
+  if (archivo == NULL) {
+    perror("Error al abrir el archivo");
+    return;
+  }
+
+  int tamRegistro = sizeof(Pacientes);
+  fseek(archivo, 0, SEEK_END);
+  long tamArchivo = ftell(archivo);
+  fseek(archivo, 0, SEEK_SET);
+
+  int totalRegistros = tamArchivo / tamRegistro;
+
+  for (int i = 1; i < totalRegistros; i++) {
+    fseek(archivo, i * tamRegistro, SEEK_SET);
+
+    int j;
+    Pacientes tmp;
+    fread(&tmp, sizeof(Pacientes), 1, archivo);
+
+    j = i - 1;
+    while (j >= 0) {
+      Pacientes actual;
+      fseek(archivo, j * tamRegistro, SEEK_SET);
+      fread(&actual, sizeof(Pacientes), 1, archivo);
+
+      if (strcmp(actual.CURP, tmp.CURP) < 0)
+        break;
+
+      fseek(archivo, (j + 1) * tamRegistro, SEEK_SET);
+      fwrite(&actual, sizeof(Pacientes), 1, archivo);
+
+      j--;
+    }
+
+    fseek(archivo, (j + 1) * tamRegistro, SEEK_SET);
+    fwrite(&tmp, sizeof(Pacientes), 1, archivo);
+  }
+
+  fclose(archivo);
+}
+
 void free_PacForm(GtkWidget *widget, gpointer data) {
   gtk_widget_hide(pForm.basesVentana.win);
 
@@ -371,6 +415,7 @@ gboolean registrar_datos_paciente(GtkWidget *btn, gpointer data) {
   fwrite(&registro, sizeof(Pacientes), 1, apArch);
   fclose(apArch);
 
+  ordenar_pacientes();
   gtk_list_store_clear(tabla.listStore);
   mostrar_pacientes("../data/pacientes.dat");
 
@@ -413,6 +458,7 @@ gboolean modificar_datos_paciente(GtkWidget *btn, gpointer data) {
   fwrite(&registro, sizeof(Pacientes), 1, apArch);
   fclose(apArch);
 
+  ordenar_pacientes();
   gtk_list_store_clear(tabla.listStore);
   mostrar_pacientes("../data/pacientes.dat");
 

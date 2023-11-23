@@ -1,4 +1,5 @@
 #include "listv_bar.h"
+#include "consultas.h"
 #include "general.h"
 #include "menu.h"
 #include "reportes.h"
@@ -47,7 +48,6 @@ void crear_btn_imglbl(BarBtn *btn, char *imgPath, char *titulo) {
   gtk_box_pack_start(GTK_BOX(btn->box), btn->lbl, FALSE, FALSE, 0);
   btn->base.btn = gtk_button_new();
   gtk_container_add(GTK_CONTAINER(btn->base.btn), btn->box);
-
 }
 
 void volver_menu(GtkWidget *btn, gpointer data) {
@@ -71,8 +71,6 @@ BarListv crear_bar(Opc modo) {
   crear_btn_imglbl(&bar.eliminar, "../images/delete.png", "Eliminar");
 
   crear_btn_img(&bar.backBtn, "../images/back.png");
-  g_signal_connect(G_OBJECT(bar.backBtn.btn), "clicked",
-                   G_CALLBACK(volver_menu), NULL);
 
   crear_btn_img(&bar.searchBtn, "../images/search.png");
 
@@ -93,7 +91,11 @@ BarListv crear_bar(Opc modo) {
                      G_CALLBACK(crear_reporte), NULL);
     gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.reportes.base.btn, FALSE,
                        FALSE, 0);
-  }
+    g_signal_connect(G_OBJECT(bar.backBtn.btn), "clicked",
+                     G_CALLBACK(free_tabla_consultas), NULL);
+  } else
+    g_signal_connect(G_OBJECT(bar.backBtn.btn), "clicked",
+                     G_CALLBACK(volver_menu), NULL);
 
   gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.separador, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.entrys[0], TRUE, TRUE, 0);

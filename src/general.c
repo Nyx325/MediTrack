@@ -572,9 +572,30 @@ gboolean preparar_archivos() {
 #ifdef _WIN32
   if (!GetFileAttributesA("..\\data\\usr") != INVALID_FILE_ATTRIBUTES) {
   FILE *apArch
-  
+
 #else
 
 #endif
 }
 */
+
+int fechacmp(Fecha a, Fecha b) {
+  if (a.anio == b.anio) {
+    if (a.mes == b.mes) {
+      if (a.dia == b.dia)
+        return 0;
+      else if (a.dia > b.dia)
+        return 1;
+      else
+        return -1;
+    } else if (a.mes > b.mes) {
+      return 1;
+    } else {
+      return -1;
+    }
+  } else if (a.anio > b.anio) {
+    return 1;
+  } else {
+    return -1;
+  }
+}

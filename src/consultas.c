@@ -1,13 +1,57 @@
 #include "consultas.h"
 #include "general.h"
-#include "reportes.h"
 #include "listv.h"
 #include "listv_bar.h"
+#include "reportes.h"
 #include <stdio.h>
 
 ListView Consult;
 ConsForm cForm;
 gchar *curpPac;
+
+void ordenar_consultas(char *nombreArchivo) {
+  FILE *archivo = fopen(nombreArchivo, "rb+");
+
+  if (archivo == NULL) {
+    perror("Error al abrir el archivo");
+    return;
+  }
+
+  int tamRegistro = sizeof(Consultas);
+  fseek(archivo, 0, SEEK_END);
+  long tamArchivo = ftell(archivo);
+  fseek(archivo, 0, SEEK_SET);
+
+  int totalRegistros = tamArchivo / tamRegistro;
+
+  for (int i = 1; i < totalRegistros; i++) {
+    fseek(archivo, i * tamRegistro, SEEK_SET);
+
+    int j;
+    Consultas tmp;
+    fread(&tmp, sizeof(Consultas), 1, archivo);
+
+    j = i - 1;
+    while (j >= 0) {
+      Consultas actual;
+      fseek(archivo, j * tamRegistro, SEEK_SET);
+      fread(&actual, sizeof(Consultas), 1, archivo);
+
+      if (fechacmp(actual.fecha, tmp.fecha) > 0)
+        break;
+
+      fseek(archivo, (j + 1) * tamRegistro, SEEK_SET);
+      fwrite(&actual, sizeof(Consultas), 1, archivo);
+
+      j--;
+    }
+
+    fseek(archivo, (j + 1) * tamRegistro, SEEK_SET);
+    fwrite(&tmp, sizeof(Consultas), 1, archivo);
+  }
+
+  fclose(archivo);
+}
 
 void free_tabla_consultas(GtkWidget *widget, gpointer data) {
   gtk_widget_hide(Consult.baseVentana.win);
@@ -81,11 +125,12 @@ void crear_tabla_consultas(GtkTreeView *tree_view, GtkTreePath *path,
 
   Consult.bar = crear_bar(BAR_PACIENTES);
   // Solución cutre xD
-  gtk_container_remove(GTK_CONTAINER(Consult.baseVentana.box), Consult.bar.mainbox);
+  gtk_container_remove(GTK_CONTAINER(Consult.baseVentana.box),
+                       Consult.bar.mainbox);
   free_barlistv(&Consult.bar);
   Consult.bar = crear_bar(BAR_PACIENTES);
-  gtk_box_pack_start(GTK_BOX(Consult.baseVentana.box), Consult.bar.mainbox, FALSE,
-                     FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(Consult.baseVentana.box), Consult.bar.mainbox,
+                     FALSE, FALSE, 0);
 
   g_signal_connect(G_OBJECT(Consult.bar.agregar.base.btn), "clicked",
                    G_CALLBACK(agregar_consulta_callback), NULL);
@@ -463,6 +508,7 @@ void registrar_consulta(GtkWidget *btn, gpointer data) {
   fwrite(&registro, sizeof(Consultas), 1, apArch);
   fclose(apArch);
 
+  ordenar_consultas(dirArch);
   gtk_list_store_clear(Consult.listStore);
   mostrar_consultas(dirArch);
 }
@@ -502,6 +548,7 @@ void modificar_consulta(GtkWidget *btn, gpointer data) {
   fwrite(&registro, sizeof(Consultas), 1, apArch);
   fclose(apArch);
 
+  ordenar_consultas(dirArch);
   gtk_list_store_clear(Consult.listStore);
   mostrar_consultas(dirArch);
 }

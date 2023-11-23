@@ -54,6 +54,7 @@ void crear_reporte(GtkWidget *btn, gpointer data) {
   guint handler_id = crear_ventana_listv(&reporte.baseVentana, 400, 500);
   g_signal_handler_disconnect(G_OBJECT(reporte.baseVentana.win), handler_id);
 
+
   if (buscar_paciente(curpPac, &paciente) == FALSE) {
     g_print("ERROR: No se pudo crear reporte, paciente no encontrado\n");
     return;

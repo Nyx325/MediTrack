@@ -20,6 +20,50 @@ typedef struct {
 
 FormProv prForm;
 
+void ordenar_proveedores() {
+  FILE *archivo = fopen("../data/proveedores.dat", "rb+");
+
+  if (archivo == NULL) {
+    perror("Error al abrir el archivo");
+    return;
+  }
+
+  int tamRegistro = sizeof(Proveedor);
+  fseek(archivo, 0, SEEK_END);
+  long tamArchivo = ftell(archivo);
+  fseek(archivo, 0, SEEK_SET);
+
+  int totalRegistros = tamArchivo / tamRegistro;
+
+  for (int i = 1; i < totalRegistros; i++) {
+    fseek(archivo, i * tamRegistro, SEEK_SET);
+
+    int j;
+    Proveedor tmp;
+    fread(&tmp, sizeof(Proveedor), 1, archivo);
+
+    j = i - 1;
+    while (j >= 0) {
+      Proveedor actual;
+      fseek(archivo, j * tamRegistro, SEEK_SET);
+      fread(&actual, sizeof(Proveedor), 1, archivo);
+
+      if (strcmp(actual.rfc, tmp.rfc) < 0)
+        break;
+
+      fseek(archivo, (j + 1) * tamRegistro, SEEK_SET);
+      fwrite(&actual, sizeof(Proveedor), 1, archivo);
+
+      j--;
+    }
+
+    fseek(archivo, (j + 1) * tamRegistro, SEEK_SET);
+    fwrite(&tmp, sizeof(Proveedor), 1, archivo);
+  }
+
+  fclose(archivo);
+}
+
 void free_provform(GtkWidget *widget, gpointer data) {
   gtk_widget_hide(prForm.baseVentana.win);
 
@@ -401,6 +445,7 @@ gboolean registrar_datos_proveedor(GtkWidget *btn, gpointer data) {
   fwrite(&registro, sizeof(Proveedor), 1, apArch);
   fclose(apArch);
 
+  ordenar_proveedores();
   gtk_list_store_clear(tabla.listStore);
   mostrar_proveedores("../data/proveedores.dat");
 
@@ -440,6 +485,7 @@ gboolean modificar_datos_proveedor(GtkWidget *btn, gpointer data) {
   fwrite(&registro, sizeof(Proveedor), 1, apArch);
   fclose(apArch);
 
+  ordenar_proveedores();
   gtk_list_store_clear(tabla.listStore);
   mostrar_proveedores("../data/proveedores.dat");
 
