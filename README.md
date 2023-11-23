@@ -40,13 +40,6 @@ Sin embargo puesto que es un repositorio privado pedirá una
 contraseña, en usuario que pida tendrán que poner `OmarRoman29`
 y una clave propia que tengo para estas cosas.
 
-No dejen la carpeta del código o el `README.md` por ahí en
-la carpeta del proyecto que esto es prácticamente una contraseña
-mía jajaja.
-```
-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
-```
-
 ### La complicada pero rápida
 Si ya instalaron los paquetes que les dije en  [Introducción](#instalar-lo-necesario)
 reinicien la terminal para que se actualicen los datos, durante
