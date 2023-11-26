@@ -523,7 +523,7 @@ void eliminar_datos_proveedor(GtkWidget *btn, gpointer data) {
 
   fseek(apArch, pos, SEEK_SET);
   fread(&proveedor, sizeof(Proveedor), 1, apArch);
-  // proveedor.estado = 0;
+  proveedor.estado = 0;
   fseek(apArch, pos, SEEK_SET);
   fwrite(&proveedor, sizeof(Proveedor), 1, apArch);
   fclose(apArch);

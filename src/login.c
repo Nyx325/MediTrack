@@ -50,11 +50,11 @@ void gen_login() {
   // Hacer invisible el texto ingresado
   gtk_entry_set_visibility(GTK_ENTRY(login.contrasenia), FALSE);
 
-  gtk_grid_attach(GTK_GRID(login.baseLog.grid), login.banner, 0, 0, 3, 1);
-  gtk_grid_attach(GTK_GRID(login.baseLog.grid), login.usuario, 0, 1, 3, 1);
-  gtk_grid_attach(GTK_GRID(login.baseLog.grid), login.contrasenia, 0, 2, 3, 1);
-  gtk_grid_attach(GTK_GRID(login.baseLog.grid), login.warning, 0, 3, 3, 1);
-  gtk_grid_attach(GTK_GRID(login.baseLog.grid), login.aceptBtn, 0, 4, 3, 1);
+  gtk_grid_attach(GTK_GRID(login.baseLog.grid), login.banner, 0, 0, 4, 1);
+  gtk_grid_attach(GTK_GRID(login.baseLog.grid), login.usuario, 1, 1, 2, 1);
+  gtk_grid_attach(GTK_GRID(login.baseLog.grid), login.contrasenia, 1, 2, 2, 1);
+  gtk_grid_attach(GTK_GRID(login.baseLog.grid), login.warning, 0, 3, 4, 1);
+  gtk_grid_attach(GTK_GRID(login.baseLog.grid), login.aceptBtn, 1, 4, 2, 1);
 
   gtk_widget_show_all(login.baseLog.win);
 }

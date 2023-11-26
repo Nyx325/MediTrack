@@ -391,6 +391,7 @@ Medicamento validar_formulario_medicamento() {
   registro.gramaje = atof(reg.gramajeSF);
   registro.costo = atof(reg.costo);
   registro.unidadesInventario = atoi(reg.unidadesInventario);
+  registro.unidadesCaja = atoi(reg.unidadesCaja);
 
   widFecha.anioEntry = GTK_ENTRY(mForm.caducidad.anioEntry);
   widFecha.mesCombox = GTK_COMBO_BOX(mForm.caducidad.mesCombox);

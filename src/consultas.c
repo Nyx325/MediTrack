@@ -55,17 +55,20 @@ void ordenar_consultas(char *nombreArchivo) {
 
 void free_tabla_consultas(GtkWidget *widget, gpointer data) {
   gtk_widget_hide(Consult.baseVentana.win);
-
+  g_print("1");
   if (Consult.tView)
     gtk_widget_destroy(Consult.tView);
+  g_print("2");
   if (Consult.listStore)
     gtk_list_store_clear(Consult.listStore);
-  if (Consult.filaActual)
-    g_object_unref(Consult.filaActual);
-
+  g_print("3");
+  //if (Consult.filaActual)
+    //g_object_unref(Consult.filaActual);
+  g_print("4");
   free_baselistv(&Consult.baseVentana);
-
+  g_print("5");
   free_barlistv(&Consult.bar);
+  g_print("6");
 
   Consult.tView = NULL;
   Consult.listStore = NULL;
@@ -127,8 +130,8 @@ void crear_tabla_consultas(GtkTreeView *tree_view, GtkTreePath *path,
   // Solución cutre xD
   gtk_container_remove(GTK_CONTAINER(Consult.baseVentana.box),
                        Consult.bar.mainbox);
-  free_barlistv(&Consult.bar);
-  Consult.bar = crear_bar(BAR_PACIENTES);
+  // free_barlistv(&Consult.bar);
+  // Consult.bar = crear_bar(BAR_PACIENTES);
   gtk_box_pack_start(GTK_BOX(Consult.baseVentana.box), Consult.bar.mainbox,
                      FALSE, FALSE, 0);
 
@@ -388,8 +391,10 @@ void crear_formulario_consulta(Opc modo) {
   gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.enfCron.numcEscritos, 8,
                   15, 6, 1);
 
-  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.aceptBtn, 0, 16, 7, 1);
-  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.cancelBtn, 8, 16, 6, 1);
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.warningLbl, 0, 16, 14, 1);
+
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.aceptBtn, 0, 17, 7, 1);
+  gtk_grid_attach(GTK_GRID(cForm.baseForm.grid), cForm.cancelBtn, 8, 17, 6, 1);
 
   if (modo)
     cargar_consulta_registro();

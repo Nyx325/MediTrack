@@ -53,7 +53,7 @@ void crear_reporte(GtkWidget *btn, gpointer data) {
 
   guint handler_id = crear_ventana_listv(&reporte.baseVentana, 400, 500);
   g_signal_handler_disconnect(G_OBJECT(reporte.baseVentana.win), handler_id);
-
+  gtk_window_set_title(GTK_WINDOW(reporte.baseVentana.win), "Reporte");
 
   if (buscar_paciente(curpPac, &paciente) == FALSE) {
     g_print("ERROR: No se pudo crear reporte, paciente no encontrado\n");
@@ -110,7 +110,7 @@ void crear_reporte(GtkWidget *btn, gpointer data) {
   g_print("a\n");
 
   // Se usa dirArch pero es formato para el lbl de los promedios
-  sprintf(buffer.dirArch, "Promerdios\nTemperatura: %.2f IMC: %.2f Peso: %.2f",
+  sprintf(buffer.dirArch, "Promedios\nTemperatura: %.2f IMC: %.2f Peso: %.2f",
           conteo.temp.prom, conteo.imc.prom, conteo.peso.prom);
 
   g_print("a\n");

@@ -25,16 +25,12 @@ void free_barlistv(BarListv *bar) {
   if (!bar->separador)
     gtk_widget_destroy(bar->separador);
 
-  for (i = 0; i < 2; i++)
-    if (!bar->entrys[i])
-      gtk_widget_destroy(bar->entrys[i]);
 
   free_barbtn_con_texto(&bar->agregar);
   free_barbtn_con_texto(&bar->modificar);
   free_barbtn_con_texto(&bar->eliminar);
 
   free_basebtn(&bar->backBtn);
-  free_basebtn(&bar->searchBtn);
 
   bar->mainbox = NULL;
   bar->separador = NULL;
@@ -98,9 +94,9 @@ BarListv crear_bar(Opc modo) {
                      G_CALLBACK(volver_menu), NULL);
 
   gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.separador, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.entrys[0], TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.entrys[1], TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.searchBtn.btn, FALSE, FALSE, 0);
+  //gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.entrys[0], TRUE, TRUE, 0);
+  //gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.entrys[1], TRUE, TRUE, 0);
+  //gtk_box_pack_start(GTK_BOX(bar.mainbox), bar.searchBtn.btn, FALSE, FALSE, 0);
 
   return bar;
 }
