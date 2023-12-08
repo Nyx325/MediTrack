@@ -52,7 +52,7 @@ O haciendo uso de `make`
 ```bash
 make
 ```
-## Distribución en Windows
+## Distribución en Windows (No funciona del todo xd)
 
 Para que se pueda ejecutar el programa sin necesitar instalar un entorno de desarrollo
 al usuario se deben copiar los archivos dll a la carpeta donde se encuentra el ejecutable
