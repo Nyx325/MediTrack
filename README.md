@@ -38,7 +38,7 @@ cmake ..
 
 Esto es solo para mi:
 ```bash
-cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DDEBUG_MODE=ON ..
 ```
 
 Y dependiendo de su equipo se compila con `ninja` 

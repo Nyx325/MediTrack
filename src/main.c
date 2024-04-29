@@ -1,26 +1,9 @@
-#include "login.h"
-#include "consultas.h"
+#include <gtk/gtk.h>
 
-int main() {
-  // Establecer la variable de entorno GTK_THEME con la ruta al tema descargado
-  g_setenv("GTK_THEME", "../theme/gtk.css", TRUE);
-  
-/*
-#ifdef _WIN32
-  if (carpeta_existe("..\\data\\"))
-    if (!carpeta_existe("..\\data\\consultas"))
-      return 1;
-#else
-  if (carpeta_existe("../data/"))
-    if (!carpeta_existe("../data/consultas"))
-      return 1;
-#endif
-*/
-  // Inicializar gtk
-  gtk_init(NULL, NULL);
+int main(){
+    gtk_init(NULL, NULL);
 
-  gen_login();
+    g_print("Hello world\n");
 
-  gtk_main();
-  return 0;
+    return 0;
 }
