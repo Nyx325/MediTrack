@@ -15,6 +15,17 @@ else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")  # Agrega optimizaciones
 endif()
 
+# Agrega tus archivos fuente
+# Cargar todos los archivos .c
+file(GLOB ENTIDAD "src/datos/entidad/*.c")
+file(GLOB REPOSITORIO "src/datos/repositorio/*.c")
+file(GLOB LOGICA "src/logica/*.c")
+file(GLOB VISTA "src/vista/*.c")
+file(GLOB MAIN "src/main.c")
+
+# Crea un ejecutable
+add_executable(MediTrack ${MAIN} ${ENTIDAD} ${REPOSITORIO} ${LOGICA} ${VISTA})
+
 # Busca el paquete GTK
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
@@ -22,17 +33,6 @@ pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
 # Agrega las rutas de inclusión para GTK
 # Agrega los archivos .h creo
 include_directories(${GTK3_INCLUDE_DIRS})
-
-# Agrega tus archivos fuente
-# Cargar todos los archivos .c
-file(GLOB ENTIDAD "src/entidad/*.c")
-file(GLOB REPOSITORIO "src/repositorio/*.c")
-file(GLOB LOGICA "src/logica/*.c")
-file(GLOB VISTA "src/vista/*.c")
-file(GLOB MAIN "src/main.c")
-
-# Crea un ejecutable
-add_executable(MediTrack ${MAIN} ${ENTIDAD} ${REPOSITORIO} ${LOGICA} ${VISTA})
 
 # Vincula tu ejecutable con las bibliotecas de GTK
 # Agregar librerias y todo lo que hace a GTK funcionar

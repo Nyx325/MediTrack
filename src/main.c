@@ -1,11 +1,13 @@
 #include <gtk/gtk.h>
+#include "vista/default_window.h"
 
-int main(){
-    gtk_init(NULL, NULL);
+int main(int argc, char **argv){
+    gtk_init(&argc, &argv);
 
-    GTK_WIDGET(NULL);
+    DefaultWindow* win = meditrack_new_default_window();
+    GtkWidget* label = gtk_label_new("Hola");
 
-    g_print("Hello world\n");
-
+    gtk_widget_show(win->win);
+    gtk_main();
     return 0;
 }
