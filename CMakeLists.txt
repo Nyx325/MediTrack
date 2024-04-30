@@ -23,8 +23,12 @@ file(GLOB LOGICA "src/logica/*.c")
 file(GLOB VISTA "src/vista/*.c")
 file(GLOB MAIN "src/main.c")
 
-# Crea un ejecutable
+# Incluir archivos de cabecera
+# file(GLOB VISTA_HEADERS "src/vista/*.h")  
+
+# Agrega tus archivos fuente y de cabecera al ejecutable
 add_executable(MediTrack ${MAIN} ${ENTIDAD} ${REPOSITORIO} ${LOGICA} ${VISTA})
+#add_executable(MediTrack ${MAIN} ${ENTIDAD} ${REPOSITORIO} ${LOGICA} ${VISTA} ${VISTA_HEADERS})
 
 # Busca el paquete GTK
 find_package(PkgConfig REQUIRED)
