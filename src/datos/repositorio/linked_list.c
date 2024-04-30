@@ -1,8 +1,7 @@
 #include "linked_list.h"
 #include <stdio.h>
-#include <stdlib.h>
 
-LinkedList* linkedList_new(){
+LinkedList* linkedlist_new(){
     LinkedList* new = (LinkedList*)malloc(sizeof(LinkedList));
     if(new==NULL){
         printf("No se pudo crear la lista");
@@ -16,14 +15,49 @@ LinkedList* linkedList_new(){
     return new;
 }
 
-void linkedList_push(LinkedList* list, void* element){
-    if(list == NULL) return;
+int linkedlist_push(LinkedList* list, void* element){
+    Node* node;
+    if(list == NULL) return 1;
+    //if(*list == NULL) return 1;
 
-    if(list->size == 0){
+    if((list)->size == 0){
+        node = node_new(element);
+        if(node == NULL) return 0;
+        (list)->head=node;
+        (list)->tail=node;
+        (list)->size++;
+        return 1;
+    }
 
+    node = node_new(element);
+    if(node == NULL) return 0;
+    node->prev = (list)->tail;
+    (list)->tail->next = node;
+    (list)->tail = node;
+    (list)->size++;
+    return 1;
+}
+
+void linkedlist_print(LinkedList *list){
+    if(list->size==0){
+        printf("No existen elementos");
+        return;
+    }
+
+    printf("Size: %lu\n", list->size);
+    Node* node = list->head;
+    printf("Tail: %p, Head: %p\n", list->tail, list->head);
+    printf("Prev: %p, Cur: %p, Next: %p\n", node->prev, node, node->next);
+    for(unsigned long i = 0; i<list->size; i++){
+        int* dato = (int*)node->data;
+        printf("%lu) %d\n", i, *dato);
+        node = node->next;
     }
 }
 
-void linkedList_pop(LinkedList* list);
-void linkedList_delete(LinkedList* list, void* element);
-void linkedList_delete_index(LinkedList* list, unsigned long index);
+void linkedlist_pop(LinkedList* list){
+    if(list->size == 0) return;
+
+}
+void linkedlist_delete(LinkedList* list, void* element);
+void linkedlist_delete_index(LinkedList* list, unsigned long index);

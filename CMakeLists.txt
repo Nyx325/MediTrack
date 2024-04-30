@@ -9,6 +9,7 @@ option(DEBUG_MODE "Compilar con información de depuración" ON)
 # cmake -DDEBUG_MODE=ON .
 # cmake -DDEBUG_MODE=OFF .
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c99")
 if(DEBUG_MODE)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")  # Agrega información de depuración
 else()
