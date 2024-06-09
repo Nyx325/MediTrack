@@ -1,4 +1,5 @@
 #include "linked_list.h"
+#include "node.h"
 #include <stdio.h>
 
 LinkedList* linkedlist_new(){
@@ -55,9 +56,21 @@ void linkedlist_print(LinkedList *list){
     }
 }
 
-void linkedlist_pop(LinkedList* list){
-    if(list->size == 0) return;
+void* linkedlist_pop(LinkedList** list){
+    void* data;
+    Node* tmp;
+    if((*list)->size == 0) return NULL;
+    
+    data = (*list)->tail->data;
+    tmp = (*list)->tail;
+    if((*list)->size == 1){
+        node_destroy(&tmp);
+        (*list)->tail = NULL;
+        (*list)->head = NULL;
+        return data;
+    }
 
+    
 }
 void linkedlist_delete(LinkedList* list, void* element);
 void linkedlist_delete_index(LinkedList* list, unsigned long index);
